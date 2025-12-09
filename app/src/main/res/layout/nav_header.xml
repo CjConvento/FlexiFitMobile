@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="210dp"
+    android:background="@drawable/bg_modern_wave">
+
+    <!-- SETTINGS ICON – top right ng header -->
+    <ImageButton
+        android:id="@+id/btnHeaderSettings"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_settings"
+        android:tint="@android:color/white"
+        android:contentDescription="Settings" />
+
+    <!-- Centered content (avatar + name + email) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="36dp"
+        android:paddingBottom="24dp">
+
+        <ImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:src="@drawable/ic_person"
+            android:tint="@android:color/white"
+            android:padding="10dp" />
+
+        <TextView
+            android:id="@+id/txtHeaderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WELCOME manish"
+            android:textColor="@android:color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <TextView
+            android:id="@+id/txtHeaderEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="user@email.com"
+            android:textColor="#D9E2F3"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    tools:context=".LoginActivity">
+
+    <!-- TOP APP BAR (dito lalabas yung sun/moon) -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        app:title="FlexiFit"
+        app:titleTextColor="@color/white" />
+
+    <!-- CONTENT -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="1">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="12dp"
+            app:strokeColor="@color/colorPrimary"
+            app:cardUseCompatPadding="true"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:layout_gravity="center_horizontal">
+
+                <!-- TITLE -->
+                <TextView
+                    android:id="@+id/tvLoginTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Login"
+                    android:textSize="28sp"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/aut_color" />
+
+                <!-- USERNAME with border + icon -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/flexifit_border"
+                    app:hintTextColor="@color/textPrimary"
+                    android:paddingHorizontal="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/login_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:hint="Username"
+                        android:inputType="text"
+                        android:textColor="@color/textPrimary"
+                        android:textColorHint="@color/textPrimary"
+                        android:drawableStart="@drawable/baseline_person_pin_24"
+                        android:drawableTint="@color/colorPrimary"
+                        android:drawablePadding="8dp"
+                        android:padding="8dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- PASSWORD with border + SHOW/HIDE toggle -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/flexifit_border"
+                    android:paddingHorizontal="8dp"
+                    app:endIconMode="password_toggle"
+                    app:hintTextColor="@color/textPrimary"
+                    app:endIconTint="@color/colorPrimary"
+                    app:errorIconDrawable="@null">   <!-- WALANG ! ICON -->
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/login_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:textColor="@color/textPrimary"
+                        android:textColorHint="@color/textPrimary"
+                        android:drawableStart="@drawable/baseline_lock_24"
+                        android:drawableTint="@color/colorPrimary"
+                        android:drawablePadding="8dp"
+                        android:padding="8dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- LOGIN BUTTON -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/login_button"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="30dp"
+                    android:text="Login"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/colorPrimary"
+                    app:cornerRadius="24dp" />
+
+                <!-- SIGNUP REDIRECT -->
+                <TextView
+                    android:id="@+id/signupRedirectText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Not yet registered? Sign Up"
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/redirect_color"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</LinearLayout>

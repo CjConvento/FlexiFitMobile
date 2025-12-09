@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Primary Navy -->
+    <color name="colorPrimary">#1D3C78</color>
+
+    <!-- NIGHT MODE BACKGROUND -->
+    <color name="background">#050914</color>
+    <color name="surface">#141824</color>
+
+    <!-- SIGNUP REDIRECT -->
+    <color name="redirect_color">@color/textSecondary</color>
+
+    <color name="textPrimary">#FFFFFF</color>
+    <color name="textSecondary">#B3BCD8</color>
+
+    <color name="wave_color">#050711</color>
+
+    <!--    LOGIN & SIGNUP TITLE-->
+    <color name="aut_color">@color/textSecondary</color>
+
+    <!-- Drawer / nav colors - DARK -->
+    <!-- Drawer background -->
+    <color name="drawer_bg">#050711</color>
+
+    <!-- Selected background = NAVY BLUE -->
+    <color name="nav_item_active_bg">@color/colorPrimary</color>
+
+    <!-- TEXT COLORS -->
+    <!-- Selected label = white -->
+    <color name="nav_item_text">#FFFFFF</color>
+    <!-- Inactive label (KEEP CURRENT GRAY) -->
+    <color name="nav_item_text_inactive">#9CA3AF</color>
+
+    <!-- ICON COLORS -->
+    <!-- Selected icon = white -->
+    <color name="nav_item_icon">#FFFFFF</color>
+    <!-- Inactive icon (KEEP CURRENT GRAY) -->
+    <color name="nav_item_icon_inactive">#4B5563</color>
+
+</resources>

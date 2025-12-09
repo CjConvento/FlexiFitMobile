@@ -1,0 +1,39 @@
+<resources>
+    <color name="colorPrimary">#1D3C78</color>
+
+    <!-- LIGHT MODE BACKGROUND -->
+    <!-- SIGNUP REDIRECT -->
+    <color name="redirect_color">@color/colorPrimary</color>
+
+    <color name="background">#F5F7FB</color>
+    <color name="surface">#FFFFFF</color>
+
+    <color name="textPrimary">#111111</color>
+    <color name="textSecondary">#666666</color>
+    <color name="white">#FFFFFF</color>
+    <color name="progressTrack">#FFE0E0E0</color>   <!-- light gray -->
+    <color name="progressFill">@color/colorPrimary</color> <!-- or any accent -->
+
+    <color name="wave_color">#F7F2FA</color>
+
+    <!--    LOGIN & SIGNUP TITLE-->
+    <color name="aut_color">@color/colorPrimary</color>
+
+    <!-- Drawer / nav colors - LIGHT -->
+    <color name="drawer_bg">#FFFFFF</color>
+
+    <!-- Selected background = navy blue -->
+    <color name="nav_item_active_bg">@color/colorPrimary</color>
+
+    <!-- TEXT COLORS (DAY) -->
+    <!-- Selected label = white -->
+    <color name="nav_item_text">@color/white</color>
+    <!-- Inactive label = navy blue -->
+    <color name="nav_item_text_inactive">@color/colorPrimary</color>
+
+    <!-- ICON COLORS (DAY) -->
+    <!-- Selected icon = white -->
+    <color name="nav_item_icon">@color/white</color>
+    <!-- Inactive icon = navy blue -->
+    <color name="nav_item_icon_inactive">@color/colorPrimary</color>
+</resources>

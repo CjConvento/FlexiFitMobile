@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FlexiFitApp</string>
+    <string name="nav_open">Open navigation</string>
+    <string name="nav_close">Close navigation</string>
+</resources>

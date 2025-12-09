@@ -1,0 +1,48 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Main app theme used in Manifest -->
+    <style name="Theme.FlexiFitApp" parent="Base.Theme.FlexiFitApp">
+        <!-- apply NavigationView style -->
+        <item name="navigationViewStyle">@style/Widget.FlexiFit.NavigationView</item>
+    </style>
+
+    <!-- Base Light Theme -->
+    <style name="Base.Theme.FlexiFitApp" parent="Theme.Material3.Light.NoActionBar">
+
+        <!-- NAVY BLUE THEME COLORS -->
+        <item name="colorPrimary">#1D3C78</item>
+        <item name="colorPrimaryContainer">#28488C</item>
+        <item name="colorSecondary">#4A7BD0</item>
+        <item name="colorSecondaryContainer">#6B96E0</item>
+
+        <!-- Background & Surface -->
+        <item name="android:colorBackground">#F5F7FA</item>
+        <item name="colorSurface">#FFFFFF</item>
+
+        <!-- Text Colors -->
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSurface">#1A1A1A</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor" tools:targetApi="l">#162F5A</item>
+
+        <!-- Navigation Bar -->
+        <item name="android:navigationBarColor" tools:targetApi="l">#1D3C78</item>
+
+    </style>
+
+    <!-- NAVIGATION VIEW STYLE (DAY) -->
+    <style name="Widget.FlexiFit.NavigationView" parent="Widget.Material3.NavigationView">
+        <!-- background ng buong drawer -->
+        <item name="android:background">@color/drawer_bg</item>
+
+        <!-- text & icon colors -->
+        <item name="itemTextColor">@color/nav_item_text_color</item>
+        <item name="itemIconTint">@color/nav_item_icon_tint</item>
+
+        <!-- NEW: background selector for items -->
+        <item name="itemBackground">@drawable/nav_item_background</item>
+    </style>
+
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ✅ SELECTED (checked) = shaded gray pill -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#E6E6E6"/>
+            <corners android:radius="30dp"/>
+            <padding
+                android:left="8dp"
+                android:top="8dp"
+                android:right="8dp"
+                android:bottom="8dp"/>
+        </shape>
+    </item>
+
+    <!-- ✅ DEFAULT (hindi selected) = transparent, walang kulay -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="30dp"/>
+            <padding
+                android:left="8dp"
+                android:top="8dp"
+                android:right="8dp"
+                android:bottom="8dp"/>
+        </shape>
+    </item>
+
+</selector>

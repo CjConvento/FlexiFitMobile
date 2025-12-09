@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background / Track -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <!-- gawin mong >= kalahati ng height ng ProgressBar para maging bilog dulo -->
+            <corners android:radius="50dp" />
+            <solid android:color="@color/progressTrack" />
+        </shape>
+    </item>
+
+    <!-- Filled progress -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="50dp" />
+                <solid android:color="@color/progressFill" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background track -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp" />
+            <!-- light track so kita sa dark blue card -->
+            <solid android:color="#33FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Progress fill -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="50dp" />
+                <!-- solid white progress -->
+                <solid android:color="#FFFFFFFF" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

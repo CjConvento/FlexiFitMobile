@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="health_conditions">
+        <item>None</item>
+        <item>Hypertension</item>
+        <item>Diabetes</item>
+        <item>Asthma</item>
+        <item>Heart disease</item>
+        <item>Knee pain / joint issues</item>
+        <item>Back pain</item>
+        <item>Gyno</item>
+        <item>Other</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,40 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Main app theme used in Manifest -->
+    <style name="Theme.FlexiFitApp" parent="Base.Theme.FlexiFitApp">
+        <!-- apply NavigationView style -->
+        <item name="navigationViewStyle">@style/Widget.FlexiFit.NavigationView</item>
+    </style>
+
+    <!-- Base Night Theme -->
+    <style name="Base.Theme.FlexiFitApp" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- NAVY BLUE NIGHT COLORS -->
+        <item name="colorPrimary">#1D3C78</item>
+        <item name="colorPrimaryContainer">#162A52</item>
+        <item name="colorSecondary">#4A7BD0</item>
+        <item name="colorSecondaryContainer">#2F4F85</item>
+
+        <!-- DARK MODE BACKGROUNDS -->
+        <item name="android:windowBackground">#050711</item>
+        <item name="android:colorBackground">#050711</item>
+        <item name="colorSurface">#0C0F18</item>
+
+        <!-- TEXT COLORS -->
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSurface">#E5E7EB</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor" tools:targetApi="l">#0A1324</item>
+    </style>
+
+    <!-- NAVIGATION VIEW STYLE (DARK) -->
+    <style name="Widget.FlexiFit.NavigationView" parent="Widget.Material3.NavigationView">
+        <item name="android:background">@color/drawer_bg</item>
+        <item name="itemTextColor">@color/nav_item_text_color</item>
+        <item name="itemIconTint">@color/nav_item_icon_tint</item>
+        <item name="itemBackground">@drawable/nav_item_background</item>
+    </style>
+
+</resources>

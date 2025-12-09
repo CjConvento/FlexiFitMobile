@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_toggle_theme"
+        android:title="Toggle theme"
+        android:icon="@drawable/ic_moon"
+        app:showAsAction="always" />
+    <!--  ^^^^^^^^^^^^^  DITO YUNG MAGIC -->
+</menu>

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ========= TITLE ========= -->
+        <TextView
+            android:id="@+id/tv_macros_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Macros"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:paddingBottom="2dp" />
+
+        <TextView
+            android:id="@+id/tv_macros_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily calorie and macro overview."
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:paddingBottom="16dp" />
+
+        <!-- ========= PRIMARY OVERVIEW CARD (Flutter-style big card) ========= -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_daily_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:stateListAnimator="@null"
+            app:cardCornerRadius="24dp"
+            app:cardUseCompatPadding="false"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@android:color/transparent"
+            app:cardBackgroundColor="@color/colorPrimary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today’s Calories"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_daily_calories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1,695 / 1,920 kcal"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_kcal"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:max="100"
+                    android:progress="70"
+                    android:indeterminate="false"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:progressDrawable="@drawable/progress_kcal_primary" />
+
+                <TextView
+                    android:id="@+id/tv_daily_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Workout day: slightly higher carbs to support performance."
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:alpha="0.9"
+                    android:paddingTop="6dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ========= MACRO BREAKDOWN TITLE ========= -->
+        <TextView
+            android:id="@+id/tv_macros_breakdown_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Macros Today"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:paddingBottom="8dp" />
+
+        <!-- ========= 3 MINI MACRO CARDS (Flutter row chips) ========= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:paddingBottom="12dp">
+
+            <!-- Protein Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:stateListAnimator="@null"
+                app:cardCornerRadius="18dp"
+                app:cardUseCompatPadding="false"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:strokeColor="@android:color/transparent"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Protein"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary" />
+
+                    <TextView
+                        android:id="@+id/tv_protein_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="120 g / 120 g"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingTop="2dp" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_protein"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:max="100"
+                        android:progress="100"
+                        android:layout_marginTop="6dp"
+                        android:progressDrawable="@drawable/progress_rounded_calories" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Carbs Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:stateListAnimator="@null"
+                app:cardCornerRadius="18dp"
+                app:cardUseCompatPadding="false"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:strokeColor="@android:color/transparent"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Carbs"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary" />
+
+                    <TextView
+                        android:id="@+id/tv_carbs_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="180 g / 225 g"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingTop="2dp" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_carbs"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:max="100"
+                        android:progress="80"
+                        android:layout_marginTop="6dp"
+                        android:progressDrawable="@drawable/progress_rounded_calories" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Fats Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:stateListAnimator="@null"
+                app:cardCornerRadius="18dp"
+                app:cardUseCompatPadding="false"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:strokeColor="@android:color/transparent"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fats"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary" />
+
+                    <TextView
+                        android:id="@+id/tv_fats_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="55 g / 60 g"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingTop="2dp" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_fats"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:max="100"
+                        android:progress="90"
+                        android:layout_marginTop="6dp"
+                        android:progressDrawable="@drawable/progress_rounded_calories" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <!-- ========= TOTAL CALORIES (CALORIES COUNTING LABEL) ========= -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calories Counting"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:textColor="@color/textSecondary"
+            android:paddingBottom="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total Calories"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary" />
+
+            <TextView
+                android:id="@+id/tv_kcal_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1,695 / 1,920 kcal"
+                android:textSize="13sp"
+                android:textColor="@color/textSecondary"
+                android:paddingTop="2dp" />
+            <!-- progress_kcal nasa big primary card para Flutter look -->
+        </LinearLayout>
+
+        <!-- ========= BUTTON ROW (Flutter-style pill buttons) ========= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:paddingBottom="8dp">
+
+            <!-- OUTLINED BUTTON -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_update_intake"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Update Intake"
+                android:textAllCaps="false"
+                app:cornerRadius="999dp"
+                android:backgroundTint="@color/surface"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/textSecondary"
+                android:textColor="@color/textPrimary" />
+
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+
+            <!-- FILLED BUTTON -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_view_meal_plan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Generate Meal Plan"
+                android:textAllCaps="false"
+                app:cornerRadius="999dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- ========= MEAL PLAN CARD ========= -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_meal_plan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:stateListAnimator="@null"
+            app:cardCornerRadius="22dp"
+            app:cardUseCompatPadding="false"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@android:color/transparent"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Suggested Meal Plan"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:paddingBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tv_meal_plan_output"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tap “Generate Meal Plan” to see your meals for today."
+                    android:textSize="13sp"
+                    android:textColor="@color/textSecondary"
+                    android:lineSpacingExtra="2dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
