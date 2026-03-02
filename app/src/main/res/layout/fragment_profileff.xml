@@ -39,44 +39,6 @@
                     android:textColor="@color/textSecondary"
                     android:text="Your personal details and fitness information"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/textPrimary"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="50dp"
-                        app:cardElevation="10dp"
-                        app:cardUseCompatPadding="true"
-                        app:strokeWidth="0dp"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/txtProfileName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="User"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:id="@+id/txtProfileHandle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="user name"/>
-                    </LinearLayout>
-
-                </LinearLayout>
 
                 <!-- Sections -->
                 <com.google.android.material.card.MaterialCardView
@@ -93,11 +55,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingTop="10dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -106,6 +69,7 @@
                             android:layout_width="54dp"
                             android:layout_height="54dp"
                             app:cornerRadius="14dp"
+                            android:layout_marginStart="12dp"
                             app:card_elevation="9dp"
                         />
 
@@ -143,6 +107,7 @@
                             android:textAllCaps="false"
                             android:textColor="@color/white"
                             app:backgroundTint="@null"
+                            android:layout_marginEnd="10dp"
                             android:background="@drawable/btn_gradient"
                             app:cornerRadius="14dp" />
 
@@ -152,96 +117,123 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="55dp"
                         android:orientation="horizontal">
 
                         <!-- Height -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/btn_gradient"
-                            android:padding="12dp"
-                            android:orientation="vertical">
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="8dp"
+                            android:layout_marginTop="10dp"
+                            app:cardUseCompatPadding="true"
+                            app:strokeWidth="0dp">
 
-                            <TextView
-                                android:id="@+id/tvHeightValue"
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="10 cm"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
+                                android:padding="15dp"
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Height"
-                                android:textColor="#B0B0B0"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tvHeightValue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="10 cm"
+                                    android:textColor="@color/textPrimary"
+                                    android:textStyle="bold"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Height"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <View
                             android:layout_width="10dp"
                             android:layout_height="1dp" />
 
                         <!-- Weight -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/btn_gradient"
-                            android:padding="12dp"
-                            android:orientation="vertical">
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="8dp"
+                            android:layout_marginTop="10dp"
+                            app:cardUseCompatPadding="true"
+                            app:strokeWidth="0dp">
 
-                            <TextView
-                                android:id="@+id/tvWeightValue"
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="0 kg"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
+                                android:padding="15dp"
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Weight"
-                                android:textColor="#B0B0B0"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tvWeightValue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0 kg"
+                                    android:textColor="@color/textPrimary"
+                                    android:textStyle="bold"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Weight"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <View
                             android:layout_width="10dp"
                             android:layout_height="1dp" />
 
                         <!-- Age -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/btn_gradient"
-                            android:padding="12dp"
-                            android:orientation="vertical">
+                            android:layout_marginTop="10dp"
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="8dp"
+                            app:cardUseCompatPadding="true"
+                            app:strokeWidth="0dp">
 
-                            <TextView
-                                android:id="@+id/tvAgeValue"
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="0 yo"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
+                                android:padding="15dp"
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Age"
-                                android:textColor="#B0B0B0"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/tvAgeValue"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0 yo"
+                                    android:textColor="@color/textPrimary"
+                                    android:textStyle="bold"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Age"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
                     </LinearLayout>
-                </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Basic Information -->
