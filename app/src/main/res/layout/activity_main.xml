@@ -22,16 +22,18 @@
             android:background="@color/colorPrimary"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
             app:title="FlexiFit"
-            app:titleTextColor="#FBFBFB" />
+            app:titleTextColor="@color/white" />
 
         <!-- CONTENT (FRAGMENTS) -->
-        <FrameLayout
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_container"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
-            android:background="@color/background" />
-        <!-- pwede mo palitan background dito -->
+            android:background="@color/background"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

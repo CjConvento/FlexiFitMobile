@@ -10,10 +10,10 @@
     <style name="Base.Theme.FlexiFitApp" parent="Theme.Material3.Light.NoActionBar">
 
         <!-- NAVY BLUE THEME COLORS -->
-        <item name="colorPrimary">#1D3C78</item>
-        <item name="colorPrimaryContainer">#28488C</item>
-        <item name="colorSecondary">#4A7BD0</item>
-        <item name="colorSecondaryContainer">#6B96E0</item>
+        <item name="colorPrimary">#6082B6 </item>
+        <item name="colorPrimaryContainer">#6082B6</item>
+        <item name="colorSecondary">#6093b6</item>
+        <item name="colorSecondaryContainer">#6093b6</item>
 
         <!-- Background & Surface -->
         <item name="android:colorBackground">#F5F7FA</item>
@@ -25,10 +25,10 @@
         <item name="colorOnSurface">#1A1A1A</item>
 
         <!-- Status Bar -->
-        <item name="android:statusBarColor" tools:targetApi="l">#162F5A</item>
+        <item name="android:statusBarColor" tools:targetApi="l">#6082B6</item>
 
         <!-- Navigation Bar -->
-        <item name="android:navigationBarColor" tools:targetApi="l">#1D3C78</item>
+        <item name="android:navigationBarColor" tools:targetApi="l">#6082B6</item>
 
     </style>
 

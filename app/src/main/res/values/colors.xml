@@ -1,15 +1,38 @@
 <resources>
-    <color name="colorPrimary">#1D3C78</color>
+    <color name="colorPrimary">#6082B6</color>
+    <color name="colorSecondary">#9eb9d4</color>
 
     <!-- LIGHT MODE BACKGROUND -->
-    <!-- SIGNUP REDIRECT -->
+    <!-- Background & surfaces (template feel) -->
+    <color name="colorBackground">#F7F9FC</color>      <!-- soft light bg -->
+    <color name="colorCardDark">#0A0A0A</color>       <!-- jet black -->
+    <color name="colorCardLight">#FFFFFF</color>
+
+    <!-- Gradient like the template -->
+    <color name="gradientStart">#6082B6</color>       <!-- aqua -->
+    <color name="gradientEnd">#9eb9d4   </color>         <!-- lilac -->
+
+    <!-- Primary accent -->     <!-- blue button -->
+    <color name="colorButtonText">#FFFFFF</color>
+
+    <!-- Text colors -->
+    <color name="colorTextOnDark">#FFFFFF</color>
+    <color name="colorTextMuted">#B0B0B0</color>
+
+    <!-- Aliases so default + layouts compile -->
+    <color name="colorSurface">@color/colorCardDark</color>
+    <color name="colorOnBackground">@color/colorTextOnDark</color>
+    <color name="colorCardBackground">@color/colorCardLight</color>
+    <color name="colorButtonBackground">@color/colorPrimary</color>
+
+
     <color name="redirect_color">@color/colorPrimary</color>
 
     <color name="background">#F5F7FB</color>
     <color name="surface">#FFFFFF</color>
 
-    <color name="textPrimary">#111111</color>
-    <color name="textSecondary">#666666</color>
+    <color name="textPrimary">#1d1617 </color>
+    <color name="textSecondary">#7b6f72 </color>
     <color name="white">#FFFFFF</color>
     <color name="progressTrack">#FFE0E0E0</color>   <!-- light gray -->
     <color name="progressFill">@color/colorPrimary</color> <!-- or any accent -->

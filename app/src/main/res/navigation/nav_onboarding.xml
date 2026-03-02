@@ -1,0 +1,63 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_onboarding"
+    app:startDestination="@id/obd_fragment_pg1_profile">
+
+    <fragment
+        android:id="@+id/obd_fragment_pg1_profile"
+        android:name="com.example.flexifitapp.onboarding.Pg1ProfileFragment">
+        <action android:id="@+id/a1" app:destination="@id/pg1p5MetricsFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg1p5MetricsFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg1p5MetricsFragment">
+        <action android:id="@+id/a2" app:destination="@id/pg2HealthFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg2HealthFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg2HealthFragment">
+        <action android:id="@+id/a3" app:destination="@id/pg3BackgroundFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg3BackgroundFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg3BackgroundFragment">
+        <action android:id="@+id/a4" app:destination="@id/pg4LocationFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg4LocationFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg4LocationFragment">
+        <action android:id="@+id/a5" app:destination="@id/pg5GoalFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg5GoalFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg5GoalFragment">
+        <action android:id="@+id/a6" app:destination="@id/pg6BodyCompFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg6BodyCompFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg6BodyCompFragment">
+        <action android:id="@+id/a7" app:destination="@id/pg7DietFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg7DietFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg7DietFragment">
+        <action android:id="@+id/a8" app:destination="@id/pg8ProgramsFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pg8ProgramsFragment"
+        android:name="com.example.flexifitapp.onboarding.Pg8ProgramsFragment">
+        <action android:id="@+id/a9" app:destination="@id/summaryFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.example.flexifitapp.onboarding.SummaryFragment"/>
+</navigation>

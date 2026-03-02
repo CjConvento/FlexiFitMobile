@@ -50,7 +50,7 @@ class MacrosFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_macros, container, false)
+        return inflater.inflate(R.layout.fragment_nutri, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,16 +70,11 @@ class MacrosFragment : Fragment() {
         tvProteinValue = view.findViewById(R.id.tv_protein_value)
         tvCarbsValue = view.findViewById(R.id.tv_carbs_value)
         tvFatsValue = view.findViewById(R.id.tv_fats_value)
-        tvKcalValue = view.findViewById(R.id.tv_kcal_value)
 
         progressProtein = view.findViewById(R.id.progress_protein)
         progressCarbs = view.findViewById(R.id.progress_carbs)
         progressFats = view.findViewById(R.id.progress_fats)
         progressKcal = view.findViewById(R.id.progress_kcal)
-
-        btnUpdateIntake = view.findViewById(R.id.btn_update_intake)
-        btnViewMealPlan = view.findViewById(R.id.btn_view_meal_plan)
-        tvMealPlanOutput = view.findViewById(R.id.tv_meal_plan_output)
     }
 
     private fun setupListeners() {

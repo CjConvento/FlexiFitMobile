@@ -2,21 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
             android:title="Home" />
 
         <item
-            android:id="@+id/nav_my_workout"
+            android:id="@+id/workoutTabRootFragment"
             android:icon="@drawable/ic_workout"
-            android:title="My Workout" />
+            android:title="Workout Plan" />
 
         <item
-            android:id="@+id/nav_macros"
+            android:id="@+id/nutritionTabRootFragment"
             android:icon="@drawable/ic_macros"
-            android:title="Macros" />
+            android:title="Nutrition Plan" />
 
         <item
             android:id="@+id/nav_profile"
@@ -27,7 +26,6 @@
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_info"
             android:title="About" />
-
     </group>
 
     <item android:title="">

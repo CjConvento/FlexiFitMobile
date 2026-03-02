@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <!-- ✅ HOME -->
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.flexifitapp.HomeFragment"
+        android:label="Home" />
+
+    <!-- ✅ WORKOUT TAB ROOT -->
+    <fragment
+        android:id="@+id/workoutTabRootFragment"
+        android:name="com.example.flexifitapp.WorkoutTabRootFragment"
+        android:label="Workout">
+        <action
+            android:id="@+id/action_workoutTabRootFragment_to_unifiedCalendarFragment"
+            app:destination="@id/unifiedCalendarFragment" />
+    </fragment>
+
+    <!-- ✅ NUTRITION TAB ROOT -->
+    <fragment
+        android:id="@+id/nutritionTabRootFragment"
+        android:name="com.example.flexifitapp.NutritionTabRootFragment"
+        android:label="Nutrition">
+        <action
+            android:id="@+id/action_nutritionTabRootFragment_to_unifiedCalendarFragment"
+            app:destination="@id/unifiedCalendarFragment" />
+    </fragment>
+
+    <!-- ✅ PROFILE -->
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.flexifitapp.ProfileFragment"
+        android:label="Profile" />
+
+    <!-- ✅ ABOUT -->
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="com.example.flexifitapp.AboutFragment"
+        android:label="About" />
+
+    <!-- CALENDAR -->
+    <fragment
+        android:id="@+id/unifiedCalendarFragment"
+        android:name="com.example.flexifitapp.UnifiedCalendarFragment"
+        android:label="Calendar">
+
+        <action
+            android:id="@+id/action_unifiedCalendarFragment_to_dayHostFragment"
+            app:destination="@id/dayHostFragment" />
+
+        <argument
+            android:name="sourceTab"
+            app:argType="string"
+            android:defaultValue="WORKOUT" />
+
+        <argument
+            android:name="month"
+            app:argType="integer"
+            android:defaultValue="1" />
+
+        <argument
+            android:name="day"
+            app:argType="integer"
+            android:defaultValue="1" />
+    </fragment>
+
+    <!-- DAY HOST -->
+    <fragment
+        android:id="@+id/dayHostFragment"
+        android:name="com.example.flexifitapp.DayHostFragment"
+        android:label="Day Host">
+
+        <argument
+            android:name="sourceTab"
+            app:argType="string"
+            android:defaultValue="WORKOUT" />
+
+        <argument
+            android:name="day"
+            app:argType="integer"
+            android:defaultValue="1" />
+    </fragment>
+
+</navigation>

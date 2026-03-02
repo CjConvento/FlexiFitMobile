@@ -15,12 +15,12 @@ class ProfileFragment : Fragment() {
     ): View? {
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profileff, container, false)
 
-        // TODO: Next steps (AI + logic)
-        // 1. Kunin user data (fitness level, BMI, etc.)
-        // 2. I-filter ang recommended programs depende sa level
-        // 3. Palitan ang "Today’s Workout" content based on selected program
+        // TODO: Next steps (workflow and rule based logic)
+        // 1. Kunin user profile data (age, gender, height, weight, body composition goal, fitness level, selected diet type, selected programs)
+        // 2. I-filter ang recommended programs depende sa fitness goal, body composition goal, workout location and fitness level)
+        // 3. Palitan ang "Day's Workout" content based on selected program
 
         return view
     }

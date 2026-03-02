@@ -1,149 +1,108 @@
-package com.example.flexifitapp;
+package com.example.flexifitapp
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import com.example.flexifitapp.TokenStore
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+class MainActivity : AppCompatActivity() {
 
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;   // ✅ IMPORT THIS
+    companion object {
+        private const val PREFS_NAME = "flexifit_settings"
+        private const val KEY_DARK_MODE = "dark_mode"
+    }
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
 
-    private static final String PREFS_NAME = "flexifit_settings";
-    private static final String KEY_DARK_MODE = "dark_mode";
+    override fun onCreate(savedInstanceState: Bundle?) {
 
-    private DrawerLayout drawer;
+        // Theme
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val isDarkMode = prefs.getBoolean(KEY_DARK_MODE, false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState)
+        Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
+        setContentView(R.layout.activity_main)
 
-        // 1. Load preference (SAME prefs + key as SettingsFragment)
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean isDarkMode = prefs.getBoolean(KEY_DARK_MODE, false);
+        // Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-        // 2. Apply theme BEFORE setContentView
-        if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        // Drawer
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
+        // NavHost
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as? NavHostFragment
+                ?: throw IllegalStateException(
+                    "NavHostFragment not found. Check activity_main.xml uses NavHostFragment for fragment_container."
+                )
+
+        navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration.Builder(
+            R.id.nav_home,
+            R.id.workoutTabRootFragment,
+            R.id.nutritionTabRootFragment,
+            R.id.nav_profile,
+            R.id.nav_about
+        )
+            .setOpenableLayout(drawerLayout)
+            .build()
+
+        // Connect toolbar + drawer + nav controller
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+
+        // Connect drawer menu clicks
+        NavigationUI.setupWithNavController(navView, navController)
+
+        // Header settings button
+        val headerView: View = navView.getHeaderView(0)
+        val btnHeaderSettings = headerView.findViewById<ImageButton>(R.id.btnHeaderSettings)
+        btnHeaderSettings.setOnClickListener {
+            drawerLayout.close()
         }
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // Logout
+        navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
 
-        // Toolbar setup
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+            FirebaseAuth.getInstance().signOut()
+            TokenStore.clear(this)
 
-        drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+            getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply()
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar,
-                R.string.nav_open, R.string.nav_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        // === Header Settings button ===
-        View headerView = navigationView.getHeaderView(0);
-        ImageButton btnHeaderSettings = headerView.findViewById(R.id.btnHeaderSettings);
-
-        btnHeaderSettings.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new SettingsFragment())
-                    .addToBackStack(null)
-                    .commit();
-            drawer.closeDrawer(GravityCompat.START);
-        });
-
-        // default fragment (Home)
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment())
-                    .commit();
-            navigationView.setCheckedItem(R.id.nav_home);
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            finish()
+            true
         }
     }
 
-    // === DRAWER ITEMS (WALANG SETTINGS DITO) ===
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment())
-                    .commit();
-
-        } else if (id == R.id.nav_my_workout) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MyWorkoutFragment())
-                    .commit();
-
-        } else if (id == R.id.nav_macros) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MacrosFragment())
-                    .commit();
-
-        } else if (id == R.id.nav_profile) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new ProfileFragment())
-                    .commit();
-
-        } else if (id == R.id.nav_about) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new AboutFragment())
-                    .commit();
-
-        } else if (id == R.id.nav_logout) {
-
-            // Optional debug
-            // Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
-
-            // 1️⃣ FirebaseAuth logout (VERY IMPORTANT)
-            FirebaseAuth.getInstance().signOut();
-
-            // 2️⃣ Clear ONLY login session, wag galawin survey_completed
-            SharedPreferences prefs = getSharedPreferences("flexifit_prefs", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("is_logged_in", false);  // log out lang
-            editor.remove("username");                 // optional
-            editor.apply();
-
-            // 3️⃣ Go back to LoginActivity and clear back stack
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-
-            // 4️⃣ Close current activity
-            finish();
-        }
-
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

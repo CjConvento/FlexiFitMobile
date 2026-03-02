@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- CHECKED STATE -->
+    <item android:state_checked="true">
+        <layer-list>
+
+            <!-- Background box -->
+            <item>
+                <shape android:shape="rectangle">
+                    <size android:width="22dp" android:height="22dp"/>
+                    <corners android:radius="4dp"/>
+                    <solid android:color="@color/colorPrimary"/>
+                    <stroke
+                        android:width="1.5dp"
+                        android:color="@color/colorPrimary"/>
+                </shape>
+            </item>
+
+            <!-- Check Icon -->
+            <item
+                android:gravity="center"
+                android:drawable="@android:drawable/checkbox_on_background"/>
+        </layer-list>
+    </item>
+
+    <!-- UNCHECKED STATE -->
+    <item>
+        <shape android:shape="rectangle">
+            <size android:width="22dp" android:height="22dp"/>
+            <corners android:radius="4dp"/>
+            <solid android:color="@android:color/transparent"/>
+            <stroke
+                android:width="1.5dp"
+                android:color="@color/colorPrimary"/>
+        </shape>
+    </item>
+
+</selector>

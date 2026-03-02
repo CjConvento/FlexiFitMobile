@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- ✅ Required for Firebase + Retrofit + ASP.NET API -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,9 +14,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FlexiFitApp"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true">
 
-        <!-- LAUNCHER -->
+        <!-- ========================= -->
+        <!-- 🚀 LAUNCHER / AUTH -->
+        <!-- ========================= -->
+
+        <!-- LOGIN (Launcher) -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -24,23 +32,35 @@
             </intent-filter>
         </activity>
 
-        <!-- SURVEY ACTIVITIES -->
-        <activity android:name=".SurveyStep1Activity" />
-        <activity android:name=".SurveyStep2Activity" />
-
-        <!-- MAIN DASHBOARD -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-
         <!-- SIGNUP -->
         <activity
             android:name=".SignupActivity"
             android:exported="false" />
 
-        <!-- 🔴 IMPORTANT: ADD THIS -->
+        <!-- EMAIL VERIFICATION -->
         <activity
             android:name=".EmailVerificationActivity"
+            android:exported="false" />
+
+        <!-- ========================= -->
+        <!-- ✅ NEW ONBOARDING (replaces old SurveyStep1/2) -->
+        <!-- ========================= -->
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+
+        <!-- ========================= -->
+        <!-- 🏠 MAIN DASHBOARD -->
+        <!-- ========================= -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- ========================= -->
+        <!-- 🚨 CRASH SCREEN -->
+        <!-- ========================= -->
+        <activity
+            android:name=".CrashScreenActivity"
             android:exported="false" />
 
     </application>

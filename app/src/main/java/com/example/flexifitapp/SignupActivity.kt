@@ -1,329 +1,312 @@
-package com.example.flexifitapp;
+package com.example.flexifitapp
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.util.Patterns;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.util.Patterns
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseUser
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
+class SignupActivity : AppCompatActivity() {
 
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.*;
+    // Views
+    private lateinit var etName: TextInputEditText
+    private lateinit var etAddress: TextInputEditText
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var etUsername: TextInputEditText
+    private lateinit var etPassword: TextInputEditText
+    private lateinit var tilPassword: TextInputLayout
+    private lateinit var btnSignup: MaterialButton
+    private lateinit var tvLoginRedirect: TextView
 
-import java.util.HashMap;
-import java.util.Map;
+    // Firebase + prefs
+    private lateinit var auth: FirebaseAuth
+    private lateinit var prefs: SharedPreferences
 
-public class SignupActivity extends AppCompatActivity {
+    // Pref keys
+    private val PREF_NAME = "flexifit_prefs"
+    private val KEY_DARK_MODE = "dark_mode"
 
-    private TextInputEditText etName, etAddress, etEmail, etUsername, etPassword;
-    private TextInputLayout tilPassword;
-    private MaterialButton signupButton;
-    private TextView loginRedirectText;
+    // Pending signup data (for later bootstrap to backend, optional)
+    private val KEY_PENDING_NAME = "pending_name"
+    private val KEY_PENDING_ADDRESS = "pending_address"
+    private val KEY_PENDING_USERNAME = "pending_username"
+    private val KEY_PENDING_EMAIL = "pending_email"
+    private val KEY_PENDING_CREATED_AT = "pending_created_at"
 
-    private static final String PREF_NAME = "flexifit_prefs";
-    private static final String KEY_DARK_MODE = "dark_mode";
+    private var isSubmitting = false
 
-    private FirebaseAuth mAuth;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Theme first
+        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+        applyThemeFromPrefs()
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_signup)
 
-        // 🌙 Load theme
-        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        boolean isDark = prefs.getBoolean(KEY_DARK_MODE, false);
-        AppCompatDelegate.setDefaultNightMode(
-                isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-        );
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
-
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance()
 
         // Toolbar
-        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { finish() }
 
-        // Views
-        etName     = findViewById(R.id.signup_name);
-        etAddress  = findViewById(R.id.signup_address);
-        etEmail    = findViewById(R.id.signup_email);
-        etUsername = findViewById(R.id.signup_username);
-        etPassword = findViewById(R.id.signup_password);
-        tilPassword = findViewById(R.id.tilpass);
+        // Bind views
+        etName = findViewById(R.id.signup_name)
+        etAddress = findViewById(R.id.signup_address)
+        etEmail = findViewById(R.id.signup_email)
+        etUsername = findViewById(R.id.signup_username)
+        etPassword = findViewById(R.id.signup_password)
+        tilPassword = findViewById(R.id.tilpass)
+        btnSignup = findViewById(R.id.signup_button)
+        tvLoginRedirect = findViewById(R.id.loginRedirectText)
 
-        signupButton      = findViewById(R.id.signup_button);
-        loginRedirectText = findViewById(R.id.loginRedirectText);
+        // Prefill email if passed from other screen
+        intent.getStringExtra("email")?.let { etEmail.setText(it) }
 
-        signupButton.setOnClickListener(v -> {
-            if (!validateName() | !validateAddress() | !validateEmail()
-                    | !validateUsername() | !validatePassword()) {
-                return;
-            }
-            checkIfUsernameExists();
-        });
+        btnSignup.setOnClickListener {
+            if (isSubmitting) return@setOnClickListener
+            clearErrors()
+            if (!validateAll()) return@setOnClickListener
+            createAccount()
+        }
 
-        loginRedirectText.setOnClickListener(v -> {
-            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-            finish();
-        });
+        tvLoginRedirect.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
     }
 
-    // ------------------------------------------------------------
-    // 🔵 0. CHECK USERNAME DUPLICATION BEFORE SIGNUP
-    // ------------------------------------------------------------
-    private void checkIfUsernameExists() {
-        String username = safeText(etUsername);
+    // -------------------- Signup flow --------------------
 
-        DatabaseReference ref = FirebaseDatabase.getInstance()
-                .getReference("users");
+    private fun createAccount() {
+        val name = safeText(etName)
+        val address = safeText(etAddress)
+        val email = safeText(etEmail)
+        val username = safeText(etUsername)
+        val password = safeText(etPassword)
 
-        Query checkUser = ref.orderByChild("username").equalTo(username);
+        setLoading(true)
 
-        signupButton.setEnabled(false);
+        // Save pending data locally (optional)
+        savePendingSignup(name, address, username, email)
 
-        checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                if (snapshot.exists()) {
-                    signupButton.setEnabled(true);
-                    etUsername.setError("Username already taken");
-                    etUsername.requestFocus();
-                    return;
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    setLoading(false)
+                    handleSignupError(task.exception)
+                    return@addOnCompleteListener
                 }
 
-                // WALA pang gumagamit ng username → proceed with account creation
-                createAccount();
+                val user = auth.currentUser
+                if (user == null) {
+                    setLoading(false)
+                    Toast.makeText(this, "Signup failed. Please try again.", Toast.LENGTH_LONG).show()
+                    return@addOnCompleteListener
+                }
+
+                sendVerificationAndRedirect(user, email)
             }
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                signupButton.setEnabled(true);
-                Toast.makeText(SignupActivity.this,
-                        "Database error: " + error.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+    private fun sendVerificationAndRedirect(user: FirebaseUser, email: String) {
+        user.sendEmailVerification()
+            .addOnCompleteListener { verifyTask ->
+                setLoading(false)
+
+                if (!verifyTask.isSuccessful) {
+                    Toast.makeText(
+                        this,
+                        "Failed to send verification email: ${verifyTask.exception?.message ?: "Unknown error"}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@addOnCompleteListener
+                }
+
+                // IMPORTANT: prevent unverified auto-login
+                auth.signOut()
+
+                Toast.makeText(
+                    this,
+                    "Account created! Please verify via the link sent to your email.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                // Go to verification screen
+                val intent = Intent(this, EmailVerificationActivity::class.java).apply {
+                    putExtra("email", email)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                }
+                startActivity(intent)
+                finish()
             }
-        });
     }
 
-    // ------------------------------------------------------------
-    // 🔵 1. CREATE ACCOUNT WITH FIREBASE AUTH
-    // ------------------------------------------------------------
-    private void createAccount() {
-        String name     = safeText(etName);
-        String address  = safeText(etAddress);
-        String email    = safeText(etEmail);
-        String username = safeText(etUsername);
-        String password = safeText(etPassword);
-
-        // 1️⃣ Create Firebase Auth account
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-
-                    signupButton.setEnabled(true);
-
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(
-                                SignupActivity.this,
-                                "Sign up failed: " +
-                                        (task.getException() != null ? task.getException().getMessage() : ""),
-                                Toast.LENGTH_LONG
-                        ).show();
-                        return;
-                    }
-
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    if (user == null) {
-                        Toast.makeText(SignupActivity.this,
-                                "User not available. Try again.",
-                                Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // 2️⃣ Send email verification WITH listener
-                    user.sendEmailVerification()
-                            .addOnCompleteListener(verifyTask -> {
-
-                                if (!verifyTask.isSuccessful()) {
-                                    // ❌ Hindi na-send ang email
-                                    Toast.makeText(
-                                            SignupActivity.this,
-                                            "Failed to send verification email: " +
-                                                    (verifyTask.getException() != null
-                                                            ? verifyTask.getException().getMessage()
-                                                            : ""),
-                                            Toast.LENGTH_LONG
-                                    ).show();
-                                    signupButton.setEnabled(true);
-                                    return; // huwag ituloy pag wala talagang email na na-send
-                                }
-
-                                // ✅ Umabot dito = verification email SENT successfully
-                                String uid = user.getUid();
-
-                                // 3️⃣ Save profile sa /users/{uid}
-                                Map<String, Object> userData = new HashMap<>();
-                                userData.put("uid", uid);
-                                userData.put("name", name);
-                                userData.put("address", address);
-                                userData.put("email", email);
-                                userData.put("username", username);
-                                userData.put("surveyCompleted", false);
-                                userData.put("createdAt", System.currentTimeMillis());
-
-                                FirebaseDatabase.getInstance()
-                                        .getReference("users")
-                                        .child(uid)
-                                        .setValue(userData)
-                                        .addOnCompleteListener(saveTask -> {
-                                            if (saveTask.isSuccessful()) {
-                                                Toast.makeText(
-                                                        SignupActivity.this,
-                                                        "Account created! Verification link sent to your email.",
-                                                        Toast.LENGTH_LONG
-                                                ).show();
-
-                                                Intent intent = new Intent(SignupActivity.this, EmailVerificationActivity.class);
-                                                intent.putExtra("email", email);
-                                                startActivity(intent);
-                                                finish();
-
-                                            } else {
-                                                Toast.makeText(SignupActivity.this,
-                                                        "Failed to save profile. Try again.",
-                                                        Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            });
-                });
-    }
-
-    // ------------------------------------------------------------
-    // VALIDATIONS
-    // ------------------------------------------------------------
-
-    private boolean validateName() {
-        String val = safeText(etName);
-        if (val.isEmpty()) {
-            etName.setError("Name cannot be empty");
-            return false;
-        } else if (val.length() < 2) {
-            etName.setError("Name is too short");
-            return false;
-        } else {
-            etName.setError(null);
-            return true;
+    private fun handleSignupError(ex: Exception?) {
+        when (ex) {
+            is FirebaseAuthUserCollisionException -> {
+                // Email already used
+                etEmail.error = "This email is already registered."
+                Toast.makeText(this, "Email already in use. Try logging in.", Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                Toast.makeText(
+                    this,
+                    "Sign up failed: ${ex?.message ?: "Unknown error"}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
-    private boolean validateAddress() {
-        String val = safeText(etAddress);
-        if (val.isEmpty()) {
-            etAddress.setError("Address cannot be empty");
-            return false;
-        } else {
-            etAddress.setError(null);
-            return true;
+    private fun savePendingSignup(name: String, address: String, username: String, email: String) {
+        prefs.edit()
+            .putString(KEY_PENDING_NAME, name)
+            .putString(KEY_PENDING_ADDRESS, address)
+            .putString(KEY_PENDING_USERNAME, username)
+            .putString(KEY_PENDING_EMAIL, email)
+            .putLong(KEY_PENDING_CREATED_AT, System.currentTimeMillis())
+            .apply()
+    }
+
+    // -------------------- Validation --------------------
+
+    private fun validateAll(): Boolean {
+        val okName = validateName()
+        val okAddr = validateAddress()
+        val okEmail = validateEmail()
+        val okUser = validateUsername()
+        val okPass = validatePassword()
+        return okName && okAddr && okEmail && okUser && okPass
+    }
+
+    private fun validateName(): Boolean {
+        val v = safeText(etName)
+        return when {
+            v.isEmpty() -> { etName.error = "Name cannot be empty"; false }
+            v.length < 2 -> { etName.error = "Name is too short"; false }
+            else -> true
         }
     }
 
-    private boolean validateEmail() {
-        String val = safeText(etEmail);
-        if (val.isEmpty()) {
-            etEmail.setError("Email cannot be empty");
-            return false;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(val).matches()) {
-            etEmail.setError("Invalid email format");
-            return false;
-        } else {
-            etEmail.setError(null);
-            return true;
+    private fun validateAddress(): Boolean {
+        val v = safeText(etAddress)
+        return when {
+            v.isEmpty() -> { etAddress.error = "Address cannot be empty"; false }
+            v.length < 4 -> { etAddress.error = "Address is too short"; false }
+            else -> true
         }
     }
 
-    private boolean validateUsername() {
-        String val = safeText(etUsername);
-        if (val.isEmpty()) {
-            etUsername.setError("Username cannot be empty");
-            return false;
-        } else if (val.contains(" ")) {
-            etUsername.setError("Username cannot have spaces");
-            return false;
-        } else if (val.length() < 2) {
-            etUsername.setError("Username must be at least 2 characters");
-            return false;
-        } else {
-            etUsername.setError(null);
-            return true;
+    private fun validateEmail(): Boolean {
+        val v = safeText(etEmail)
+        return when {
+            v.isEmpty() -> { etEmail.error = "Email cannot be empty"; false }
+            !Patterns.EMAIL_ADDRESS.matcher(v).matches() -> { etEmail.error = "Invalid email format"; false }
+            else -> true
         }
     }
 
-    private boolean validatePassword() {
-        String val = safeText(etPassword);
-        if (val.isEmpty()) {
-            tilPassword.setError("Password cannot be empty");
-            return false;
-        } else if (val.length() < 6) {
-            tilPassword.setError("Password must be at least 6 characters");
-            return false;
-        } else {
-            tilPassword.setError(null);
-            return true;
+    private fun validateUsername(): Boolean {
+        val v = safeText(etUsername)
+        return when {
+            v.isEmpty() -> { etUsername.error = "Username cannot be empty"; false }
+            v.contains(" ") -> { etUsername.error = "Username cannot have spaces"; false }
+            v.length < 2 -> { etUsername.error = "Username must be at least 2 characters"; false }
+            else -> true
         }
     }
 
-    private String safeText(TextInputEditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
+    private fun validatePassword(): Boolean {
+        val v = safeText(etPassword)
+        return when {
+            v.isEmpty() -> { tilPassword.error = "Password cannot be empty"; false }
+            v.length < 6 -> { tilPassword.error = "Password must be at least 6 characters"; false }
+            else -> { tilPassword.error = null; true }
+        }
     }
 
-    // 🌙 Theme menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_theme_switcher, menu);
-
-        MenuItem item = menu.findItem(R.id.action_toggle_theme);
-        boolean isDark = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-                .getBoolean(KEY_DARK_MODE, false);
-
-        item.setIcon(ContextCompat.getDrawable(
-                this,
-                isDark ? R.drawable.ic_sun : R.drawable.ic_moon
-        ));
-
-        return true;
+    private fun clearErrors() {
+        etName.error = null
+        etAddress.error = null
+        etEmail.error = null
+        etUsername.error = null
+        tilPassword.error = null
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_toggle_theme) {
-            SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-            boolean current = prefs.getBoolean(KEY_DARK_MODE, false);
-            boolean newMode = !current;
+    private fun safeText(et: TextInputEditText): String {
+        return et.text?.toString()?.trim().orEmpty()
+    }
 
-            prefs.edit().putBoolean(KEY_DARK_MODE, newMode).apply();
+    // -------------------- Loading / UX --------------------
 
+    private fun setLoading(loading: Boolean) {
+        isSubmitting = loading
+        btnSignup.isEnabled = !loading
+        btnSignup.text = if (loading) "Creating..." else "Sign Up"
+
+        // Optional: disable all inputs while submitting
+        setEnabled(etName, !loading)
+        setEnabled(etAddress, !loading)
+        setEnabled(etEmail, !loading)
+        setEnabled(etUsername, !loading)
+        setEnabled(etPassword, !loading)
+
+        // Optional: if you have progress bar id "progressBar"
+        val pb = findViewById<View?>(R.id.loadingOverlay)
+        pb?.visibility = if (loading) View.VISIBLE else View.GONE
+    }
+
+    private fun setEnabled(view: View, enabled: Boolean) {
+        view.isEnabled = enabled
+        view.isClickable = enabled
+        view.isFocusable = enabled
+        view.isFocusableInTouchMode = enabled
+    }
+
+    // -------------------- Theme menu --------------------
+
+    private fun applyThemeFromPrefs() {
+        val isDark = prefs.getBoolean(KEY_DARK_MODE, false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_theme_switcher, menu)
+        val item = menu.findItem(R.id.action_toggle_theme)
+        val isDark = prefs.getBoolean(KEY_DARK_MODE, false)
+        item.icon = ContextCompat.getDrawable(this, if (isDark) R.drawable.ic_sun else R.drawable.ic_moon)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_toggle_theme) {
+            val current = prefs.getBoolean(KEY_DARK_MODE, false)
+            val newMode = !current
+            prefs.edit().putBoolean(KEY_DARK_MODE, newMode).apply()
             AppCompatDelegate.setDefaultNightMode(
-                    newMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-            );
-
-            recreate();
-            return true;
+                if (newMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            )
+            recreate()
+            return true
         }
-
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 }
+

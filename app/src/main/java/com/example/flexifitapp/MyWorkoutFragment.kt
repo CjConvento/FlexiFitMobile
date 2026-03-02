@@ -15,7 +15,7 @@ class MyWorkoutFragment : Fragment() {
     ): View? {
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_my_workout, container, false)
+        val view = inflater.inflate(R.layout.fragment_workout, container, false)
 
         // TODO: Next steps (AI + logic)
         // 1. Kunin user data (fitness level, BMI, etc.)

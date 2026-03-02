@@ -16,7 +16,7 @@
             android:id="@+id/tv_my_workout_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Workout"
+            android:text="Workout Plan"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/textPrimary"
@@ -26,10 +26,12 @@
             android:id="@+id/tv_my_workout_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Here’s your current workout plan and today’s session."
+            android:text="Here’s your current workout plan and current day’s session."
             android:textSize="14sp"
             android:textColor="@color/textPrimary"
             android:paddingBottom="16dp" />
+
+        <!-- Calendar Icon Button (upper-right) -->
 
         <!-- CURRENT PROGRAM CARD -->
         <com.google.android.material.card.MaterialCardView
@@ -47,6 +49,17 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <ImageButton
+                    android:id="@+id/btnOpenCalendar"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="end"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Open Calendar"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <TextView
                     android:id="@+id/tv_current_program_label"
                     android:layout_width="wrap_content"
@@ -60,7 +73,7 @@
                     android:id="@+id/tv_current_program_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Beginner Full Body (3x/week)"
+                    android:text="Beginner Cardio (3x/week)"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/textPrimary"
@@ -102,7 +115,7 @@
             android:id="@+id/tv_today_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Today’s Workout"
+            android:text="Day 1 - Push Workout"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/textPrimary"
@@ -123,15 +136,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Day 1 – Full Body A"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="8dp" />
-
                 <!-- WARM-UP SECTION -->
                 <TextView
                     android:layout_width="wrap_content"
@@ -151,7 +155,6 @@
 
                 <!-- MAIN WORKOUT WITH REST TIME PER SET -->
 
-                <!-- WARM-UP SECTION -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -182,100 +185,11 @@
                     android:textSize="14sp"
                     android:paddingBottom="4dp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• Shoulder Press – 3 sets x 10 reps • Rest 60–90s between sets"
-                    android:textSize="14sp"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• Plank – 3 sets x 30–45 seconds • Rest 45–60s between sets"
-                    android:textSize="14sp" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- RECOMMENDED PROGRAMS -->
-        <TextView
-            android:id="@+id/tv_recommended_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recommended Programs for You"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="8dp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_program_beginner_full_body"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="16dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Beginner Full Body"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="3 days per week • Ideal for true beginners"
-                    android:textSize="13sp"
-                    android:paddingTop="4dp" />
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_program_upper_lower"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="16dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Upper / Lower Split"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="4 days per week • For progressing beginners"
-                    android:textSize="13sp"
-                    android:textColor="@color/textPrimary"
-                    android:paddingTop="4dp" />
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
 
 
     </LinearLayout>

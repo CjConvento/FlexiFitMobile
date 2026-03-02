@@ -13,6 +13,7 @@ googleGmsGoogleServices = "4.4.4"
 kotlin = "1.9.22"
 coreKtx = "1.17.0"
 materialVersion = "1.12.0"
+firebaseMessaging = "25.0.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -26,6 +27,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 material-v1120 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
