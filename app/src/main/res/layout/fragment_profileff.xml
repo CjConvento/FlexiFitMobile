@@ -274,13 +274,13 @@
                                 android:text="Basic Information"
                                 android:textColor="@color/textPrimary"
                                 android:textStyle="bold"/>
-                            <TextView
-                                android:layout_width="2dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@drawable/bg_edit"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"/>
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/bg_edit"
+                                android:tint="@color/colorPrimary"
+                                android:contentDescription="Edit"/>
 
                         </LinearLayout>
 
