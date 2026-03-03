@@ -18,6 +18,11 @@
             android:title="Nutrition Plan" />
 
         <item
+            android:id="@+id/ProgressFragment"
+            android:icon="@drawable/ic_macros"
+            android:title="Progress Tracking" />
+
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_person"
             android:title="Profile" />

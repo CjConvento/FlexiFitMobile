@@ -5,14 +5,13 @@
     android:layout_height="48dp"
     android:layout_margin="4dp"
     app:cardCornerRadius="12dp"
-    app:strokeWidth="2dp"
-    app:strokeColor="@android:color/black">
+    app:strokeWidth="0dp">
 
     <TextView
         android:id="@+id/txtDay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="1"
-        android:textStyle="bold"/>
+        android:text="Day 10"
+        android:textStyle="normal"/>
 </com.google.android.material.card.MaterialCardView>

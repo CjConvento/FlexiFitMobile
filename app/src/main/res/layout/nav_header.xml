@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="210dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_modern_wave">
 
     <!-- SETTINGS ICON – top right ng header -->
@@ -14,7 +15,7 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_settings"
-        android:tint="@android:color/white"
+        app:tint="@android:color/white"
         android:contentDescription="Settings" />
 
     <!-- Centered content (avatar + name + email) -->
@@ -38,7 +39,7 @@
             android:id="@+id/txtHeaderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="WELCOME manish"
+            android:text="WELCOME Manish"
             android:textColor="@android:color/white"
             android:textSize="17sp"
             android:textStyle="bold"

@@ -18,15 +18,16 @@
     <!-- Floating Bottom Nav (Workout / Nutrition) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomDayNav"
-        android:layout_width="260dp"
-        android:layout_height="64dp"
+        android:layout_width="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="18dp"
-        android:background="@android:color/white"
+        app:itemActiveIndicatorStyle="@null"
+        android:padding="90dp"
         app:menu="@menu/menu_dayhost_bottom"
         app:labelVisibilityMode="labeled"
-        app:itemIconTint="@android:color/black"
-        app:itemTextColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

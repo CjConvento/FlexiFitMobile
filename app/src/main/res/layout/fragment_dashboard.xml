@@ -86,7 +86,7 @@
                     android:layout_marginTop="10dp"
                     android:textColor="@color/textSecondary"
                     android:layout_height="wrap_content"
-                    tools:text="2500kcal"/>
+                    tools:text="0 kcal"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:textColor="@color/textSecondary"
-                    tools:text="100kcal"/>
+                    tools:text="0 kcal"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -148,6 +148,7 @@
                     android:text="Calories"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -157,7 +158,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="0 kcal"
+                    android:text="2300 kcal"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -193,7 +194,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="0 kcal\nleft"
+                    android:text="2300 kcal\nleft"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@id/progressRing"
@@ -244,7 +245,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/textSecondary"
-                        tools:text="In Progress"/>
+                        tools:text="Skipped"/>
 
                 </LinearLayout>
 
@@ -295,80 +296,73 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/textGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Water Intake"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/waterGlass">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
-
-                    <com.example.flexifitapp.custom.WaterGlassView
-                        android:id="@+id/waterGlass"
-                        android:layout_width="74dp"
-                        android:layout_height="92dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="46dp"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toEndOf="@id/waterGlass"
-                        app:layout_constraintTop_toTopOf="@id/waterGlass"
-                        app:layout_constraintBottom_toBottomOf="@id/waterGlass"
-                        app:layout_constraintEnd_toEndOf="parent">
+                        android:text="Water Intake"
+                        android:textColor="@color/textPrimary"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/txtWaterCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0/8"
-                            android:textColor="@color/textPrimary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/txtWaterCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0/8"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="glasses today"
-                            android:textColor="@color/textPrimary"
-                            android:textSize="12sp"
-                            android:alpha="0.7" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="glasses today"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="12sp"
+                        android:alpha="0.7" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAddWater"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/btn_gradient"
-                            android:minHeight="0dp"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp"
-                            android:text="Add +"
-                            android:textAllCaps="false"
-                            android:textColor="@color/white"
-                            app:backgroundTint="@null"
-                            app:cornerRadius="20dp" />
-                    </LinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddWater"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/btn_gradient"
+                        android:minHeight="0dp"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp"
+                        android:text="Add +"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        app:backgroundTint="@null"
+                        app:cornerRadius="20dp" />
+                </LinearLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.example.flexifitapp.custom.WaterGlassView
+                    android:id="@+id/waterGlass"
+                    android:layout_width="74dp"
+                    android:layout_height="92dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </com.google.android.material.card.MaterialCardView>
-
         <!-- ===================== MEAL CARD ===================== -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardMeal"
@@ -389,12 +383,27 @@
                 android:padding="16dp"
                 android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
                 <TextView
-                    android:text="Meal Plan"
+                    android:text="Nutrition Plan"
                     android:textStyle="bold"
                     android:textColor="@color/textPrimary"
+                    android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txt_nutriStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textSecondary"
+                    tools:text="Skipped" />
+
+            </LinearLayout>
 
                 <TextView
                     android:id="@+id/txtMealPlanType"
@@ -402,7 +411,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textColor="@color/textPrimary"
-                    tools:text="Gain Weight • Vegan Meal Plan"/>
+                    tools:text="Gain Weight • Balanced Meal Plan"/>
 
                 <TextView
                     android:layout_marginTop="12dp"
@@ -411,6 +420,12 @@
                     android:textColor="@color/textPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/txtdshb_Bfast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textSecondary"
+                    tools:text="Oat Pancakes, Eg...."/>
 
                 <TextView
                     android:text="Lunch"
@@ -418,6 +433,12 @@
                     android:textColor="@color/textPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/txtdshb_Lunch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textSecondary"
+                    tools:text="Chicken Adobo, Or..."/>
 
                 <TextView
                     android:text="Snacks"
@@ -425,6 +446,12 @@
                     android:textColor="@color/textPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/txtdshb_Snacks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textSecondary"
+                    tools:text="Apple, Boiled Eggs..."/>
 
                 <TextView
                     android:text="Dinner"
