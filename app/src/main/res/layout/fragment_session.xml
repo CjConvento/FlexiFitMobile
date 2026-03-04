@@ -30,10 +30,10 @@
                     android:id="@+id/txtDayTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Day 1 - Week 1"
+                    android:text="Month 1 - Day 1 - Week 1"
                     android:textStyle="bold"
                     android:textColor="@color/textPrimary"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:layout_gravity="center_horizontal"/>
 
                 <TextView

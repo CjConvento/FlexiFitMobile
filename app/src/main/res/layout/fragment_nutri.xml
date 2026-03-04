@@ -5,308 +5,347 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:padding="16dp"
-    android:background="@color/background">
+    android:overScrollMode="never">
 
-
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btnOpenCalendar"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_gravity="start|top"
-            android:background="@android:color/transparent"
-            android:contentDescription="Open Calendar"
-            android:src="@android:drawable/ic_menu_my_calendar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- ========= TITLE ========= -->
-        <TextView
-            android:id="@+id/tv_nutri_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nutrition Macros"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="2dp" />
-
-        <TextView
-            android:id="@+id/tv_macros_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Daily calorie and macro overview."
-            android:textSize="14sp"
-            android:textColor="@color/textSecondary"
-            android:paddingBottom="16dp" />
-
-        <!-- ========= PRIMARY OVERVIEW CARD (Flutter-style big card) ========= -->
+        <!-- ========================= -->
+        <!-- MACROS CARD -->
+        <!-- ========================= -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_daily_summary"
-            android:layout_width="match_parent"
+            android:id="@+id/cardMacrosMain"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:stateListAnimator="@null"
-            app:cardCornerRadius="24dp"
-            app:cardUseCompatPadding="false"
-            app:cardElevation="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
             app:strokeWidth="0dp"
-            app:strokeColor="@android:color/transparent"
-            app:cardBackgroundColor="@color/colorPrimary">
+            app:cardUseCompatPadding="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Today’s Calories"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_daily_calories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1,695 / 1,920 kcal"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp" />
-
-                <ProgressBar
-                    android:id="@+id/progress_kcal"
-                    style="?android:attr/progressBarStyleHorizontal"
+                <!-- Header -->
+                <!-- Header (Left: back, Center: chip label, Right: calendar) -->
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:max="100"
-                    android:progress="70"
-                    android:indeterminate="false"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:progressDrawable="@drawable/progress_kcal_primary" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/tv_daily_status"
-                    android:layout_width="wrap_content"
+                    <!-- Back -->
+                    <ImageButton
+                        android:id="@+id/btnNutri"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Back"
+                        android:src="@drawable/baseline_arrow_left_ios_new_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <!-- Center Chip -->
+                    <TextView
+                        android:id="@+id/tvMacrosTag"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Month 1 - Week 1 - Day 1"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:background="@drawable/bg_chip_soft"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:layout_constraintStart_toEndOf="@id/btnNutri"
+                        app:layout_constraintEnd_toStartOf="@id/btnOpenCalendar"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"/>
+
+                    <!-- Calendar -->
+                    <ImageButton
+                        android:id="@+id/btnOpenCalendar"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Open Calendar"
+                        android:src="@drawable/iconly_calendar"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Chart + Totals Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Workout day: slightly higher carbs to support performance."
-                    android:textSize="12sp"
-                    android:textColor="@android:color/white"
-                    android:alpha="0.9"
-                    android:paddingTop="6dp" />
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Donut / Pie Chart container -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="180dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="18dp"
+                        app:cardElevation="6dp"
+                        app:cardUseCompatPadding="true"
+                        app:strokeWidth="0dp">
+
+                        <!-- Replace this FrameLayout with PieChart later -->
+                        <FrameLayout
+                            android:id="@+id/chartContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="[ Donut Chart ]"
+                                android:textStyle="bold"
+                                android:alpha="0.6" />
+
+                            <!-- Optional center label -->
+                            <TextView
+                                android:id="@+id/tvChartCenter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="2200\nkcal"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:alpha="0.0" />
+                        </FrameLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Total macros summary -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvTotalsTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Macros"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvTotalProtein"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Protein: 0g" />
+
+                        <TextView
+                            android:id="@+id/tvTotalCarbs"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Carbs: 0g" />
+
+                        <TextView
+                            android:id="@+id/tvTotalFats"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Fats: 0g" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Intake vs Target (progress rows) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
+
+                    <!-- Protein row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Protein"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvProteinValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0g / 120g"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:id="@+id/pbProtein"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="10dp"
+                            android:layout_marginTop="8dp"
+                            android:max="100"
+                            android:progress="0" />
+                    </LinearLayout>
+
+                    <!-- Carbs row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Carbs"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvCarbsValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0g / 220g"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:id="@+id/pbCarbs"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="10dp"
+                            android:layout_marginTop="8dp"
+                            android:max="100"
+                            android:progress="0" />
+                    </LinearLayout>
+
+                    <!-- Fats row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Fats"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvFatsValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0g / 80g"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:id="@+id/pbFats"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="10dp"
+                            android:layout_marginTop="8dp"
+                            android:max="100"
+                            android:progress="0" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Calories row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp"
+                    android:layout_marginTop="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Calories"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvCaloriesValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 / 2200 kcal"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/pbCalories"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="0"/>
+                </LinearLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ========= MACRO BREAKDOWN TITLE ========= -->
-        <TextView
-            android:id="@+id/tv_macros_breakdown_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Macros Intake"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="8dp" />
-
-        <!-- ========= 3 MINI MACRO CARDS (Flutter row chips) ========= -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3"
-            android:paddingBottom="12dp">
-
-            <!-- Protein Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:stateListAnimator="@null"
-                app:cardCornerRadius="18dp"
-                app:cardUseCompatPadding="false"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                app:strokeColor="@android:color/transparent"
-                app:cardBackgroundColor="@color/surface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Protein"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:id="@+id/tv_protein_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="120 g / 120 g"
-                        android:textSize="12sp"
-                        android:textColor="@color/textSecondary"
-                        android:paddingTop="2dp" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_protein"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:max="100"
-                        android:progress="100"
-                        android:layout_marginTop="6dp"
-                        android:progressDrawable="@drawable/progress_rounded_calories" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Carbs Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="3dp"
-                android:layout_marginEnd="3dp"
-                android:stateListAnimator="@null"
-                app:cardCornerRadius="18dp"
-                app:cardUseCompatPadding="false"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                app:strokeColor="@android:color/transparent"
-                app:cardBackgroundColor="@color/surface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Carbs"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:id="@+id/tv_carbs_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="180 g / 225 g"
-                        android:textSize="12sp"
-                        android:textColor="@color/textSecondary"
-                        android:paddingTop="2dp" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_carbs"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:max="100"
-                        android:progress="80"
-                        android:layout_marginTop="6dp"
-                        android:progressDrawable="@drawable/progress_rounded_calories" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Fats Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:stateListAnimator="@null"
-                app:cardCornerRadius="18dp"
-                app:cardUseCompatPadding="false"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                app:strokeColor="@android:color/transparent"
-                app:cardBackgroundColor="@color/surface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Fats"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:id="@+id/tv_fats_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="55 g / 60 g"
-                        android:textSize="12sp"
-                        android:textColor="@color/textSecondary"
-                        android:paddingTop="2dp" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_fats"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:max="100"
-                        android:progress="90"
-                        android:layout_marginTop="6dp"
-                        android:progressDrawable="@drawable/progress_rounded_calories" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
-
-
-
-        <!-- ========= BUTTON ROW (Flutter-style pill buttons) ========= -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:weightSum="2">
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <!-- ========= MEAL PLAN CARD ========= -->
-
+        <!-- ========================= -->
+        <!-- MEAL PLAN CARD -->
+        <!-- ========================= -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_meal_plan"
-            android:layout_width="match_parent"
+            android:id="@+id/cardMealPlan"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:stateListAnimator="@null"
-            app:cardCornerRadius="22dp"
-            app:cardUseCompatPadding="false"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            app:strokeColor="@android:color/transparent"
-            app:cardBackgroundColor="@color/surface">
+            android:layout_marginTop="14dp"
+            app:layout_constraintTop_toBottomOf="@id/cardMacrosMain"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -315,95 +354,183 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Suggested Meal Plan"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_meal_type"
+                    android:id="@+id/tvMealPlanTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:stateListAnimator="@null"
-                    app:cardCornerRadius="24dp"
-                    app:cardUseCompatPadding="false"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp"
-                    app:strokeColor="@android:color/transparent"
-                    app:cardBackgroundColor="@color/colorPrimary">
+                    android:text="Meal Plan"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="center" />
+
+                <!-- Meal slots (pwede mo palitan into RecyclerView later) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardUseCompatPadding="true"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="18dp">
+                        android:padding="14dp"
+                        android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvBreakfast"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Meal Plan"
-                            android:textColor="@android:color/white"
-                            android:textSize="14sp" />
-
+                            android:text="Breakfast: "
+                            android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/breakfast"
+                            android:id="@+id/tvLunch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Breakfast"
-                            android:textSize="12sp"
-                            android:textColor="@android:color/white"
-                            android:alpha="0.9"
-                            android:paddingTop="6dp" />
+                            android:layout_marginTop="12dp"
+                            android:text="Lunch: "
+                            android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/Lunch"
+                            android:id="@+id/tvSnacks"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Lunch"
-                            android:textSize="12sp"
-                            android:textColor="@android:color/white"
-                            android:alpha="0.9"
-                            android:paddingTop="6dp" />
+                            android:layout_marginTop="12dp"
+                            android:text="Snacks: "
+                            android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/Snacks"
+                            android:id="@+id/tvDinner"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Snacks"
-                            android:textSize="12sp"
-                            android:textColor="@android:color/white"
-                            android:alpha="0.9"
-                            android:paddingTop="6dp" />
-
-                        <TextView
-                            android:id="@+id/Dinner"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Dinner"
-                            android:textSize="12sp"
-                            android:textColor="@android:color/white"
-                            android:alpha="0.9"
-                            android:paddingTop="6dp" />
-
-
-
-
+                            android:layout_marginTop="12dp"
+                            android:text="Dinner: "
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Skip / Done buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:padding="10dp"
+                    android:orientation="horizontal">
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSkipMealPlan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Skip"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="14dp"
+                        app:iconPadding="0dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDoneMealPlan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="10dp"
+                        android:text="Done"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="14dp"
+                        app:iconPadding="0dp" />
+                </LinearLayout>
 
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- ========================= -->
+        <!-- WATER INTAKE CARD -->
+        <!-- ========================= -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardWater"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintTop_toBottomOf="@id/cardMealPlan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Water Intake"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvWaterValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 ml / 2500 ml"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/pbWater"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="10dp"
+                    android:max="100"
+                    android:progress="0" />
+
+                <!-- optional quick actions -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddWater"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        android:text="Add +250ml"
+                        app:cornerRadius="14dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnResetWater"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        android:layout_marginStart="10dp"
+                        android:text="Reset"
+                        app:cornerRadius="14dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
-
