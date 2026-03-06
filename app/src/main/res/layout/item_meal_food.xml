@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rowMealFood"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp">
+
+    <!-- image -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <ImageView
+            android:id="@+id/imgFood"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Food image"
+            android:src="@drawable/ic_food"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- name + meta -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvFoodName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Oatmeal Pancakes"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tvFoodSub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap to view / edit serving"
+            android:textSize="12sp"
+            android:alpha="0.7"/>
+    </LinearLayout>
+
+    <!-- open details -->
+    <ImageButton
+        android:id="@+id/btnOpenFood"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/bg_circle_soft"
+        android:src="@drawable/ic_arrow_right"
+        android:tint="?attr/colorPrimary"
+        android:contentDescription="Open details"/>
+</LinearLayout>

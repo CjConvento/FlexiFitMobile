@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:padding="16dp">
 
     <LinearLayout
@@ -11,187 +11,189 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- TITLE -->
-        <TextView
-            android:id="@+id/tv_my_workout_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Workout Plan"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="8dp" />
-
-        <TextView
-            android:id="@+id/tv_my_workout_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Here’s your current workout plan and current day’s session."
-            android:textSize="14sp"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="16dp" />
-
-        <!-- Calendar Icon Button (upper-right) -->
-
-        <!-- CURRENT PROGRAM CARD -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_current_program"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="18dp"
             app:cardUseCompatPadding="true"
-            app:cardElevation="2dp">
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@android:color/black">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <ImageButton
-                    android:id="@+id/btnOpenCalendar"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="Open Calendar"
-                    android:src="@android:drawable/ic_menu_my_calendar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:padding="16dp"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_current_program_label"
+                    android:id="@+id/txtDayTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Current Program"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary" />
-
-                <TextView
-                    android:id="@+id/tv_current_program_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Beginner Cardio (3x/week)"
-                    android:textSize="18sp"
+                    android:text="Month 1 - Day 1 - Week 1"
                     android:textStyle="bold"
                     android:textColor="@color/textPrimary"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp" />
+                    android:textSize="14sp"
+                    android:layout_gravity="center_horizontal"/>
 
                 <TextView
-                    android:id="@+id/tv_current_program_details"
+                    android:id="@+id/txtProgramName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:text="Program: Beginner Outdoor Strength Push"
+                    android:textColor="@color/textSecondary"/>
+
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Focus on basic compound movements to build strength and proper form."
-                    android:textSize="14sp"
-                    android:textColor="@color/textPrimary" />
+                    android:layout_marginTop="14dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardElevation="8dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@android:color/black">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textPrimary"
+                            android:text="Warm-Up:"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textSecondary"
+                            android:layout_marginTop="6dp"
+                            android:text="Shoulder Dislocation&#10;Arm Circles"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardElevation="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textPrimary"
+                                android:layout_weight="1"
+                                android:text="Workouts:"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textPrimary"
+                                android:text="Reps"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textPrimary"
+                                android:text="Sets"
+                                android:textStyle="bold"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textPrimary"
+                                android:text="Rest"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- For MVP: static list. Later replace with RecyclerView -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/textSecondary"
+                            android:layout_marginTop="10dp"
+                            android:text="Knee Pushups     &#10;Wall Pushups    &#10;Planks            &#10;Crunches       "/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/tv_current_program_level"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Beginner"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
-                    app:cornerRadius="50dp"
-                    app:backgroundTint="#1D3C78"
-                    app:iconGravity="textStart"
-                    android:elevation="0dp"/>
-
+                    android:id="@+id/btnDone"
+                    android:layout_width="140dp"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_gravity="end"
+                    app:backgroundTint="@null"
+                    android:text="Mark as Done"
+                    android:background="@drawable/btn_gradient"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="0dp"/>
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- TODAY'S WORKOUT -->
-        <TextView
-            android:id="@+id/tv_today_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Day 1 - Push Workout"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="8dp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_today_workout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="2dp">
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_weight="1"
+                android:layout_marginEnd="12dp"
+                app:cardCornerRadius="18dp"
+                app:strokeWidth="0dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp">
 
-                <!-- WARM-UP SECTION -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/txtTotalBurned"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Warm-up"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
+                    android:padding="16dp"
                     android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
+                    android:text="Total Calories Burned: 400 kcal"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardCornerRadius="18dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp">
 
                 <TextView
+                    android:id="@+id/txtDuration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• 5–10 minutes light cardio (brisk walk, cycling, or treadmill)"
-                    android:textSize="14sp"
-                    android:paddingBottom="12dp" />
-
-                <!-- MAIN WORKOUT WITH REST TIME PER SET -->
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Main Workout"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
+                    android:padding="19dp"
                     android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• Squats – 3 sets x 10–12 reps • Rest 60–90s between sets"
-                    android:textSize="14sp"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• Bench Press – 3 sets x 8–10 reps • Rest 60–90s between sets"
-                    android:textSize="14sp"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• Lat Pulldown – 3 sets x 10–12 reps • Rest 60–90s between sets"
-                    android:textSize="14sp"
-                    android:paddingBottom="4dp" />
-
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-
+                    android:text="30 mins"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
     </LinearLayout>
-
 </androidx.core.widget.NestedScrollView>

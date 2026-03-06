@@ -343,9 +343,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
+            app:cardElevation="8dp"
             app:cardUseCompatPadding="true"
-            app:strokeWidth="0dp">
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@android:color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -353,6 +354,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <!-- Title -->
                 <TextView
                     android:id="@+id/tvMealPlanTitle"
                     android:layout_width="match_parent"
@@ -362,88 +364,109 @@
                     android:textSize="16sp"
                     android:gravity="center" />
 
-                <!-- Meal slots (pwede mo palitan into RecyclerView later) -->
+                <!-- Optional: plan name chip (matches mockup middle screen) -->
+                <TextView
+                    android:id="@+id/tvMealPlanChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_chip_soft"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp"
+                    android:includeFontPadding="false"
+                    android:text="Lose Weight Vegan Meal Plan"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+                <!-- Inner container (soft gray) -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMealInner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
                     app:cardCornerRadius="16dp"
                     app:cardUseCompatPadding="true"
-                    app:strokeWidth="0dp">
+                    app:strokeWidth="0dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#F6F7FB">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="14dp"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                        <TextView
-                            android:id="@+id/tvBreakfast"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Breakfast: "
-                            android:textStyle="bold" />
+                        <!-- Breakfast -->
+                        <include
+                            android:id="@+id/secBreakfast"
+                            layout="@layout/item_meal_section" />
 
-                        <TextView
-                            android:id="@+id/tvLunch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="Lunch: "
-                            android:textStyle="bold" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="10dp" />
 
-                        <TextView
-                            android:id="@+id/tvSnacks"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="Snacks: "
-                            android:textStyle="bold" />
+                        <!-- Lunch -->
+                        <include
+                            android:id="@+id/secLunch"
+                            layout="@layout/item_meal_section" />
 
-                        <TextView
-                            android:id="@+id/tvDinner"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="Dinner: "
-                            android:textStyle="bold" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="10dp" />
+
+                        <!-- Snacks -->
+                        <include
+                            android:id="@+id/secSnacks"
+                            layout="@layout/item_meal_section" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="10dp" />
+
+                        <!-- Dinner -->
+                        <include
+                            android:id="@+id/secDinner"
+                            layout="@layout/item_meal_section" />
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Skip / Done buttons -->
+                <!-- Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:padding="10dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSkipMealPlan"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:text="Skip"
                         app:backgroundTint="@null"
                         android:background="@drawable/btn_gradient"
-                        app:cornerRadius="14dp"
-                        app:iconPadding="0dp" />
+                        app:cornerRadius="16dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnDoneMealPlan"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginStart="10dp"
                         android:text="Done"
                         app:backgroundTint="@null"
                         android:background="@drawable/btn_gradient"
-                        app:cornerRadius="14dp"
-                        app:iconPadding="0dp" />
+                        app:cornerRadius="16dp" />
                 </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
 
         <!-- ========================= -->
         <!-- WATER INTAKE CARD -->

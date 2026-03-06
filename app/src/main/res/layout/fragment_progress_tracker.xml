@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvProgressTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress Tracker"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:layout_marginBottom="12dp"/>
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_range"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:checkedButton="@id/btnWeekly">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnWeekly"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="Weekly"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="18dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMonthly"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="Monthly"
+                android:textAllCaps="false"
+                android:textColor="@color/textPrimary"
+                app:backgroundTint="@color/surface"
+                app:cornerRadius="18dp"/>
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <!-- TOP METRIC CARDS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Workout Compliance"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"/>
+
+                    <TextView
+                        android:id="@+id/tvCompliance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="75%"
+                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginTop="4dp"/>
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressCompliance"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="75"
+                        app:trackColor="#D9E2F1"
+                        app:indicatorColor="@color/colorPrimary"/>
+
+                    <TextView
+                        android:id="@+id/tvComplianceMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3 / 4 Sessions"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="8dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Avg Calories"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"/>
+
+                    <TextView
+                        android:id="@+id/tvAvgCalories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2,150 kcal"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/textPrimary"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvAvgCaloriesSub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+200 vs last week"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginTop="8dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <!-- SECOND ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Avg Water Intake"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"/>
+
+                    <TextView
+                        android:id="@+id/tvWater"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2.3 L"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvWaterSub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+0.5L vs last week"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginTop="8dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Meals Completed"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"/>
+
+                    <TextView
+                        android:id="@+id/tvMealsCompleted"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18 / 21"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/textPrimary"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvMealsCompletedSub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="85% completion"
+                        android:textSize="12sp"
+                        android:textColor="@color/textSecondary"
+                        android:layout_marginTop="8dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <!-- WEIGHT CHART CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weight Progress"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"/>
+
+                <TextView
+                    android:id="@+id/tvWeight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="76.8 kg"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:layout_marginTop="6dp"/>
+
+                <TextView
+                    android:id="@+id/tvWeightChange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change: -1.6 kg"
+                    android:textSize="13sp"
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lineChartWeight"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CALORIES BAR CHART CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardCaloriesBurned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Calories Burned"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"/>
+
+                <TextView
+                    android:id="@+id/tvCaloriesBurned"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Avg: 520 kcal"
+                    android:textSize="16sp"
+                    android:textColor="@color/textPrimary"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barChartCalories"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- STREAK CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardStreak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current Streak"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/tvStreak"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔥 7 Days"
+                    android:textSize="18sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvStreakSub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Keep it up!"
+                    android:textSize="13sp"
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginTop="2dp"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ACHIEVEMENTS CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAchievements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recent Achievements"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="10dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAchievements"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_screen">
+
+    <!-- hero image -->
+    <ImageView
+        android:id="@+id/imgHero"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/sample_food_hero"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cardSheet" />
+
+    <!-- back button -->
+    <ImageButton
+        android:id="@+id/btnBackFood"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_margin="14dp"
+        android:background="@drawable/bg_circle_soft"
+        android:src="@drawable/baseline_arrow_left_ios_new_24"
+        android:tint="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="Back" />
+
+    <!-- bottom sheet card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSheet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="10dp"
+        app:cardUseCompatPadding="true"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- drag handle -->
+            <View
+                android:layout_width="44dp"
+                android:layout_height="5dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bg_handle" />
+
+            <!-- title + author -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvFoodTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Blueberry Pancake"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvFoodAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="by James Ruth"
+                    android:textSize="12sp"
+                    android:alpha="0.7" />
+            </LinearLayout>
+
+            <!-- serving + qty row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvServingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_chip_soft"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp"
+                    android:text="1 serving (2 pancakes)"
+                    android:textStyle="bold"
+                    android:textSize="13sp" />
+
+                <!-- qty stepper -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_stepper"
+                    android:padding="4dp">
+
+                    <ImageButton
+                        android:id="@+id/btnMinus"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_minus"
+                        android:tint="?attr/colorPrimary"
+                        android:contentDescription="Minus" />
+
+                    <TextView
+                        android:id="@+id/tvQty"
+                        android:layout_width="28dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/btnPlus"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_plus"
+                        android:tint="?attr/colorPrimary"
+                        android:contentDescription="Plus" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvAutoNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Totals update automatically"
+                android:textSize="12sp"
+                android:alpha="0.65" />
+
+            <!-- Nutrition chips -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Nutrition"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/chipRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/chipCalories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_soft"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="180 kcal"
+                    android:textStyle="bold"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/chipCarbs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_chip_soft"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="30g carbs"
+                    android:textStyle="bold"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/chipFats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_chip_soft"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="30g fats"
+                    android:textStyle="bold"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/chipProtein"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_chip_soft"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="20g proteins"
+                    android:textStyle="bold"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Descriptions"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Pancakes are some people’s favorite breakfast..."
+                android:textSize="13sp"
+                android:alpha="0.85" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

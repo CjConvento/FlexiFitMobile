@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mealSectionRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- header -->
+    <LinearLayout
+        android:id="@+id/headerRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvMealTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Breakfast"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+
+        <ImageView
+            android:id="@+id/ivExpand"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_chevron_down"
+            android:tint="?attr/colorPrimary"
+            android:contentDescription="Expand"/>
+    </LinearLayout>
+
+    <!-- items container (you can add rows dynamically OR replace with RecyclerView later) -->
+    <LinearLayout
+        android:id="@+id/containerItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
+
+        <!-- sample item (remove this later; just preview) -->
+        <include layout="@layout/item_meal_food"/>
+
+    </LinearLayout>
+
+</LinearLayout>
