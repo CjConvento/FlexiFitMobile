@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mealSectionRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:background="#F6F7FB"
+    tools:padding="12dp">
 
-    <!-- header -->
     <LinearLayout
         android:id="@+id/headerRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:minHeight="44dp"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:paddingVertical="4dp">
 
         <TextView
             android:id="@+id/tvMealTitle"
@@ -20,29 +27,28 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Breakfast"
+            android:textColor="@color/textPrimary"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            tools:text="Breakfast" />
 
         <ImageView
             android:id="@+id/ivExpand"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/ic_chevron_down"
-            android:tint="?attr/colorPrimary"
-            android:contentDescription="Expand"/>
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="Expand"
+            android:src="@drawable/baseline_keyboard_arrow_down_24"
+            app:tint="@color/textPrimary" />
     </LinearLayout>
 
-    <!-- items container (you can add rows dynamically OR replace with RecyclerView later) -->
-    <LinearLayout
-        android:id="@+id/containerItems"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMealItems"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:orientation="vertical">
-
-        <!-- sample item (remove this later; just preview) -->
-        <include layout="@layout/item_meal_food"/>
-
-    </LinearLayout>
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
+        tools:listitem="@layout/item_meal_food"
+        tools:itemCount="2" />
 
 </LinearLayout>

@@ -17,13 +17,13 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         val fromHost = arguments?.getBoolean(NavKeys.ARG_FROM_HOST, false) ?: false
 
         val btnOpenCalendar = view.findViewById<ImageButton>(R.id.btnOpenCalendar)
-        val title = view.findViewById<TextView?>(R.id.tv_today_title) // if meron ka
+//        val title = view.findViewById<TextView?>(R.id.tv_today_title) // if meron ka
 
         // If inside DayHost: hide calendar button
         btnOpenCalendar.visibility = if (fromHost) View.GONE else View.VISIBLE
 
         // Optional title change (if your layout has txtWorkoutDayTitle)
-        title?.text = if (day == -1) "Workout" else "Workout - Day $day"
+//        title?.text = if (day == -1) "Workout" else "Workout - Day $day"
 
         // Only root mode needs calendar open
         if (!fromHost) {

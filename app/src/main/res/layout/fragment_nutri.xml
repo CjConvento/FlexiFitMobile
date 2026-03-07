@@ -334,6 +334,9 @@
         <!-- ========================= -->
         <!-- MEAL PLAN CARD -->
         <!-- ========================= -->
+        <!-- ========================= -->
+        <!-- MEAL PLAN CARD -->
+        <!-- ========================= -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardMealPlan"
             android:layout_width="0dp"
@@ -364,7 +367,7 @@
                     android:textSize="16sp"
                     android:gravity="center" />
 
-                <!-- Optional: plan name chip (matches mockup middle screen) -->
+                <!-- Plan Name Chip -->
                 <TextView
                     android:id="@+id/tvMealPlanChip"
                     android:layout_width="wrap_content"
@@ -381,7 +384,7 @@
                     android:maxLines="1"
                     android:ellipsize="end" />
 
-                <!-- Inner container (soft gray) -->
+                <!-- Inner container -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardMealInner"
                     android:layout_width="match_parent"
@@ -393,45 +396,17 @@
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="#F6F7FB">
 
-                    <LinearLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMealSections"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        android:padding="14dp"
+                        xmlns:tools="http://schemas.android.com/tools"
+                        tools:listitem="@layout/item_meal_section"
+                        tools:itemCount="4" />
 
-                        <!-- Breakfast -->
-                        <include
-                            android:id="@+id/secBreakfast"
-                            layout="@layout/item_meal_section" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp" />
-
-                        <!-- Lunch -->
-                        <include
-                            android:id="@+id/secLunch"
-                            layout="@layout/item_meal_section" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp" />
-
-                        <!-- Snacks -->
-                        <include
-                            android:id="@+id/secSnacks"
-                            layout="@layout/item_meal_section" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp" />
-
-                        <!-- Dinner -->
-                        <include
-                            android:id="@+id/secDinner"
-                            layout="@layout/item_meal_section" />
-
-                    </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Buttons -->
@@ -462,11 +437,11 @@
                         app:backgroundTint="@null"
                         android:background="@drawable/btn_gradient"
                         app:cornerRadius="16dp" />
+
                 </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
 
         <!-- ========================= -->
         <!-- WATER INTAKE CARD -->

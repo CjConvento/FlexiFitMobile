@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rowMealFood"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingVertical="8dp">
+    android:paddingVertical="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackgroundBorderless">
 
-    <!-- image -->
+    <!-- Food image -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="42dp"
         android:layout_height="42dp"
@@ -23,10 +27,11 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:contentDescription="Food image"
-            android:src="@drawable/ic_food"/>
+            android:src="@drawable/ic_food_placeholder"
+            tools:src="@drawable/ic_food_placeholder"/>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- name + meta -->
+    <!-- Food name + description -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -38,26 +43,27 @@
             android:id="@+id/tvFoodName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Oatmeal Pancakes"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            tools:text="Oatmeal Pancakes"/>
 
         <TextView
             android:id="@+id/tvFoodSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tap to view / edit serving"
             android:textSize="12sp"
-            android:alpha="0.7"/>
+            android:alpha="0.7"
+            tools:text="Tap to view / edit serving"/>
     </LinearLayout>
 
-    <!-- open details -->
+    <!-- Open details button -->
     <ImageButton
         android:id="@+id/btnOpenFood"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:background="@drawable/bg_circle_soft"
-        android:src="@drawable/ic_arrow_right"
-        android:tint="?attr/colorPrimary"
-        android:contentDescription="Open details"/>
+        android:contentDescription="Open food details"
+        android:src="@drawable/ic_chevron_r_circle"
+        app:tint="?attr/colorPrimary" />
+
 </LinearLayout>

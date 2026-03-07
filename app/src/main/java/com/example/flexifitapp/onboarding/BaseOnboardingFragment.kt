@@ -27,22 +27,8 @@ abstract class BaseOnboardingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnNext = view.findViewById<ImageButton?>(R.id.btnNext)
-        val btnPrev = view.findViewById<ImageButton?>(R.id.btnPrev)
 
-        btnPrev?.setOnClickListener {
-            if (isFirst) requireActivity().finish()
-            else findNavController().popBackStack()
-        }
-
-        btnNext?.setOnClickListener {
-            val error = validateBeforeNext()
-            if (!error.isNullOrBlank()) {
-                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             nextActionId?.let { findNavController().navigate(it) }
         }
     }
-}

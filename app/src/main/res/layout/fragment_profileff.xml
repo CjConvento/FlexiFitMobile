@@ -269,7 +269,6 @@
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
                                     android:src="@drawable/bg_edit"
-                                    app:int="@color/colorPrimary"
                                     android:contentDescription="Edit"/>
 
                             </LinearLayout>

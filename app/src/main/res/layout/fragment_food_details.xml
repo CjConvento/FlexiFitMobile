@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_screen">
+    android:background="@color/colorBackground">
 
     <!-- hero image -->
     <ImageView
@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/sample_food_hero"
+        android:src="@drawable/ic_food_placeholder"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,10 +25,10 @@
         android:layout_margin="14dp"
         android:background="@drawable/bg_circle_soft"
         android:src="@drawable/baseline_arrow_left_ios_new_24"
-        android:tint="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="Back" />
+        android:contentDescription="Back"
+        app:tint="?attr/colorPrimary" />
 
     <!-- bottom sheet card -->
     <com.google.android.material.card.MaterialCardView
@@ -77,7 +77,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="by James Ruth"
+                    android:text="by FlexiFit"
                     android:textSize="12sp"
                     android:alpha="0.7" />
             </LinearLayout>
@@ -117,8 +117,8 @@
                         android:layout_height="32dp"
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_minus"
-                        android:tint="?attr/colorPrimary"
-                        android:contentDescription="Minus" />
+                        android:contentDescription="Minus"
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/tvQty"
@@ -134,8 +134,8 @@
                         android:layout_height="32dp"
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_plus"
-                        android:tint="?attr/colorPrimary"
-                        android:contentDescription="Plus" />
+                        android:contentDescription="Plus"
+                        app:tint="?attr/colorPrimary" />
                 </LinearLayout>
             </LinearLayout>
 

@@ -20,7 +20,7 @@ class Pg7DietFragment : BaseOnboardingFragment(
         val diets = listOf(
             OptionTile("balanced", "Balanced", R.drawable.ic_diet_balanced),
             OptionTile("high_protein", "High Protein", R.drawable.ic_diet_protein),
-            OptionTile("low_carb", "Low Carb", R.drawable.ic_diet_lowcarb),
+            OptionTile("lactose_free", "Lactose Free", R.drawable.ic_diet_lactosefree),
             OptionTile("keto", "Keto", R.drawable.ic_diet_keto),
             OptionTile("vegetarian", "Vegetarian", R.drawable.ic_diet_veg),
             OptionTile("vegan", "Vegan", R.drawable.ic_diet_vegan)

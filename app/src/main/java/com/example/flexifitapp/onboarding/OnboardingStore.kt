@@ -23,7 +23,15 @@ object OnboardingStore {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getBoolean(key, false)
 
-    // ✅ ADD THESE (for multi-select tiles)
+    fun putBoolean(ctx: Context, key: String, value: Boolean) {
+        putBool(ctx, key, value)
+    }
+
+    fun getBoolean(ctx: Context, key: String, def: Boolean = false): Boolean {
+        return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getBoolean(key, def)
+    }
+
     fun putStringSet(ctx: Context, key: String, value: Set<String>) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .edit().putStringSet(key, value).apply()

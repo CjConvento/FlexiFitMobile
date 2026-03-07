@@ -31,6 +31,12 @@
             app:destination="@id/unifiedCalendarFragment" />
     </fragment>
 
+<!--    PROGRESS TRACKING-->
+    <fragment
+        android:id="@+id/nav_progtr"
+        android:name="com.example.flexifitapp.progress.ProgressTrackerFragment"
+        android:label="Progress Tracking" />
+
     <!-- ✅ PROFILE -->
     <fragment
         android:id="@+id/nav_profile"

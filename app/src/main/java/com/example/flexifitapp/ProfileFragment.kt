@@ -29,8 +29,8 @@ class ProfileFragment : Fragment() {
             imgAvatar?.let { imageView ->
                 Glide.with(this)
                     .load(uri)
-                    .placeholder(R.drawable.ic_avatar_placeholder)
-                    .error(R.drawable.ic_avatar_placeholder)
+                    .placeholder(R.drawable.profile)
+                    .error(R.drawable.profile)
                     .circleCrop()
                     .into(imageView)
             }
@@ -79,8 +79,8 @@ class ProfileFragment : Fragment() {
                         // load from server (persisted)
                         Glide.with(this@ProfileFragment)
                             .load(ApiConfig.BASE_URL.trimEnd('/') + "/" + avatarUrl.trimStart('/'))
-                            .placeholder(R.drawable.ic_avatar_placeholder)
-                            .error(R.drawable.ic_avatar_placeholder)
+                            .placeholder(R.drawable.profile)
+                            .error(R.drawable.profile)
                             .circleCrop()
                             .into(imgAvatar!!)
                     }
