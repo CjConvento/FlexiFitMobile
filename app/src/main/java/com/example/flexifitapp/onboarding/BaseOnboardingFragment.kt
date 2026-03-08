@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.flexifitapp.R
 
-abstract class BaseOnboardingFragment(
+abstract class      BaseOnboardingFragment(
     layoutId: Int,
     @IdRes private val nextActionId: Int?,
     private val isFirst: Boolean = false

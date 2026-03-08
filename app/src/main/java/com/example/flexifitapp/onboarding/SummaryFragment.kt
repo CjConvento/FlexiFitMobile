@@ -13,14 +13,14 @@ import com.google.android.material.button.MaterialButton
 
 class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
 
-    // Match your constants (from your message)
     private val KEY_LIFESTYLE = "fitness_lifestyle"
     private val KEY_LEVEL = "fitness_level"
     private val KEY_ENVIRONMENT = "environment"
-    private val KEY_FITNESS_GOAL = "fitness_goal"      // StringSet
+    private val KEY_FITNESS_GOAL = "fitness_goal"
     private val KEY_BODYCOMP_GOAL = "bodycomp_goal"
     private val KEY_DIET = "dietary_type"
-    private val KEY_PROGRAMS = "selected_programs"     // StringSet
+    private val KEY_PROGRAMS = "selected_programs"
+    private val KEY_TARGET_WEIGHT = "target_weight_kg"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,8 +31,8 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val tvSumGender = view.findViewById<TextView>(R.id.tvSumGender)
         val tvSumHeight = view.findViewById<TextView>(R.id.tvSumHeight)
         val tvSumWeight = view.findViewById<TextView>(R.id.tvSumWeight)
+        val tvSumTargetWeight = view.findViewById<TextView?>(R.id.tvSumTargetWeight)
 
-        // These are optional (only if you added them in the summary layout)
         val tvSumHealth = view.findViewById<TextView?>(R.id.tvSumHealth)
         val tvSumLifestyle = view.findViewById<TextView?>(R.id.tvSumLifestyle)
         val tvSumLevel = view.findViewById<TextView?>(R.id.tvSumLevel)
@@ -44,35 +44,30 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val tvProgramsEmpty = view.findViewById<TextView>(R.id.tvProgramsEmpty)
         val btnFinish = view.findViewById<MaterialButton>(R.id.btnFinish)
 
-        // ===== render basic values =====
         val age = OnboardingStore.getInt(ctx, "age", 0)
         val gender = OnboardingStore.getString(ctx, "gender")
         val height = OnboardingStore.getInt(ctx, "height_cm", 0)
         val weight = OnboardingStore.getInt(ctx, "weight_kg", 0)
+        val targetWeight = OnboardingStore.getInt(ctx, KEY_TARGET_WEIGHT, 0)
 
         tvSumAge.text = if (age > 0) age.toString() else "-"
         tvSumGender.text = if (gender.isNotBlank()) gender else "-"
         tvSumHeight.text = if (height > 0) height.toString() else "-"
         tvSumWeight.text = if (weight > 0) weight.toString() else "-"
+        tvSumTargetWeight?.text = if (targetWeight > 0) targetWeight.toString() else "-"
 
-        // ===== render optional values =====
-        val injury = OnboardingStore.getString(ctx, "has_injury")
-        val medical = OnboardingStore.getString(ctx, "has_medical_condition")
-        tvSumHealth?.text = when {
-            injury.isBlank() && medical.isBlank() -> "-"
-            else -> "Injury: ${injury.ifBlank { "-" }} | Medical: ${medical.ifBlank { "-" }}"
-        }
+        // Health from PG2 booleans
+        tvSumHealth?.text = buildHealthSummary()
 
         tvSumLifestyle?.text = OnboardingStore.getString(ctx, KEY_LIFESTYLE).ifBlank { "-" }
         tvSumLevel?.text = OnboardingStore.getString(ctx, KEY_LEVEL).ifBlank { "-" }
 
         val goals = OnboardingStore.getStringSet(ctx, KEY_FITNESS_GOAL)
-        tvSumGoal?.text = if (goals.isEmpty()) "-" else goals.joinToString(", ")
+        tvSumGoal?.text = if (goals.isEmpty()) "-" else goals.joinToString(", ") { it.prettyLabel() }
 
         tvSumBodyComp?.text = OnboardingStore.getString(ctx, KEY_BODYCOMP_GOAL).ifBlank { "-" }
         tvSumDiet?.text = OnboardingStore.getString(ctx, KEY_DIET).ifBlank { "-" }
 
-        // ===== Programs (PG8) =====
         val programs = OnboardingStore.getStringSet(ctx, KEY_PROGRAMS)
         programsWrap.removeAllViews()
 
@@ -82,8 +77,6 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
             tvProgramsEmpty.visibility = View.GONE
 
             programs.forEach { name ->
-                // If item_program_summary exists, you can inflate it.
-                // If not, we create a simple bordered TextView.
                 val row = try {
                     val v = layoutInflater.inflate(R.layout.item_program_summary, programsWrap, false)
                     v.findViewById<TextView>(R.id.tvProgramTitle).text = name
@@ -101,7 +94,6 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
             }
         }
 
-        // ===== finish logic =====
         btnFinish.setOnClickListener {
             val missing = getMissingRequiredFields()
 
@@ -122,39 +114,55 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         }
     }
 
+    private fun buildHealthSummary(): String {
+        val ctx = requireContext()
+
+        val none = OnboardingStore.getBoolean(ctx, "health_none", false)
+        if (none) return "None"
+
+        val items = mutableListOf<String>()
+
+        if (OnboardingStore.getBoolean(ctx, "upper_body_injury", false)) items += "Upper Body Injury"
+        if (OnboardingStore.getBoolean(ctx, "lower_body_injury", false)) items += "Lower Body Injury"
+        if (OnboardingStore.getBoolean(ctx, "joint_problems", false)) items += "Joint Problems"
+        if (OnboardingStore.getBoolean(ctx, "short_breath", false)) items += "Short Breath"
+
+        return if (items.isEmpty()) "-" else items.joinToString(", ")
+    }
+
     private fun commitToUserPrefs() {
         val ctx = requireContext()
 
-        // Basic
         UserPrefs.putInt(ctx, UserPrefs.KEY_AGE, OnboardingStore.getInt(ctx, "age", 0))
         UserPrefs.putString(ctx, UserPrefs.KEY_GENDER, OnboardingStore.getString(ctx, "gender"))
         UserPrefs.putInt(ctx, UserPrefs.KEY_HEIGHT_CM, OnboardingStore.getInt(ctx, "height_cm", 0))
         UserPrefs.putInt(ctx, UserPrefs.KEY_WEIGHT_KG, OnboardingStore.getInt(ctx, "weight_kg", 0))
+        UserPrefs.putInt(ctx, UserPrefs.KEY_TARGET_WEIGHT_KG, OnboardingStore.getInt(ctx, KEY_TARGET_WEIGHT, 0))
 
-        // Health
-        UserPrefs.putString(ctx, UserPrefs.KEY_HAS_INJURY, OnboardingStore.getString(ctx, "has_injury"))
-        UserPrefs.putString(ctx, UserPrefs.KEY_HAS_MEDICAL_CONDITION, OnboardingStore.getString(ctx, "has_medical_condition"))
+        // Keep compatibility summary fields if needed
+        UserPrefs.putString(ctx, UserPrefs.KEY_HAS_INJURY, buildHealthSummary())
+        UserPrefs.putString(
+            ctx,
+            UserPrefs.KEY_HAS_MEDICAL_CONDITION,
+            if (OnboardingStore.getBoolean(ctx, "joint_problems", false) ||
+                OnboardingStore.getBoolean(ctx, "short_breath", false)
+            ) "Yes" else "No"
+        )
 
-        // Background
         UserPrefs.putString(ctx, UserPrefs.KEY_FITNESS_LIFESTYLE, OnboardingStore.getString(ctx, KEY_LIFESTYLE))
         UserPrefs.putInt(ctx, UserPrefs.KEY_FITNESS_LIFESTYLE_INDEX, OnboardingStore.getInt(ctx, "fitness_lifestyle_index", 0))
         UserPrefs.putString(ctx, UserPrefs.KEY_FITNESS_LEVEL, OnboardingStore.getString(ctx, KEY_LEVEL))
         UserPrefs.putInt(ctx, UserPrefs.KEY_FITNESS_LEVEL_INDEX, OnboardingStore.getInt(ctx, "fitness_level_index", 0))
 
-        // Environment
-        UserPrefs.putString(ctx, UserPrefs.KEY_ENVIRONMENT, OnboardingStore.getString(ctx, KEY_ENVIRONMENT))
+        // Environment is now multi-select
+        UserPrefs.putStringSet(ctx, UserPrefs.KEY_ENVIRONMENT, OnboardingStore.getStringSet(ctx, KEY_ENVIRONMENT))
 
-        // Goals
         UserPrefs.putStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET, OnboardingStore.getStringSet(ctx, KEY_FITNESS_GOAL))
         UserPrefs.putString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, OnboardingStore.getString(ctx, KEY_BODYCOMP_GOAL))
 
-        // Diet
         UserPrefs.putString(ctx, UserPrefs.KEY_DIETARY_TYPE, OnboardingStore.getString(ctx, KEY_DIET))
-
-        // Programs
         UserPrefs.putStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS, OnboardingStore.getStringSet(ctx, KEY_PROGRAMS))
 
-        // Mark done
         UserPrefs.setOnboardingDone(ctx, true)
     }
 
@@ -185,17 +193,24 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         // PG1.5
         reqInt("height_cm", "PG1.5 - Height")
         reqInt("weight_kg", "PG1.5 - Weight")
+        reqInt(KEY_TARGET_WEIGHT, "PG1.5 - Target Weight")
 
-        // PG2
-        reqStr("has_injury", "PG2 - Injury status")
-        reqStr("has_medical_condition", "PG2 - Medical condition status")
+        // PG2 - at least one explicit status
+        val hasHealthChoice =
+            OnboardingStore.getBoolean(ctx, "health_none", false) ||
+                    OnboardingStore.getBoolean(ctx, "upper_body_injury", false) ||
+                    OnboardingStore.getBoolean(ctx, "lower_body_injury", false) ||
+                    OnboardingStore.getBoolean(ctx, "joint_problems", false) ||
+                    OnboardingStore.getBoolean(ctx, "short_breath", false)
+
+        if (!hasHealthChoice) missing += "PG2 - Health status"
 
         // PG3
         reqStr(KEY_LIFESTYLE, "PG3 - Daily lifestyle")
         reqStr(KEY_LEVEL, "PG3 - Fitness level")
 
-        // PG4
-        reqStr(KEY_ENVIRONMENT, "PG4 - Workout environment")
+        // PG4 is now multi-select
+        reqSet(KEY_ENVIRONMENT, "PG4 - Workout environment")
 
         // PG5
         reqSet(KEY_FITNESS_GOAL, "PG5 - Fitness goal")
@@ -210,5 +225,15 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         reqSet(KEY_PROGRAMS, "PG8 - Program selection")
 
         return missing
+    }
+
+    private fun String.prettyLabel(): String {
+        return this
+            .replace('_', ' ')
+            .lowercase()
+            .split(" ")
+            .joinToString(" ") { word ->
+                word.replaceFirstChar { c -> c.uppercase() }
+            }
     }
 }

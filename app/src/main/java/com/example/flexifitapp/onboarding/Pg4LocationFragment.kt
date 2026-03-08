@@ -22,7 +22,7 @@ class Pg4LocationFragment : BaseOnboardingFragment(
             OptionTile("outdoor", "Outdoor", R.drawable.ic_home)
         )
 
-        val preselectedId = OnboardingStore.getString(requireContext(), KEY_ENVIRONMENT)
+        val preselected = OnboardingStore.getStringSet(requireContext(), KEY_ENVIRONMENT)
 
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -33,21 +33,21 @@ class Pg4LocationFragment : BaseOnboardingFragment(
         }
 
         rv.layoutManager = glm
-        rv.adapter = OptionTileAdapter(
+        rv.adapter = MultiSelectTileAdapter(
             items = tiles,
-            initiallySelectedId = preselectedId
-        ) { selected ->
-            // ✅ autosave (store the ID)
-            OnboardingStore.putString(requireContext(), KEY_ENVIRONMENT, selected.id)
-
-            // optional: enable next
-            // setNextEnabled(true)
+            preselected = preselected
+        ) { selectedIds ->
+            OnboardingStore.putStringSet(requireContext(), KEY_ENVIRONMENT, selectedIds)
         }
     }
 
     override fun validateBeforeNext(): String? {
-        val env = OnboardingStore.getString(requireContext(), KEY_ENVIRONMENT)
-        return if (env.isBlank()) "Please select where you will work out (Home / Gym / Outdoor)." else null
+        val selected = OnboardingStore.getStringSet(requireContext(), KEY_ENVIRONMENT)
+        return if (selected.isEmpty()) {
+            "Please select at least one workout environment."
+        } else {
+            null
+        }
     }
 
     companion object {

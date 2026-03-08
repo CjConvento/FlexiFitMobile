@@ -1,15 +1,14 @@
 package com.example.flexifitapp
 
 import android.content.Context
-import com.example.flexifitapp.BuildConfig
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    @Volatile private var retrofit: Retrofit? = null
+    @Volatile
+    private var retrofit: Retrofit? = null
 
     fun get(ctx: Context): Retrofit {
         return retrofit ?: synchronized(this) {
@@ -21,27 +20,27 @@ object ApiClient {
         get(ctx).create(ProfileApi::class.java)
 
     private fun build(ctx: Context): Retrofit {
-
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.HEADERS
         }
 
         val clientBuilder = OkHttpClient.Builder()
 
-        // add logging only in debug mode
         if (BuildConfig.DEBUG) {
             clientBuilder.addInterceptor(logging)
         }
 
         clientBuilder.addInterceptor { chain ->
             val original = chain.request()
-            val token = TokenStore.getIdToken(ctx)
+            val token = UserPrefs.getToken(ctx)
 
-            val req = if (!token.isNullOrBlank()) {
+            val req = if (token.isNotBlank()) {
                 original.newBuilder()
                     .header("Authorization", "Bearer $token")
                     .build()
-            } else original
+            } else {
+                original
+            }
 
             chain.proceed(req)
         }
@@ -54,5 +53,4 @@ object ApiClient {
             .client(client)
             .build()
     }
-
 }

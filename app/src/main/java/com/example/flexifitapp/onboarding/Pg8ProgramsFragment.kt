@@ -23,13 +23,11 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
 
         rv = view.findViewById(R.id.rvprogramgoal)
 
-        // 1) Restore selection
         selectedPrograms.clear()
         selectedPrograms.addAll(
-            OnboardingStore.getStringSet(requireContext(), "selected_programs")
+            OnboardingStore.getStringSet(requireContext(), KEY_SELECTED_PROGRAMS)
         )
 
-        // 2) Build inputs
         val inputs = ProgramInputs(
             goals = loadGoals(),
             locations = loadLocations(),
@@ -37,25 +35,24 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
             safety = loadSafety()
         )
 
-        // 3) Generate programs
         val programs = ProgramRuleEngine.generate(inputs)
 
-        // Optional edge: no generated programs
         if (programs.isEmpty()) {
-            showBannerIfExists(view, "No programs generated. Please go back and select goals and locations.")
+            showBannerIfExists(
+                view,
+                "No programs generated. Please go back and complete your goals, location, and health selections."
+            )
         }
 
-        // 4) Joint problem rule
         if (inputs.safety == HealthSafety.JOINT_PROBLEM) {
             selectedPrograms.clear()
             selectedPrograms.addAll(programs)
-            OnboardingStore.putStringSet(requireContext(), "selected_programs", selectedPrograms)
+            OnboardingStore.putStringSet(requireContext(), KEY_SELECTED_PROGRAMS, selectedPrograms)
             showBannerIfExists(view, "Since you have joint problems, Rehab Program is required.")
         } else if (inputs.safety == HealthSafety.SHORT_BREATH) {
             showBannerIfExists(view, "Short breath selected: choose intensity level carefully.")
         }
 
-        // 5) RecyclerView setup (✅ GRID)
         rv.layoutManager = GridLayoutManager(requireContext(), 2)
 
         adapter = ProgramCardAdapter(
@@ -63,7 +60,7 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
             selected = selectedPrograms,
             onToggle = { programName, isSelected ->
                 if (isSelected) selectedPrograms.add(programName) else selectedPrograms.remove(programName)
-                OnboardingStore.putStringSet(requireContext(), "selected_programs", selectedPrograms)
+                OnboardingStore.putStringSet(requireContext(), KEY_SELECTED_PROGRAMS, selectedPrograms)
             },
             isLocked = (inputs.safety == HealthSafety.JOINT_PROBLEM)
         )
@@ -76,29 +73,36 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
         return when {
             ProgramRuleEngine.generate(
                 ProgramInputs(loadGoals(), loadLocations(), loadLevel(), loadSafety())
-            ).isEmpty() -> "No programs available. Please go back and select goals and locations."
+            ).isEmpty() -> "No programs available. Please go back and complete your goals, location, and health selections."
 
             selectedPrograms.isEmpty() -> "Please select at least one program to proceed."
             else -> null
         }
     }
 
-    // ------- Loaders -------
-
     private fun loadSafety(): HealthSafety {
-        val raw = OnboardingStore.getString(requireContext(), "health_safety").trim()
-        return when (raw) {
-            "UPPER_INJURY" -> HealthSafety.UPPER_INJURY
-            "LOWER_INJURY" -> HealthSafety.LOWER_INJURY
-            "JOINT_PROBLEM" -> HealthSafety.JOINT_PROBLEM
-            "SHORT_BREATH" -> HealthSafety.SHORT_BREATH
+        val ctx = requireContext()
+
+        val none = OnboardingStore.getBoolean(ctx, "health_none", false)
+        val joint = OnboardingStore.getBoolean(ctx, "joint_problems", false)
+        val shortBreath = OnboardingStore.getBoolean(ctx, "short_breath", false)
+        val upper = OnboardingStore.getBoolean(ctx, "upper_body_injury", false)
+        val lower = OnboardingStore.getBoolean(ctx, "lower_body_injury", false)
+
+        return when {
+            none -> HealthSafety.NONE
+            joint -> HealthSafety.JOINT_PROBLEM
+            shortBreath -> HealthSafety.SHORT_BREATH
+            upper -> HealthSafety.UPPER_INJURY
+            lower -> HealthSafety.LOWER_INJURY
             else -> HealthSafety.NONE
         }
     }
 
     private fun loadLevel(): Level {
         val raw = OnboardingStore.getString(requireContext(), "fitness_level").trim()
-        return when (raw) {
+
+        return when (raw.uppercase()) {
             "BEGINNER" -> Level.BEGINNER
             "INTERMEDIATE" -> Level.INTERMEDIATE
             "ADVANCED" -> Level.ADVANCED
@@ -107,26 +111,28 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
     }
 
     private fun loadGoals(): Set<Goal> {
-        val raw = OnboardingStore.getStringSet(requireContext(), "selected_goals")
+        val raw = OnboardingStore.getStringSet(requireContext(), "fitness_goal")
         if (raw.isEmpty()) return emptySet()
+
         return raw.mapNotNull { s ->
-            when (s) {
-                "CARDIO" -> Goal.CARDIO
-                "MUSCLE_GAIN" -> Goal.MUSCLE_GAIN
-                "REHAB" -> Goal.REHAB
+            when (s.trim().lowercase()) {
+                "cardio" -> Goal.CARDIO
+                "muscle_gain" -> Goal.MUSCLE_GAIN
+                "rehab" -> Goal.REHAB
                 else -> null
             }
         }.toSet()
     }
 
     private fun loadLocations(): Set<Location> {
-        val raw = OnboardingStore.getStringSet(requireContext(), "selected_locations")
+        val raw = OnboardingStore.getStringSet(requireContext(), "environment")
         if (raw.isEmpty()) return emptySet()
+
         return raw.mapNotNull { s ->
-            when (s) {
-                "GYM" -> Location.GYM
-                "HOME" -> Location.HOME
-                "OUTDOOR" -> Location.OUTDOOR
+            when (s.trim().lowercase()) {
+                "gym" -> Location.GYM
+                "home" -> Location.HOME
+                "outdoor" -> Location.OUTDOOR
                 else -> null
             }
         }.toSet()
@@ -140,5 +146,9 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
         }
+    }
+
+    companion object {
+        private const val KEY_SELECTED_PROGRAMS = "selected_programs"
     }
 }

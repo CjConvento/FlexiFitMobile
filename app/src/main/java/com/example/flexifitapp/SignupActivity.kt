@@ -24,7 +24,6 @@ class SignupActivity : AppCompatActivity() {
 
     // Views
     private lateinit var etName: TextInputEditText
-    private lateinit var etAddress: TextInputEditText
     private lateinit var etEmail: TextInputEditText
     private lateinit var etUsername: TextInputEditText
     private lateinit var etPassword: TextInputEditText
@@ -40,9 +39,8 @@ class SignupActivity : AppCompatActivity() {
     private val PREF_NAME = "flexifit_prefs"
     private val KEY_DARK_MODE = "dark_mode"
 
-    // Pending signup data (for later bootstrap to backend, optional)
+    // Pending signup data
     private val KEY_PENDING_NAME = "pending_name"
-    private val KEY_PENDING_ADDRESS = "pending_address"
     private val KEY_PENDING_USERNAME = "pending_username"
     private val KEY_PENDING_EMAIL = "pending_email"
     private val KEY_PENDING_CREATED_AT = "pending_created_at"
@@ -50,7 +48,6 @@ class SignupActivity : AppCompatActivity() {
     private var isSubmitting = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Theme first
         prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
         applyThemeFromPrefs()
 
@@ -59,14 +56,11 @@ class SignupActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
 
-        // Bind views
         etName = findViewById(R.id.signup_name)
-        etAddress = findViewById(R.id.signup_address)
         etEmail = findViewById(R.id.signup_email)
         etUsername = findViewById(R.id.signup_username)
         etPassword = findViewById(R.id.signup_password)
@@ -74,7 +68,6 @@ class SignupActivity : AppCompatActivity() {
         btnSignup = findViewById(R.id.signup_button)
         tvLoginRedirect = findViewById(R.id.loginRedirectText)
 
-        // Prefill email if passed from other screen
         intent.getStringExtra("email")?.let { etEmail.setText(it) }
 
         btnSignup.setOnClickListener {
@@ -90,19 +83,15 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
-    // -------------------- Signup flow --------------------
-
     private fun createAccount() {
         val name = safeText(etName)
-        val address = safeText(etAddress)
         val email = safeText(etEmail)
         val username = safeText(etUsername)
         val password = safeText(etPassword)
 
         setLoading(true)
 
-        // Save pending data locally (optional)
-        savePendingSignup(name, address, username, email)
+        savePendingSignup(name, username, email)
 
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -137,7 +126,6 @@ class SignupActivity : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
 
-                // IMPORTANT: prevent unverified auto-login
                 auth.signOut()
 
                 Toast.makeText(
@@ -146,7 +134,6 @@ class SignupActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
 
-                // Go to verification screen
                 val intent = Intent(this, EmailVerificationActivity::class.java).apply {
                     putExtra("email", email)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -159,7 +146,6 @@ class SignupActivity : AppCompatActivity() {
     private fun handleSignupError(ex: Exception?) {
         when (ex) {
             is FirebaseAuthUserCollisionException -> {
-                // Email already used
                 etEmail.error = "This email is already registered."
                 Toast.makeText(this, "Email already in use. Try logging in.", Toast.LENGTH_LONG).show()
             }
@@ -173,41 +159,34 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
-    private fun savePendingSignup(name: String, address: String, username: String, email: String) {
+    private fun savePendingSignup(name: String, username: String, email: String) {
         prefs.edit()
             .putString(KEY_PENDING_NAME, name)
-            .putString(KEY_PENDING_ADDRESS, address)
             .putString(KEY_PENDING_USERNAME, username)
             .putString(KEY_PENDING_EMAIL, email)
             .putLong(KEY_PENDING_CREATED_AT, System.currentTimeMillis())
             .apply()
     }
 
-    // -------------------- Validation --------------------
-
     private fun validateAll(): Boolean {
         val okName = validateName()
-        val okAddr = validateAddress()
         val okEmail = validateEmail()
         val okUser = validateUsername()
         val okPass = validatePassword()
-        return okName && okAddr && okEmail && okUser && okPass
+        return okName && okEmail && okUser && okPass
     }
 
     private fun validateName(): Boolean {
         val v = safeText(etName)
         return when {
-            v.isEmpty() -> { etName.error = "Name cannot be empty"; false }
-            v.length < 2 -> { etName.error = "Name is too short"; false }
-            else -> true
-        }
-    }
-
-    private fun validateAddress(): Boolean {
-        val v = safeText(etAddress)
-        return when {
-            v.isEmpty() -> { etAddress.error = "Address cannot be empty"; false }
-            v.length < 4 -> { etAddress.error = "Address is too short"; false }
+            v.isEmpty() -> {
+                etName.error = "Name cannot be empty"
+                false
+            }
+            v.length < 2 -> {
+                etName.error = "Name is too short"
+                false
+            }
             else -> true
         }
     }
@@ -215,8 +194,14 @@ class SignupActivity : AppCompatActivity() {
     private fun validateEmail(): Boolean {
         val v = safeText(etEmail)
         return when {
-            v.isEmpty() -> { etEmail.error = "Email cannot be empty"; false }
-            !Patterns.EMAIL_ADDRESS.matcher(v).matches() -> { etEmail.error = "Invalid email format"; false }
+            v.isEmpty() -> {
+                etEmail.error = "Email cannot be empty"
+                false
+            }
+            !Patterns.EMAIL_ADDRESS.matcher(v).matches() -> {
+                etEmail.error = "Invalid email format"
+                false
+            }
             else -> true
         }
     }
@@ -224,9 +209,18 @@ class SignupActivity : AppCompatActivity() {
     private fun validateUsername(): Boolean {
         val v = safeText(etUsername)
         return when {
-            v.isEmpty() -> { etUsername.error = "Username cannot be empty"; false }
-            v.contains(" ") -> { etUsername.error = "Username cannot have spaces"; false }
-            v.length < 2 -> { etUsername.error = "Username must be at least 2 characters"; false }
+            v.isEmpty() -> {
+                etUsername.error = "Username cannot be empty"
+                false
+            }
+            v.contains(" ") -> {
+                etUsername.error = "Username cannot have spaces"
+                false
+            }
+            v.length < 2 -> {
+                etUsername.error = "Username must be at least 2 characters"
+                false
+            }
             else -> true
         }
     }
@@ -234,15 +228,23 @@ class SignupActivity : AppCompatActivity() {
     private fun validatePassword(): Boolean {
         val v = safeText(etPassword)
         return when {
-            v.isEmpty() -> { tilPassword.error = "Password cannot be empty"; false }
-            v.length < 6 -> { tilPassword.error = "Password must be at least 6 characters"; false }
-            else -> { tilPassword.error = null; true }
+            v.isEmpty() -> {
+                tilPassword.error = "Password cannot be empty"
+                false
+            }
+            v.length < 6 -> {
+                tilPassword.error = "Password must be at least 6 characters"
+                false
+            }
+            else -> {
+                tilPassword.error = null
+                true
+            }
         }
     }
 
     private fun clearErrors() {
         etName.error = null
-        etAddress.error = null
         etEmail.error = null
         etUsername.error = null
         tilPassword.error = null
@@ -252,21 +254,16 @@ class SignupActivity : AppCompatActivity() {
         return et.text?.toString()?.trim().orEmpty()
     }
 
-    // -------------------- Loading / UX --------------------
-
     private fun setLoading(loading: Boolean) {
         isSubmitting = loading
         btnSignup.isEnabled = !loading
         btnSignup.text = if (loading) "Creating..." else "Sign Up"
 
-        // Optional: disable all inputs while submitting
         setEnabled(etName, !loading)
-        setEnabled(etAddress, !loading)
         setEnabled(etEmail, !loading)
         setEnabled(etUsername, !loading)
         setEnabled(etPassword, !loading)
 
-        // Optional: if you have progress bar id "progressBar"
         val pb = findViewById<View?>(R.id.loadingOverlay)
         pb?.visibility = if (loading) View.VISIBLE else View.GONE
     }
@@ -277,8 +274,6 @@ class SignupActivity : AppCompatActivity() {
         view.isFocusable = enabled
         view.isFocusableInTouchMode = enabled
     }
-
-    // -------------------- Theme menu --------------------
 
     private fun applyThemeFromPrefs() {
         val isDark = prefs.getBoolean(KEY_DARK_MODE, false)
@@ -291,7 +286,10 @@ class SignupActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_theme_switcher, menu)
         val item = menu.findItem(R.id.action_toggle_theme)
         val isDark = prefs.getBoolean(KEY_DARK_MODE, false)
-        item.icon = ContextCompat.getDrawable(this, if (isDark) R.drawable.ic_sun else R.drawable.ic_moon)
+        item.icon = ContextCompat.getDrawable(
+            this,
+            if (isDark) R.drawable.ic_sun else R.drawable.ic_moon
+        )
         return true
     }
 
@@ -309,4 +307,3 @@ class SignupActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 }
-

@@ -20,6 +20,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -54,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
         val current = mAuth.currentUser
         if (current != null && current.isEmailVerified) {
             setLoginLoading(true)
-            tokenThenBootstrap(current, showTokenDialog = false) // auto-login; no popup
+            tokenThenBootstrap(current, showTokenDialog = false)
         }
     }
 
@@ -180,33 +181,113 @@ class LoginActivity : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
 
-                // showTokenDialog = true so you can SEE the token on screen
                 tokenThenBootstrap(user, showTokenDialog = true)
             }
     }
 
-    /**
-     * Gets Firebase ID token, saves it, (optionally) shows it on screen, then calls backend bootstrap.
-     */
     private fun tokenThenBootstrap(user: FirebaseUser, showTokenDialog: Boolean) {
         user.getIdToken(true).addOnCompleteListener { idTask ->
-            val token = idTask.result?.token
+            val firebaseToken = idTask.result?.token
 
-            if (!idTask.isSuccessful || token.isNullOrBlank()) {
+            if (!idTask.isSuccessful || firebaseToken.isNullOrBlank()) {
                 setLoginLoading(false)
-                Toast.makeText(this, "Token error: ${idTask.exception?.message ?: "Unknown"}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Token error: ${idTask.exception?.message ?: "Unknown error"}",
+                    Toast.LENGTH_LONG
+                ).show()
                 return@addOnCompleteListener
             }
 
-            // Save for Retrofit interceptor/header usage
-            TokenStore.saveIdToken(this, token)
-
             if (showTokenDialog) {
-                showTokenDialog(token)
+                showTokenDialog(firebaseToken)
             }
 
-            lifecycleScope.launch {
-                callBootstrapAndRoute()
+            UserPrefs.putString(this, UserPrefs.KEY_USER_EMAIL, user.email ?: "")
+
+            val existingName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
+            val firebaseName = user.displayName ?: ""
+            UserPrefs.putString(
+                this,
+                UserPrefs.KEY_NAME,
+                if (firebaseName.isNotBlank()) firebaseName else existingName
+            )
+
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { fcmToken ->
+                    loginToBackendAndBootstrap(firebaseToken, fcmToken)
+                }
+                .addOnFailureListener {
+                    loginToBackendAndBootstrap(firebaseToken, null)
+                }
+        }
+    }
+
+    private fun loginToBackendAndBootstrap(firebaseToken: String, fcmToken: String?) {
+        lifecycleScope.launch {
+            try {
+                val api = ApiClient.get(this@LoginActivity)
+                    .create(ApiService::class.java)
+
+                val req = LoginRequest(
+                    firebaseIdToken = firebaseToken,
+                    fcmToken = fcmToken
+                )
+
+                val res = api.login(req)
+
+                if (!res.isSuccessful || res.body() == null) {
+                    setLoginLoading(false)
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Backend login failed: ${res.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                val auth = res.body()!!
+
+                UserPrefs.saveAuth(
+                    this@LoginActivity,
+                    auth.token,
+                    auth.userId,
+                    auth.role,
+                    auth.status,
+                    auth.isVerified
+                )
+
+                val bootRes = api.bootstrap()
+
+                if (!bootRes.isSuccessful || bootRes.body() == null) {
+                    setLoginLoading(false)
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Bootstrap failed: ${bootRes.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                val body = bootRes.body()!!
+
+                if (body.userId != null) {
+                    UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
+                }
+
+                if (body.profileComplete) {
+                    goToMain()
+                } else {
+                    goToOnboard()
+                }
+
+            } catch (e: Exception) {
+                setLoginLoading(false)
+                Toast.makeText(
+                    this@LoginActivity,
+                    e.message ?: "Unknown error",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -233,44 +314,6 @@ class LoginActivity : AppCompatActivity() {
             .show()
     }
 
-    private suspend fun callBootstrapAndRoute() {
-        val api = ApiClient.get(this).create(MobileApi::class.java)
-
-        val body = BootstrapRequest(
-            username = null,
-            fullName = null,
-            address = null,
-            fcmToken = null
-        )
-
-        try {
-            val res = api.bootstrap(body)
-
-            if (res.code() == 503) {
-                setLoginLoading(false)
-                Toast.makeText(
-                    this,
-                    "Server temporarily unavailable (503). Try again later.",
-                    Toast.LENGTH_LONG
-                ).show()
-                return
-            }
-
-            if (!res.isSuccessful || res.body() == null) {
-                setLoginLoading(false)
-                Toast.makeText(this, "Backend error: ${res.code()}", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-            val complete = res.body()!!.profileComplete
-            if (complete) goToMain() else goToOnboard()
-
-        } catch (t: Throwable) {
-            setLoginLoading(false)
-            Toast.makeText(this, "API failed: ${t.message}", Toast.LENGTH_LONG).show()
-        }
-    }
-
     private fun setLoginLoading(loading: Boolean) {
         loginButton.isEnabled = !loading
         loginButton.text = if (loading) "Loading..." else "Login"
@@ -294,7 +337,10 @@ class LoginActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_theme_switcher, menu)
         val item = menu.findItem(R.id.action_toggle_theme)
         val isDark = sharedPreferences.getBoolean(KEY_DARK_MODE, false)
-        item.icon = ContextCompat.getDrawable(this, if (isDark) R.drawable.ic_sun else R.drawable.ic_moon)
+        item.icon = ContextCompat.getDrawable(
+            this,
+            if (isDark) R.drawable.ic_sun else R.drawable.ic_moon
+        )
         return true
     }
 

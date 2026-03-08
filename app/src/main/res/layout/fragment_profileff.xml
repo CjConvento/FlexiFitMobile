@@ -39,7 +39,6 @@
                         android:textColor="@color/textSecondary"
                         android:text="Your personal details and fitness information"/>
 
-
                     <!-- Sections -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
@@ -235,150 +234,216 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Basic Information -->
+                    <!-- User Management -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardUserManagement"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="16dp"
-                        app:strokeWidth="0dp"
-                        app:cardElevation="8dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="7dp"
+                        app:cardBackgroundColor="#EEF3FA"
+                        app:cardCornerRadius="22dp"
+                        app:cardElevation="4dp"
                         app:cardUseCompatPadding="true"
-                        app:strokeColor="@android:color/black">
+                        app:strokeWidth="0dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="14dp"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
+                            <TextView
+                                android:id="@+id/tvUserManagementTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="User Management"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <!-- Personal Data -->
                             <LinearLayout
+                                android:id="@+id/rowPersonalData"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
                                 android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Basic Information"
-                                    android:textColor="@color/textPrimary"
-                                    android:textStyle="bold"/>
+                                android:minHeight="48dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="6dp">
 
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@drawable/bg_edit"
-                                    android:contentDescription="Edit"/>
+                                    android:src="@drawable/ic_profile"
+                                    android:contentDescription="Personal Data" />
 
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Personal Data"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@drawable/ic_chevron_right"
+                                    android:contentDescription="Go" />
                             </LinearLayout>
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <!-- Workout Data -->
+                            <LinearLayout
+                                android:id="@+id/rowWorkoutData"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Email: baybum@example.com&#10;Gender: Male&#10;Age: 22"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:minHeight="48dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="6dp">
 
-                    <!-- Body Metrics -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="9dp"
-                        app:strokeWidth="0dp"
-                        app:cardElevation="8dp"
-                        app:cardUseCompatPadding="true">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_workout"
+                                    android:contentDescription="Workout Data" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="14dp"
-                            android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Workout Data"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@drawable/ic_chevron_right"
+                                    android:contentDescription="Go" />
+                            </LinearLayout>
+
+                            <!-- Nutritional Data -->
+                            <LinearLayout
+                                android:id="@+id/rowNutritionData"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Body Metrics"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"/>
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:minHeight="48dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="6dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_nutrition"
+                                    android:contentDescription="Nutritional Data" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Nutritional Data"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@drawable/ic_chevron_right"
+                                    android:contentDescription="Go" />
+                            </LinearLayout>
+
+                            <!-- Achievements -->
+                            <LinearLayout
+                                android:id="@+id/rowAchievements"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:textColor="@color/textPrimary"
-                                android:text="Height: 170 cm&#10;Current Weight: 68 kg&#10;BMI: 23.5&#10;BMI Category: Normal"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:minHeight="48dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="6dp">
 
-                    <!-- Personal Goals -->
-                    <com.google.android.material.card.MaterialCardView
-                        xmlns:android="http://schemas.android.com/apk/res/android"
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="8dp"
-                        app:cardUseCompatPadding="true"
-                        app:strokeWidth="0dp"
-                        app:strokeColor="@android:color/black">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_achievements"
+                                    android:contentDescription="Achievements" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="14dp"
-                            android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Achievements"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@drawable/ic_chevron_right"
+                                    android:contentDescription="Go" />
+                            </LinearLayout>
+
+                            <!-- Track Progress -->
+                            <LinearLayout
+                                android:id="@+id/rowTrackProgress"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Personal Goals"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"/>
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:minHeight="48dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="6dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:textColor="@color/textPrimary"
-                                android:text="Fitness Goal: Muscle Gain, Lose Fat&#10;Body Composition Goal: Lose Weight"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_progress_tracking"
+                                    android:contentDescription="Track Progress" />
 
-                    <!-- Fitness Level -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="8dp"
-                        app:cardUseCompatPadding="true"
-                        app:strokeWidth="0dp"
-                        app:strokeColor="@android:color/black">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:text="Track Progress"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="14dp"
-                            android:orientation="vertical">
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:src="@drawable/ic_chevron_right"
+                                    android:contentDescription="Go" />
+                            </LinearLayout>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Fitness Level"
-                                android:textColor="@color/textPrimary"
-                                android:textStyle="bold"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:textColor="@color/textPrimary"
-                                android:text="Current Level: Intermediate"/>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
+
+
 
             </com.google.android.material.card.MaterialCardView>
 
