@@ -27,14 +27,8 @@ interface ApiService {
         @Query("userId") userId: Int
     ): Response<ProfileStatusResponse>
 
-
-    // =============================
-    // WORKOUT MODULE
-    // =============================
-
     @GET("api/workout/current-session")
     suspend fun getCurrentWorkoutSession(
         @Query("userId") userId: Int
     ): Response<WorkoutSessionResponse>
-
 }

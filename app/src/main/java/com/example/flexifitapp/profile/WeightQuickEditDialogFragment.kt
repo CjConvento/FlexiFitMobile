@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.flexifitapp.R
 import com.example.flexifitapp.UserPrefs
+import com.example.flexifitapp.profile.AchievementEngine
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
@@ -105,13 +106,25 @@ class WeightQuickEditDialogFragment :
                 return@setOnClickListener
             }
 
-            UserPrefs.putInt(requireContext(), UserPrefs.KEY_WEIGHT_KG, newWeight)
+            val ctx = requireContext()
+
+            // save weight
+            UserPrefs.putInt(ctx, UserPrefs.KEY_WEIGHT_KG, newWeight)
+
+            // optional tracking fields
+            UserPrefs.putInt(ctx, UserPrefs.KEY_LATEST_WEIGHT_KG, newWeight)
+            UserPrefs.putBool(ctx, UserPrefs.KEY_HAS_WEIGHT_LOG, true)
+
+            // update achievements
+            AchievementEngine.updateAchievements(ctx)
+
             parentFragmentManager.setFragmentResult(
                 REQUEST_KEY,
                 Bundle().apply {
                     putInt(BUNDLE_NEW_WEIGHT, newWeight)
                 }
             )
+
             dismiss()
         }
     }

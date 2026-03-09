@@ -33,7 +33,7 @@
                 android:contentDescription="Close"
                 android:focusable="true"
                 android:padding="2dp"
-                android:src="@drawable/ic_chevron_left" />
+                android:src="@drawable/baseline_arrow_left_ios_new_24" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -279,7 +279,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@drawable/ic_profile"
+                                    android:src="@drawable/ic_nav_profile"
                                     android:contentDescription="Personal Data" />
 
                                 <TextView
@@ -294,7 +294,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/baseline_arrow_right_ios_new_24"
                                     android:contentDescription="Go" />
                             </LinearLayout>
 
@@ -329,7 +329,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/baseline_arrow_right_ios_new_24"
                                     android:contentDescription="Go" />
                             </LinearLayout>
 
@@ -349,7 +349,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@drawable/ic_nutrition"
+                                    android:src="@drawable/ic_foods"
                                     android:contentDescription="Nutritional Data" />
 
                                 <TextView
@@ -364,7 +364,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/baseline_arrow_right_ios_new_24"
                                     android:contentDescription="Go" />
                             </LinearLayout>
 
@@ -384,7 +384,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@drawable/ic_achievements"
+                                    android:src="@drawable/document"
                                     android:contentDescription="Achievements" />
 
                                 <TextView
@@ -399,7 +399,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/baseline_arrow_right_ios_new_24"
                                     android:contentDescription="Go" />
                             </LinearLayout>
 
@@ -419,7 +419,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@drawable/ic_progress_tracking"
+                                    android:src="@drawable/ic_nav_progress"
                                     android:contentDescription="Track Progress" />
 
                                 <TextView
@@ -434,7 +434,7 @@
                                 <ImageView
                                     android:layout_width="18dp"
                                     android:layout_height="18dp"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/baseline_arrow_right_ios_new_24"
                                     android:contentDescription="Go" />
                             </LinearLayout>
 

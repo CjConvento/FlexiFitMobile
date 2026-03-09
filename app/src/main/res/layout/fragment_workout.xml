@@ -20,7 +20,6 @@
             android:contentDescription="Back"
             android:padding="10dp"
             android:src="@drawable/baseline_arrow_left_ios_new_24"
-            android:tint="#6F8FCB"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

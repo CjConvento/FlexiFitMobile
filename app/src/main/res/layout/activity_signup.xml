@@ -31,18 +31,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSignup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="30dp"
+                    app:cardBackgroundColor="@color/surface"
                     app:cardCornerRadius="30dp"
                     app:cardElevation="8dp"
                     app:cardUseCompatPadding="true"
-                    app:cardBackgroundColor="@color/surface"
                     app:strokeColor="@color/colorPrimary"
                     app:strokeWidth="0dp">
 
@@ -58,9 +58,9 @@
                             android:layout_height="wrap_content"
                             android:text="Sign Up"
                             android:textAlignment="center"
+                            android:textColor="@color/aut_color"
                             android:textSize="28sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/aut_color" />
+                            android:textStyle="bold" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -74,13 +74,13 @@
                                 android:id="@+id/signup_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:hint="Name"
                                 android:background="@android:color/transparent"
-                                android:textColor="@color/textPrimary"
-                                android:textColorHint="@color/textPrimary"
                                 android:drawableStart="@drawable/baseline_person_pin_24"
                                 android:drawableTint="@color/colorPrimary"
-                                android:padding="8dp" />
+                                android:hint="Name"
+                                android:padding="8dp"
+                                android:textColor="@color/textPrimary"
+                                android:textColorHint="@color/textPrimary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -95,14 +95,14 @@
                                 android:id="@+id/signup_email"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:hint="Email"
-                                android:inputType="textEmailAddress"
                                 android:background="@android:color/transparent"
-                                android:textColor="@color/textPrimary"
-                                android:textColorHint="@color/textPrimary"
                                 android:drawableStart="@drawable/baseline_email_24"
                                 android:drawableTint="@color/colorPrimary"
-                                android:padding="8dp" />
+                                android:hint="Email"
+                                android:inputType="textEmailAddress"
+                                android:padding="8dp"
+                                android:textColor="@color/textPrimary"
+                                android:textColorHint="@color/textPrimary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -117,13 +117,13 @@
                                 android:id="@+id/signup_username"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:hint="Username"
                                 android:background="@android:color/transparent"
-                                android:textColor="@color/textPrimary"
-                                android:textColorHint="@color/textPrimary"
                                 android:drawableStart="@drawable/baseline_person_pin_24"
                                 android:drawableTint="@color/colorPrimary"
-                                android:padding="8dp" />
+                                android:hint="Username"
+                                android:padding="8dp"
+                                android:textColor="@color/textPrimary"
+                                android:textColorHint="@color/textPrimary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -135,21 +135,21 @@
                             android:paddingHorizontal="8dp"
                             app:endIconMode="password_toggle"
                             app:endIconTint="@color/colorPrimary"
-                            app:hintTextColor="@color/textPrimary"
-                            app:errorIconDrawable="@null">
+                            app:errorIconDrawable="@null"
+                            app:hintTextColor="@color/textPrimary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/signup_password"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:hint="Password"
-                                android:inputType="textPassword"
                                 android:background="@android:color/transparent"
-                                android:textColor="@color/textPrimary"
-                                android:textColorHint="@color/textPrimary"
                                 android:drawableStart="@drawable/baseline_lock_24"
                                 android:drawableTint="@color/colorPrimary"
-                                android:padding="8dp" />
+                                android:hint="Password"
+                                android:inputType="textPassword"
+                                android:padding="8dp"
+                                android:textColor="@color/textPrimary"
+                                android:textColorHint="@color/textPrimary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
@@ -158,12 +158,67 @@
                             android:layout_width="match_parent"
                             android:layout_height="56dp"
                             android:layout_marginTop="30dp"
+                            android:background="@drawable/btn_gradient"
                             android:text="Sign Up"
                             android:textAllCaps="false"
                             android:textColor="@color/white"
-                            android:background="@drawable/btn_gradient"
                             app:backgroundTint="@null"
                             app:cornerRadius="24dp" />
+
+                        <CheckBox
+                            android:id="@+id/cbTermsSignup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:buttonTint="@color/colorPrimary"
+                            android:text="By continuing, you accept our Privacy Policy and Terms of Service"
+                            android:textColor="@color/textPrimary"
+                            android:textSize="13sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="1dp"
+                                android:layout_weight="1"
+                                android:background="@color/textSecondary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="12dp"
+                                android:text="or"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="14sp" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="1dp"
+                                android:layout_weight="1"
+                                android:background="@color/textSecondary" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnGoogleSignup"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="18dp"
+                            android:text="Sign up with Google"
+                            android:textAllCaps="false"
+                            android:textColor="@color/textPrimary"
+                            app:cornerRadius="24dp"
+                            app:icon="@drawable/ic_google"
+                            app:iconGravity="textStart"
+                            app:iconPadding="12dp"
+                            app:iconTint="@null"
+                            app:strokeColor="@color/colorPrimary"
+                            app:strokeWidth="1dp" />
 
                         <TextView
                             android:id="@+id/loginRedirectText"
@@ -185,10 +240,10 @@
             android:id="@+id/loadingOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
+            android:background="#80000000"
             android:clickable="true"
             android:focusable="true"
-            android:background="#80000000">
+            android:visibility="gone">
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:layout_width="60dp"

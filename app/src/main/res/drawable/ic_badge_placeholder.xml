@@ -1,0 +1,70 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- outer badge -->
+    <path
+        android:pathData="M12,2.8
+                          L14.1,4.7
+                          L16.9,4.4
+                          L18.1,7
+                          L20.8,8
+                          L20.3,10.8
+                          L22,13
+                          L20.3,15.2
+                          L20.8,18
+                          L18.1,19
+                          L16.9,21.6
+                          L14.1,21.3
+                          L12,23.2
+                          L9.9,21.3
+                          L7.1,21.6
+                          L5.9,19
+                          L3.2,18
+                          L3.7,15.2
+                          L2,13
+                          L3.7,10.8
+                          L3.2,8
+                          L5.9,7
+                          L7.1,4.4
+                          L9.9,4.7
+                          Z"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#17152B"
+        android:strokeWidth="1.6"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+
+    <!-- inner circle -->
+    <path
+        android:pathData="M12,6.5
+                          A6.5,6.5 0,1 1,12 19.5
+                          A6.5,6.5 0,1 1,12 6.5"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#17152B"
+        android:strokeWidth="1.4"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+
+    <!-- star -->
+    <path
+        android:pathData="M12,8.3
+                          L13.1,10.6
+                          L15.6,11
+                          L13.8,12.8
+                          L14.2,15.3
+                          L12,14.1
+                          L9.8,15.3
+                          L10.2,12.8
+                          L8.4,11
+                          L10.9,10.6
+                          Z"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#17152B"
+        android:strokeWidth="1.4"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+
+</vector>

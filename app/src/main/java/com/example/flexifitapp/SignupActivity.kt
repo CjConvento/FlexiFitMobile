@@ -7,11 +7,18 @@ import android.util.Patterns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.lifecycle.lifecycleScope
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -19,27 +26,29 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
 
 class SignupActivity : AppCompatActivity() {
 
-    // Views
     private lateinit var etName: TextInputEditText
     private lateinit var etEmail: TextInputEditText
     private lateinit var etUsername: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var tilPassword: TextInputLayout
     private lateinit var btnSignup: MaterialButton
+    private lateinit var btnGoogleSignup: MaterialButton
+    private lateinit var cbTermsSignup: CheckBox
     private lateinit var tvLoginRedirect: TextView
 
-    // Firebase + prefs
     private lateinit var auth: FirebaseAuth
     private lateinit var prefs: SharedPreferences
+    private lateinit var credentialManager: CredentialManager
 
-    // Pref keys
     private val PREF_NAME = "flexifit_prefs"
     private val KEY_DARK_MODE = "dark_mode"
 
-    // Pending signup data
     private val KEY_PENDING_NAME = "pending_name"
     private val KEY_PENDING_USERNAME = "pending_username"
     private val KEY_PENDING_EMAIL = "pending_email"
@@ -55,6 +64,7 @@ class SignupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_signup)
 
         auth = FirebaseAuth.getInstance()
+        credentialManager = CredentialManager.create(this)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
@@ -66,15 +76,46 @@ class SignupActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.signup_password)
         tilPassword = findViewById(R.id.tilpass)
         btnSignup = findViewById(R.id.signup_button)
+        btnGoogleSignup = findViewById(R.id.btnGoogleSignup)
+        cbTermsSignup = findViewById(R.id.cbTermsSignup)
         tvLoginRedirect = findViewById(R.id.loginRedirectText)
 
         intent.getStringExtra("email")?.let { etEmail.setText(it) }
 
         btnSignup.setOnClickListener {
             if (isSubmitting) return@setOnClickListener
+
             clearErrors()
+
+            if (!cbTermsSignup.isChecked) {
+                Toast.makeText(
+                    this,
+                    "Please accept the Terms of Service first.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             if (!validateAll()) return@setOnClickListener
             createAccount()
+        }
+
+        btnGoogleSignup.setOnClickListener {
+            if (isSubmitting) return@setOnClickListener
+
+            clearErrors()
+
+            if (!cbTermsSignup.isChecked) {
+                Toast.makeText(
+                    this,
+                    "Please accept the Terms of Service first.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (!validateGoogleFields()) return@setOnClickListener
+            startGoogleSignUp()
         }
 
         tvLoginRedirect.setOnClickListener {
@@ -90,7 +131,6 @@ class SignupActivity : AppCompatActivity() {
         val password = safeText(etPassword)
 
         setLoading(true)
-
         savePendingSignup(name, username, email)
 
         auth.createUserWithEmailAndPassword(email, password)
@@ -143,6 +183,237 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
+    private fun startGoogleSignUp() {
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(getString(R.string.default_web_client_id))
+            .setAutoSelectEnabled(false)
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        setLoading(true)
+
+        lifecycleScope.launch {
+            try {
+                val result = credentialManager.getCredential(
+                    context = this@SignupActivity,
+                    request = request
+                )
+
+                val credential = result.credential
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val googleIdToken = googleIdTokenCredential.idToken
+
+                firebaseAuthWithGoogleForRegister(googleIdToken)
+
+            } catch (e: GoogleIdTokenParsingException) {
+                setLoading(false)
+                Toast.makeText(
+                    this@SignupActivity,
+                    "Invalid Google credential.",
+                    Toast.LENGTH_LONG
+                ).show()
+            } catch (e: Exception) {
+                setLoading(false)
+                Toast.makeText(
+                    this@SignupActivity,
+                    "Google sign up failed: ${e.message ?: "Unknown error"}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogleForRegister(idToken: String) {
+        val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+
+        auth.signInWithCredential(firebaseCredential)
+            .addOnCompleteListener(this) { task ->
+                if (!task.isSuccessful) {
+                    setLoading(false)
+                    Toast.makeText(
+                        this,
+                        "Firebase Google auth failed: ${task.exception?.message ?: "Unknown error"}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@addOnCompleteListener
+                }
+
+                val user = auth.currentUser
+                if (user == null) {
+                    setLoading(false)
+                    Toast.makeText(this, "Google user not found.", Toast.LENGTH_LONG).show()
+                    return@addOnCompleteListener
+                }
+
+                val googleName = user.displayName.orEmpty()
+                val googleEmail = user.email.orEmpty()
+
+                if (googleName.isNotBlank() && safeText(etName).isBlank()) {
+                    etName.setText(googleName)
+                }
+                if (googleEmail.isNotBlank() && safeText(etEmail).isBlank()) {
+                    etEmail.setText(googleEmail)
+                }
+
+                UserPrefs.putString(this, UserPrefs.KEY_USER_EMAIL, googleEmail)
+
+                val existingName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
+                UserPrefs.putString(
+                    this,
+                    UserPrefs.KEY_NAME,
+                    if (googleName.isNotBlank()) googleName else existingName
+                )
+
+                registerGoogleUser(user)
+            }
+    }
+
+    private fun registerGoogleUser(user: FirebaseUser) {
+        val name = safeText(etName).ifBlank { user.displayName.orEmpty() }
+        val username = safeText(etUsername)
+
+        if (name.isBlank()) {
+            setLoading(false)
+            etName.error = "Name is required"
+            etName.requestFocus()
+            return
+        }
+
+        if (username.isBlank()) {
+            setLoading(false)
+            etUsername.error = "Username is required"
+            etUsername.requestFocus()
+            return
+        }
+
+        user.getIdToken(true).addOnCompleteListener { idTask ->
+            val firebaseToken = idTask.result?.token
+
+            if (!idTask.isSuccessful || firebaseToken.isNullOrBlank()) {
+                setLoading(false)
+                Toast.makeText(
+                    this,
+                    "Token error: ${idTask.exception?.message ?: "Unknown error"}",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@addOnCompleteListener
+            }
+
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { fcmToken ->
+                    registerToBackendAndBootstrap(firebaseToken, name, username, fcmToken)
+                }
+                .addOnFailureListener {
+                    registerToBackendAndBootstrap(firebaseToken, name, username, null)
+                }
+        }
+    }
+
+    private fun registerToBackendAndBootstrap(
+        firebaseToken: String,
+        name: String,
+        username: String,
+        fcmToken: String?
+    ) {
+        lifecycleScope.launch {
+            try {
+                val api = ApiClient.get(this@SignupActivity)
+                    .create(ApiService::class.java)
+
+                val registerReq = RegisterRequest(
+                    firebaseIdToken = firebaseToken,
+                    name = name,
+                    username = username,
+                    fcmToken = fcmToken
+                )
+
+                val registerRes = api.register(registerReq)
+
+                if (!registerRes.isSuccessful || registerRes.body() == null) {
+                    setLoading(false)
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "Backend register failed: ${registerRes.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                val authBody = registerRes.body()!!
+
+                UserPrefs.saveAuth(
+                    this@SignupActivity,
+                    authBody.token,
+                    authBody.userId,
+                    authBody.role,
+                    authBody.status,
+                    authBody.isVerified
+                )
+
+                if (!fcmToken.isNullOrBlank()) {
+                    try {
+                        val loginReq = LoginRequest(
+                            firebaseIdToken = firebaseToken,
+                            fcmToken = fcmToken
+                        )
+                        api.login(loginReq)
+                    } catch (_: Exception) {
+                    }
+                }
+
+                val bootRes = api.bootstrap()
+
+                if (!bootRes.isSuccessful || bootRes.body() == null) {
+                    setLoading(false)
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "Bootstrap failed: ${bootRes.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                val body = bootRes.body()!!
+
+                if (body.userId != null) {
+                    UserPrefs.putInt(this@SignupActivity, UserPrefs.KEY_USER_ID, body.userId)
+                }
+
+                if (body.profileComplete) {
+                    goToMain()
+                } else {
+                    goToOnboard()
+                }
+
+            } catch (e: Exception) {
+                setLoading(false)
+                Toast.makeText(
+                    this@SignupActivity,
+                    e.message ?: "Unknown error",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun goToMain() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun goToOnboard() {
+        val intent = Intent(this, OnboardingActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        finish()
+    }
+
     private fun handleSignupError(ex: Exception?) {
         when (ex) {
             is FirebaseAuthUserCollisionException -> {
@@ -174,6 +445,13 @@ class SignupActivity : AppCompatActivity() {
         val okUser = validateUsername()
         val okPass = validatePassword()
         return okName && okEmail && okUser && okPass
+    }
+
+    private fun validateGoogleFields(): Boolean {
+        val okName = validateName()
+        val okEmail = validateEmail()
+        val okUser = validateUsername()
+        return okName && okEmail && okUser
     }
 
     private fun validateName(): Boolean {
@@ -256,16 +534,22 @@ class SignupActivity : AppCompatActivity() {
 
     private fun setLoading(loading: Boolean) {
         isSubmitting = loading
+
         btnSignup.isEnabled = !loading
+        btnGoogleSignup.isEnabled = !loading
+        cbTermsSignup.isEnabled = !loading
+        tvLoginRedirect.isEnabled = !loading
+
         btnSignup.text = if (loading) "Creating..." else "Sign Up"
+        btnGoogleSignup.text = if (loading) "Please wait..." else "Sign up with Google"
 
         setEnabled(etName, !loading)
         setEnabled(etEmail, !loading)
         setEnabled(etUsername, !loading)
         setEnabled(etPassword, !loading)
 
-        val pb = findViewById<View?>(R.id.loadingOverlay)
-        pb?.visibility = if (loading) View.VISIBLE else View.GONE
+        val overlay = findViewById<View?>(R.id.loadingOverlay)
+        overlay?.visibility = if (loading) View.VISIBLE else View.GONE
     }
 
     private fun setEnabled(view: View, enabled: Boolean) {

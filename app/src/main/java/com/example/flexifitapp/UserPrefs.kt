@@ -32,6 +32,40 @@ object UserPrefs {
     const val KEY_WEIGHT_KG = "weight_kg"
     const val KEY_TARGET_WEIGHT_KG = "target_weight_kg"
 
+    // ACHIEVEMENTS
+    const val KEY_COMPLETED_WORKOUTS = "completed_workouts_count"
+    const val KEY_CURRENT_STREAK = "current_streak"
+    const val KEY_HAS_WEIGHT_LOG = "has_weight_log"
+    const val KEY_ACTIVE_STREAK_DAYS = "active_streak_days"
+    const val KEY_LAST_WORKOUT_DATE = "last_workout_date"
+    const val KEY_COMPLETED_WORKOUTS_COUNT = "completed_workouts_count"
+
+    // =========================================================
+    // ACHIEVEMENTS / BADGES
+    // =========================================================
+
+    const val KEY_FIRST_PROGRAM_COMPLETED = "first_program_completed"
+    const val KEY_SEVEN_WORKOUTS_WEEK = "seven_workouts_week"
+
+    const val BADGE_FIRST_WORKOUT = "badge_first_workout"
+    const val BADGE_5_WORKOUTS = "badge_5_workouts"
+    const val BADGE_10_WORKOUTS = "badge_10_workouts"
+    const val BADGE_25_WORKOUTS = "badge_25_workouts"
+    const val BADGE_50_WORKOUTS = "badge_50_workouts"
+
+    const val BADGE_STREAK_3 = "badge_streak_3"
+    const val BADGE_STREAK_7 = "badge_streak_7"
+    const val BADGE_STREAK_14 = "badge_streak_14"
+    const val BADGE_STREAK_30 = "badge_streak_30"
+
+    const val BADGE_FIRST_WEIGHT_LOG = "badge_first_weight_log"
+    const val BADGE_BMI_UPDATED = "badge_bmi_updated"
+    const val BADGE_TARGET_WEIGHT = "badge_target_weight"
+
+    const val BADGE_FIRST_PROGRAM_COMPLETED = "badge_first_program_completed"
+    const val BADGE_SEVEN_WORKOUTS_WEEK = "badge_seven_workouts_week"
+    const val BADGE_30_WORKOUTS_TOTAL = "badge_30_workouts_total"
+
     // Optional computed/display fields
     const val KEY_BMI = "bmi"
     const val KEY_BMR = "bmr"

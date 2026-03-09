@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="6dp"
+    app:cardUseCompatPadding="true"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/ivBadgeIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_badge_circle"
+            android:padding="10dp"
+            android:src="@drawable/ic_badge_placeholder"
+            android:contentDescription="Badge Icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="14dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Workout"
+                android:textColor="@color/textPrimary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBadgeSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Complete your first workout session."
+                android:textColor="@color/textSecondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvBadgeStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge_status"
+            android:paddingStart="10dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="6dp"
+            android:text="Unlocked"
+            android:textColor="@color/textPrimary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
