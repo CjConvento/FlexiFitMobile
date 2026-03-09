@@ -1,5 +1,6 @@
 package com.example.flexifitapp
 
+import com.example.flexifitapp.workout.WorkoutSessionResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -25,4 +26,15 @@ interface ApiService {
     suspend fun getProfileStatus(
         @Query("userId") userId: Int
     ): Response<ProfileStatusResponse>
+
+
+    // =============================
+    // WORKOUT MODULE
+    // =============================
+
+    @GET("api/workout/current-session")
+    suspend fun getCurrentWorkoutSession(
+        @Query("userId") userId: Int
+    ): Response<WorkoutSessionResponse>
+
 }

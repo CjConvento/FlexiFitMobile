@@ -8,7 +8,7 @@
     <!-- ✅ HOME -->
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.flexifitapp.HomeFragment"
+        android:name="com.example.flexifitapp.DashboardFragment"
         android:label="Home" />
 
     <!-- ✅ WORKOUT TAB ROOT -->
@@ -16,10 +16,21 @@
         android:id="@+id/workoutTabRootFragment"
         android:name="com.example.flexifitapp.WorkoutTabRootFragment"
         android:label="Workout">
+
         <action
             android:id="@+id/action_workoutTabRootFragment_to_unifiedCalendarFragment"
             app:destination="@id/unifiedCalendarFragment" />
+
+        <action
+            android:id="@+id/action_workoutTabRootFragment_to_workoutDetailFragment"
+            app:destination="@id/workoutDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/workoutDetailFragment"
+        android:name="com.example.flexifitapp.workout.WorkoutDetailFragment"
+        android:label="Workout Detail"
+        tools:layout="@layout/fragment_workout_detail" />
 
     <!-- ✅ NUTRITION TAB ROOT -->
     <fragment

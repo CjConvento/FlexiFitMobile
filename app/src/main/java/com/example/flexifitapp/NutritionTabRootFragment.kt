@@ -165,10 +165,13 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun updateTotalsFromSections(root: View) {
         val allFoods = sections.flatMap { it.foods }
 
-        val totalCal = allFoods.sumOf { it.calories * it.qty }
+        val caloriesConsumed = allFoods.sumOf { it.calories * it.qty }
         val totalProtein = allFoods.sumOf { it.protein * it.qty }
         val totalCarbs = allFoods.sumOf { it.carbs * it.qty }
         val totalFats = allFoods.sumOf { it.fats * it.qty }
+
+        // Placeholder muna habang wala pang real workout/progress API
+        val caloriesBurned = 320
 
         // TODO: replace these with actual targets from onboarding/profile/API
         val targetCal = 2200
@@ -176,16 +179,22 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         val targetCarbs = 220
         val targetFats = 80
 
-        // top totals
-        root.findViewById<TextView>(R.id.tvTotalProtein).text = "Protein: ${totalProtein}g"
-        root.findViewById<TextView>(R.id.tvTotalCarbs).text = "Carbs: ${totalCarbs}g"
-        root.findViewById<TextView>(R.id.tvTotalFats).text = "Fats: ${totalFats}g"
+        // right-side summary
+        root.findViewById<TextView>(R.id.tvCaloriesBurned).text =
+            "Calories Burned: ${caloriesBurned} kcal"
 
         // intake vs target
-        root.findViewById<TextView>(R.id.tvProteinValue).text = "${totalProtein}g / ${targetProtein}g"
-        root.findViewById<TextView>(R.id.tvCarbsValue).text = "${totalCarbs}g / ${targetCarbs}g"
-        root.findViewById<TextView>(R.id.tvFatsValue).text = "${totalFats}g / ${targetFats}g"
-        root.findViewById<TextView>(R.id.tvCaloriesValue).text = "${totalCal} / ${targetCal} kcal"
+        root.findViewById<TextView>(R.id.tvProteinValue).text =
+            "${totalProtein}g / ${targetProtein}g"
+
+        root.findViewById<TextView>(R.id.tvCarbsValue).text =
+            "${totalCarbs}g / ${targetCarbs}g"
+
+        root.findViewById<TextView>(R.id.tvFatsValue).text =
+            "${totalFats}g / ${targetFats}g"
+
+        root.findViewById<TextView>(R.id.tvCaloriesValue).text =
+            "${caloriesConsumed} / ${targetCal} kcal"
 
         // progress bars
         root.findViewById<ProgressBar>(R.id.pbProtein).progress =
@@ -198,7 +207,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
             percent(totalFats, targetFats)
 
         root.findViewById<ProgressBar>(R.id.pbCalories).progress =
-            percent(totalCal, targetCal)
+            percent(caloriesConsumed, targetCal)
     }
 
     private fun percent(value: Int, target: Int): Int {

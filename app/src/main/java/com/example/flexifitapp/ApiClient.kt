@@ -7,6 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
+
     @Volatile
     private var retrofit: Retrofit? = null
 
@@ -19,16 +20,18 @@ object ApiClient {
     fun profileApi(ctx: Context): ProfileApi =
         get(ctx).create(ProfileApi::class.java)
 
+    fun api(ctx: Context): ApiService =
+        get(ctx).create(ApiService::class.java)
+
     private fun build(ctx: Context): Retrofit {
+
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.HEADERS
         }
 
         val clientBuilder = OkHttpClient.Builder()
 
-        if (BuildConfig.DEBUG) {
-            clientBuilder.addInterceptor(logging)
-        }
+        clientBuilder.addInterceptor(logging)
 
         clientBuilder.addInterceptor { chain ->
             val original = chain.request()

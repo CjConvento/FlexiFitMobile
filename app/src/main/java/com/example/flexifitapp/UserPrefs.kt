@@ -176,6 +176,9 @@ object UserPrefs {
     fun getToken(ctx: Context): String =
         getString(ctx, KEY_JWT_TOKEN, "")
 
+    fun getUserId(ctx: Context): Int =
+        getInt(ctx, KEY_USER_ID, 0)
+
     fun getRole(ctx: Context): String =
         getString(ctx, KEY_ROLE, "")
 

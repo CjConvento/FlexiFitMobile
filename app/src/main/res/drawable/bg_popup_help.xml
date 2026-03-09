@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_popup_help"
+    android:elevation="10dp">
+
+    <TextView
+        android:id="@+id/tvHelpTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Workout Help"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#111827" />
+
+    <TextView
+        android:id="@+id/tvHelpMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Check the exercise guide and open the tutorial if needed."
+        android:textSize="13sp"
+        android:textColor="#4B5563" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPopupOpenTutorial"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="14dp"
+        android:text="Open Tutorial"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:backgroundTint="#6F8FCB"
+        app:cornerRadius="16dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+</LinearLayout>
