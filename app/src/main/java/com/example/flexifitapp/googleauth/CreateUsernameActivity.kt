@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.flexifitapp.ApiClient
 import com.example.flexifitapp.ApiService
 import com.example.flexifitapp.MainActivity
+import com.example.flexifitapp.OnboardingActivity
 import com.example.flexifitapp.R
 import com.example.flexifitapp.RegisterRequest
 import com.example.flexifitapp.UserPrefs

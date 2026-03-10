@@ -2,7 +2,6 @@ package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
@@ -20,9 +19,7 @@ abstract class BaseOnboardingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnConfirm = view.findViewById<TextView?>(R.id.btnConfirm)
-
-        btnConfirm?.setOnClickListener {
+        view.findViewById<View?>(R.id.btnConfirm)?.setOnClickListener {
             val error = validateBeforeNext()
             if (error != null) {
                 Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()

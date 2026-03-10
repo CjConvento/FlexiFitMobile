@@ -3,6 +3,7 @@ package com.example.flexifitapp.onboarding
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
@@ -62,7 +63,15 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
                 if (isSelected) selectedPrograms.add(programName) else selectedPrograms.remove(programName)
                 OnboardingStore.putStringSet(requireContext(), KEY_SELECTED_PROGRAMS, selectedPrograms)
             },
-            isLocked = (inputs.safety == HealthSafety.JOINT_PROBLEM)
+            isLocked = (inputs.safety == HealthSafety.JOINT_PROBLEM),
+            maxSelection = 4,
+            onLimitReached = {
+                Toast.makeText(
+                    requireContext(),
+                    "You can select up to 4 programs only.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         )
 
         rv.adapter = adapter

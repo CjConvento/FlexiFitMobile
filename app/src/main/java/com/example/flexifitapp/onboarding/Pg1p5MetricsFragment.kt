@@ -2,8 +2,10 @@ package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
 
 class Pg1p5MetricsFragment : BaseOnboardingFragment(
@@ -21,128 +23,109 @@ class Pg1p5MetricsFragment : BaseOnboardingFragment(
     private val MIN_TARGET_WEIGHT = 30
     private val MAX_TARGET_WEIGHT = 200
 
+    private lateinit var rvHeight: RecyclerView
+    private lateinit var rvWeight: RecyclerView
+    private lateinit var rvTargetWeight: RecyclerView
+
+    private lateinit var adapterHeight: NumberPickerAdapter
+    private lateinit var adapterWeight: NumberPickerAdapter
+    private lateinit var adapterTargetWeight: NumberPickerAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ===== HEIGHT VIEWS =====
-        val tvHeightPrev = view.findViewById<TextView>(R.id.tvHeightPrev)
-        val tvHeightSelected = view.findViewById<TextView>(R.id.tvHeightSelected)
-        val tvHeightNext = view.findViewById<TextView>(R.id.tvHeightNext)
-        val btnHeightUp = view.findViewById<ImageButton>(R.id.btnHeightUp)
-        val btnHeightDown = view.findViewById<ImageButton>(R.id.btnHeightDown)
+        rvHeight = view.findViewById(R.id.rvHeightPicker)
+        rvWeight = view.findViewById(R.id.rvWeightPicker)
+        rvTargetWeight = view.findViewById(R.id.rvTargetWeightPicker)
 
-        // ===== CURRENT WEIGHT VIEWS =====
-        val tvWeightPrev = view.findViewById<TextView>(R.id.tvWeightPrev)
-        val tvWeightSelected = view.findViewById<TextView>(R.id.tvWeightSelected)
-        val tvWeightNext = view.findViewById<TextView>(R.id.tvWeightNext)
-        val btnWeightUp = view.findViewById<ImageButton>(R.id.btnWeightUp)
-        val btnWeightDown = view.findViewById<ImageButton>(R.id.btnWeightDown)
+        val heightValues = (MIN_HEIGHT..MAX_HEIGHT).toList()
+        val weightValues = (MIN_WEIGHT..MAX_WEIGHT).toList()
+        val targetWeightValues = (MIN_TARGET_WEIGHT..MAX_TARGET_WEIGHT).toList()
 
-        // ===== TARGET WEIGHT VIEWS =====
-        val tvTargetWeightPrev = view.findViewById<TextView>(R.id.tvTargetWeightPrev)
-        val tvTargetWeightSelected = view.findViewById<TextView>(R.id.tvTargetWeightSelected)
-        val tvTargetWeightNext = view.findViewById<TextView>(R.id.tvTargetWeightNext)
-        val btnTargetWeightUp = view.findViewById<ImageButton>(R.id.btnTargetWeightUp)
-        val btnTargetWeightDown = view.findViewById<ImageButton>(R.id.btnTargetWeightDown)
-
-        // Restore saved values
-        var height = OnboardingStore.getInt(requireContext(), "height_cm", 170)
+        val savedHeight = OnboardingStore.getInt(requireContext(), "height_cm", 170)
             .coerceIn(MIN_HEIGHT, MAX_HEIGHT)
 
-        var weight = OnboardingStore.getInt(requireContext(), "weight_kg", 70)
+        val savedWeight = OnboardingStore.getInt(requireContext(), "weight_kg", 70)
             .coerceIn(MIN_WEIGHT, MAX_WEIGHT)
 
-        var targetWeight = OnboardingStore.getInt(requireContext(), "target_weight_kg", 65)
+        val savedTargetWeight = OnboardingStore.getInt(requireContext(), "target_weight_kg", 65)
             .coerceIn(MIN_TARGET_WEIGHT, MAX_TARGET_WEIGHT)
 
-        fun renderHeight() {
-            tvHeightSelected.text = height.toString()
-            tvHeightPrev.text = (height - 1).coerceAtLeast(MIN_HEIGHT).toString()
-            tvHeightNext.text = (height + 1).coerceAtMost(MAX_HEIGHT).toString()
+        adapterHeight = NumberPickerAdapter(heightValues)
+        adapterWeight = NumberPickerAdapter(weightValues)
+        adapterTargetWeight = NumberPickerAdapter(targetWeightValues)
 
-            btnHeightUp.isEnabled = height > MIN_HEIGHT
-            btnHeightDown.isEnabled = height < MAX_HEIGHT
-            btnHeightUp.alpha = if (btnHeightUp.isEnabled) 1f else 0.3f
-            btnHeightDown.alpha = if (btnHeightDown.isEnabled) 1f else 0.3f
+        setupPicker(
+            recyclerView = rvHeight,
+            adapter = adapterHeight,
+            selectedNumber = savedHeight,
+            storeKey = "height_cm"
+        )
 
-            OnboardingStore.putInt(requireContext(), "height_cm", height)
+        setupPicker(
+            recyclerView = rvWeight,
+            adapter = adapterWeight,
+            selectedNumber = savedWeight,
+            storeKey = "weight_kg"
+        )
+
+        setupPicker(
+            recyclerView = rvTargetWeight,
+            adapter = adapterTargetWeight,
+            selectedNumber = savedTargetWeight,
+            storeKey = "target_weight_kg"
+        )
+    }
+
+    private fun setupPicker(
+        recyclerView: RecyclerView,
+        adapter: NumberPickerAdapter,
+        selectedNumber: Int,
+        storeKey: String
+    ) {
+        val layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
+        recyclerView.setHasFixedSize(true)
+        recyclerView.overScrollMode = View.OVER_SCROLL_NEVER
+
+        val snapHelper = LinearSnapHelper()
+        if (recyclerView.onFlingListener == null) {
+            snapHelper.attachToRecyclerView(recyclerView)
         }
 
-        fun renderWeight() {
-            tvWeightSelected.text = weight.toString()
-            tvWeightPrev.text = (weight - 1).coerceAtLeast(MIN_WEIGHT).toString()
-            tvWeightNext.text = (weight + 1).coerceAtMost(MAX_WEIGHT).toString()
-
-            btnWeightUp.isEnabled = weight > MIN_WEIGHT
-            btnWeightDown.isEnabled = weight < MAX_WEIGHT
-            btnWeightUp.alpha = if (btnWeightUp.isEnabled) 1f else 0.3f
-            btnWeightDown.alpha = if (btnWeightDown.isEnabled) 1f else 0.3f
-
-            OnboardingStore.putInt(requireContext(), "weight_kg", weight)
+        adapter.onBindNumber = { tv: TextView, number: Int, isSelected: Boolean ->
+            tv.text = number.toString()
+            tv.alpha = if (isSelected) 1f else 0.35f
+            tv.textSize = if (isSelected) 24f else 16f
+            tv.setTypeface(null, if (isSelected) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
         }
 
-        fun renderTargetWeight() {
-            tvTargetWeightSelected.text = targetWeight.toString()
-            tvTargetWeightPrev.text = (targetWeight - 1).coerceAtLeast(MIN_TARGET_WEIGHT).toString()
-            tvTargetWeightNext.text = (targetWeight + 1).coerceAtMost(MAX_TARGET_WEIGHT).toString()
-
-            btnTargetWeightUp.isEnabled = targetWeight > MIN_TARGET_WEIGHT
-            btnTargetWeightDown.isEnabled = targetWeight < MAX_TARGET_WEIGHT
-            btnTargetWeightUp.alpha = if (btnTargetWeightUp.isEnabled) 1f else 0.3f
-            btnTargetWeightDown.alpha = if (btnTargetWeightDown.isEnabled) 1f else 0.3f
-
-            OnboardingStore.putInt(requireContext(), "target_weight_kg", targetWeight)
+        adapter.onNumberClick = { virtualPos, number ->
+            recyclerView.smoothScrollToPosition(virtualPos)
+            adapter.setSelectedVirtualPos(virtualPos)
+            OnboardingStore.putInt(requireContext(), storeKey, number)
         }
 
-        // Initial draw
-        renderHeight()
-        renderWeight()
-        renderTargetWeight()
+        val initialPos = adapter.getVirtualPosForNumber(selectedNumber)
+        adapter.setSelectedVirtualPos(initialPos)
+        recyclerView.scrollToPosition(initialPos)
 
-        // Height buttons
-        btnHeightUp.setOnClickListener {
-            if (height > MIN_HEIGHT) {
-                height -= 1
-                renderHeight()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(rv: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(rv, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val snappedView = snapHelper.findSnapView(layoutManager) ?: return
+                    val snappedPos = layoutManager.getPosition(snappedView)
+                    if (snappedPos == RecyclerView.NO_POSITION) return
+
+                    adapter.setSelectedVirtualPos(snappedPos)
+                    val selected = adapter.getNumberAtVirtualPos(snappedPos)
+                    OnboardingStore.putInt(requireContext(), storeKey, selected)
+                }
             }
-        }
-
-        btnHeightDown.setOnClickListener {
-            if (height < MAX_HEIGHT) {
-                height += 1
-                renderHeight()
-            }
-        }
-
-        // Current weight buttons
-        btnWeightUp.setOnClickListener {
-            if (weight > MIN_WEIGHT) {
-                weight -= 1
-                renderWeight()
-            }
-        }
-
-        btnWeightDown.setOnClickListener {
-            if (weight < MAX_WEIGHT) {
-                weight += 1
-                renderWeight()
-            }
-        }
-
-        // Target weight buttons
-        btnTargetWeightUp.setOnClickListener {
-            if (targetWeight > MIN_TARGET_WEIGHT) {
-                targetWeight -= 1
-                renderTargetWeight()
-            }
-        }
-
-        btnTargetWeightDown.setOnClickListener {
-            if (targetWeight < MAX_TARGET_WEIGHT) {
-                targetWeight += 1
-                renderTargetWeight()
-            }
-        }
+        })
     }
 
     override fun validateBeforeNext(): String? {

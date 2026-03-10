@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -24,6 +25,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
@@ -37,6 +39,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnGoogleSignIn: MaterialButton
     private lateinit var signupRedirectText: TextView
     private lateinit var tvForgotPassword: TextView
+    private lateinit var loadingOverlay: View
+    private lateinit var tvLoadingMessage: TextView
 
     private val PREF_NAME = "flexifit_prefs"
     private val KEY_DARK_MODE = "dark_mode"
@@ -60,11 +64,33 @@ class LoginActivity : AppCompatActivity() {
         credentialManager = CredentialManager.create(this)
 
         setupUi()
+        checkExistingSession()
+    }
 
-        val current = mAuth.currentUser
-        if (current != null && current.isEmailVerified) {
-            setAuthLoading(true)
-            tokenThenBootstrap(current, showTokenDialog = false)
+    private fun checkExistingSession() {
+        val current = mAuth.currentUser ?: return
+
+        setLoadingMessage("Checking your account...")
+        setAuthLoading(true)
+
+        current.reload().addOnCompleteListener { reloadTask ->
+            if (!reloadTask.isSuccessful) {
+                setAuthLoading(false)
+                FirebaseAuth.getInstance().signOut()
+                UserPrefs.clearAll(this)
+                return@addOnCompleteListener
+            }
+
+            val freshUser = FirebaseAuth.getInstance().currentUser
+            if (freshUser != null && (
+                        freshUser.isEmailVerified ||
+                                freshUser.providerData.any { it.providerId == "google.com" }
+                        )) {
+                setLoadingMessage("Preparing your fitness profile...")
+                tokenThenBootstrap(freshUser, showTokenDialog = false)
+            } else {
+                setAuthLoading(false)
+            }
         }
     }
 
@@ -79,6 +105,8 @@ class LoginActivity : AppCompatActivity() {
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
         signupRedirectText = findViewById(R.id.signupRedirectText)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
+        loadingOverlay = findViewById(R.id.loadingOverlay)
+        tvLoadingMessage = findViewById(R.id.tvLoadingMessage)
 
         tvForgotPassword.setOnClickListener { showForgotPasswordDialog() }
 
@@ -170,6 +198,7 @@ class LoginActivity : AppCompatActivity() {
         val email = loginEmail.text.toString().trim()
         val password = loginPassword.text.toString().trim()
 
+        setLoadingMessage("Signing you in...")
         setAuthLoading(true)
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -196,6 +225,7 @@ class LoginActivity : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
 
+                setLoadingMessage("Preparing your fitness profile...")
                 tokenThenBootstrap(user, showTokenDialog = true)
             }
     }
@@ -211,6 +241,7 @@ class LoginActivity : AppCompatActivity() {
             .addCredentialOption(googleIdOption)
             .build()
 
+        setLoadingMessage("Connecting your Google account...")
         setAuthLoading(true)
 
         lifecycleScope.launch {
@@ -276,19 +307,44 @@ class LoginActivity : AppCompatActivity() {
                     if (firebaseName.isNotBlank()) firebaseName else existingName
                 )
 
+                setLoadingMessage("Preparing your fitness profile...")
                 tokenThenBootstrap(user, showTokenDialog = false)
             }
     }
 
     private fun tokenThenBootstrap(user: FirebaseUser, showTokenDialog: Boolean) {
         user.getIdToken(true).addOnCompleteListener { idTask ->
-            val firebaseToken = idTask.result?.token
 
-            if (!idTask.isSuccessful || firebaseToken.isNullOrBlank()) {
+            if (!idTask.isSuccessful) {
+                setAuthLoading(false)
+
+                val ex = idTask.exception
+
+                if (ex is FirebaseAuthInvalidUserException) {
+                    FirebaseAuth.getInstance().signOut()
+                    UserPrefs.clearAll(this)
+
+                    Toast.makeText(
+                        this,
+                        "This account no longer exists. Please sign in again.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Token error: ${ex?.message ?: "Unknown error"}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                return@addOnCompleteListener
+            }
+
+            val firebaseToken = idTask.result?.token
+            if (firebaseToken.isNullOrBlank()) {
                 setAuthLoading(false)
                 Toast.makeText(
                     this,
-                    "Token error: ${idTask.exception?.message ?: "Unknown error"}",
+                    "Token error: empty token",
                     Toast.LENGTH_LONG
                 ).show()
                 return@addOnCompleteListener
@@ -310,9 +366,11 @@ class LoginActivity : AppCompatActivity() {
 
             FirebaseMessaging.getInstance().token
                 .addOnSuccessListener { fcmToken ->
+                    setLoadingMessage("Preparing your fitness profile...")
                     loginToBackendAndBootstrap(firebaseToken, fcmToken)
                 }
                 .addOnFailureListener {
+                    setLoadingMessage("Preparing your fitness profile...")
                     loginToBackendAndBootstrap(firebaseToken, null)
                 }
         }
@@ -351,6 +409,8 @@ class LoginActivity : AppCompatActivity() {
                     auth.status,
                     auth.isVerified
                 )
+
+                setLoadingMessage("Preparing your fitness profile...")
 
                 val bootRes = api.bootstrap()
 
@@ -410,14 +470,22 @@ class LoginActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun setLoadingMessage(message: String) {
+        tvLoadingMessage.text = message
+    }
+
     private fun setAuthLoading(loading: Boolean) {
         loginButton.isEnabled = !loading
         btnGoogleSignIn.isEnabled = !loading
         signupRedirectText.isEnabled = !loading
         tvForgotPassword.isEnabled = !loading
+        loginEmail.isEnabled = !loading
+        loginPassword.isEnabled = !loading
 
         loginButton.text = if (loading) "Loading..." else "Login"
         btnGoogleSignIn.text = if (loading) "Please wait..." else "Continue with Google"
+
+        loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
     }
 
     private fun goToMain() {

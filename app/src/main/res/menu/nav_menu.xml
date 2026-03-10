@@ -18,7 +18,7 @@
             android:title="Nutrition Plan" />
 
         <item
-            android:id="@+id/ProgressFragment"
+            android:id="@+id/nav_progtr"
             android:icon="@drawable/ic_macros"
             android:title="Progress Tracking" />
 

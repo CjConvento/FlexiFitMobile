@@ -12,13 +12,15 @@ class ProgramCardAdapter(
     private val items: List<String>,
     private val selected: MutableSet<String>,
     private val onToggle: (String, Boolean) -> Unit,
-    private val isLocked: Boolean
+    private val isLocked: Boolean,
+    private val maxSelection: Int = 4,
+    private val onLimitReached: (() -> Unit)? = null
 ) : RecyclerView.Adapter<ProgramCardAdapter.VH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_program_card, parent, false)
-        return VH(view, selected, isLocked, onToggle)
+        return VH(view, selected, isLocked, onToggle, maxSelection, onLimitReached)
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
@@ -32,7 +34,9 @@ class ProgramCardAdapter(
         itemView: View,
         private val selected: MutableSet<String>,
         private val isLocked: Boolean,
-        private val onToggle: (String, Boolean) -> Unit
+        private val onToggle: (String, Boolean) -> Unit,
+        private val maxSelection: Int,
+        private val onLimitReached: (() -> Unit)?
     ) : RecyclerView.ViewHolder(itemView) {
 
         private val tvTitle: TextView = itemView.findViewById(R.id.tvProgramTitle)
@@ -61,13 +65,17 @@ class ProgramCardAdapter(
                 val currentlySelected = selected.contains(programName)
                 val next = !currentlySelected
 
-                // ✅ update local set so UI is always consistent
-                if (next) selected.add(programName) else selected.remove(programName)
+                if (next) {
+                    if (!selected.contains(programName) && selected.size >= maxSelection) {
+                        onLimitReached?.invoke()
+                        return@setOnClickListener
+                    }
+                    selected.add(programName)
+                } else {
+                    selected.remove(programName)
+                }
 
-                // ✅ notify parent for autosave/store/vm
                 onToggle(programName, next)
-
-                // ✅ update UI immediately
                 renderSelectedState(programName)
             }
         }
