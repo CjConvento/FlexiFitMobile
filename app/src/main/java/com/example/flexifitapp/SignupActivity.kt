@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
 class SignupActivity : AppCompatActivity() {
@@ -114,7 +113,6 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (!validateGoogleFields()) return@setOnClickListener
             startGoogleSignUp()
         }
 
@@ -144,7 +142,8 @@ class SignupActivity : AppCompatActivity() {
                 val user = auth.currentUser
                 if (user == null) {
                     setLoading(false)
-                    Toast.makeText(this, "Signup failed. Please try again.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Signup failed. Please try again.", Toast.LENGTH_LONG)
+                        .show()
                     return@addOnCompleteListener
                 }
 
@@ -207,7 +206,7 @@ class SignupActivity : AppCompatActivity() {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val googleIdToken = googleIdTokenCredential.idToken
 
-                firebaseAuthWithGoogleForRegister(googleIdToken)
+                firebaseAuthWithGoogle(googleIdToken)
 
             } catch (e: GoogleIdTokenParsingException) {
                 setLoading(false)
@@ -227,7 +226,7 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
-    private fun firebaseAuthWithGoogleForRegister(idToken: String) {
+    private fun firebaseAuthWithGoogle(idToken: String) {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
 
         auth.signInWithCredential(firebaseCredential)
@@ -249,47 +248,11 @@ class SignupActivity : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
 
-                val googleName = user.displayName.orEmpty()
-                val googleEmail = user.email.orEmpty()
-
-                if (googleName.isNotBlank() && safeText(etName).isBlank()) {
-                    etName.setText(googleName)
-                }
-                if (googleEmail.isNotBlank() && safeText(etEmail).isBlank()) {
-                    etEmail.setText(googleEmail)
-                }
-
-                UserPrefs.putString(this, UserPrefs.KEY_USER_EMAIL, googleEmail)
-
-                val existingName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
-                UserPrefs.putString(
-                    this,
-                    UserPrefs.KEY_NAME,
-                    if (googleName.isNotBlank()) googleName else existingName
-                )
-
-                registerGoogleUser(user)
+                checkIfGoogleUserExists(user)
             }
     }
 
-    private fun registerGoogleUser(user: FirebaseUser) {
-        val name = safeText(etName).ifBlank { user.displayName.orEmpty() }
-        val username = safeText(etUsername)
-
-        if (name.isBlank()) {
-            setLoading(false)
-            etName.error = "Name is required"
-            etName.requestFocus()
-            return
-        }
-
-        if (username.isBlank()) {
-            setLoading(false)
-            etUsername.error = "Username is required"
-            etUsername.requestFocus()
-            return
-        }
-
+    private fun checkIfGoogleUserExists(user: FirebaseUser) {
         user.getIdToken(true).addOnCompleteListener { idTask ->
             val firebaseToken = idTask.result?.token
 
@@ -303,101 +266,77 @@ class SignupActivity : AppCompatActivity() {
                 return@addOnCompleteListener
             }
 
-            FirebaseMessaging.getInstance().token
-                .addOnSuccessListener { fcmToken ->
-                    registerToBackendAndBootstrap(firebaseToken, name, username, fcmToken)
+            lifecycleScope.launch {
+                try {
+                    val api = ApiClient.get(this@SignupActivity)
+                        .create(ApiService::class.java)
+
+                    val loginReq = LoginRequest(
+                        firebaseIdToken = firebaseToken,
+                        fcmToken = null
+                    )
+
+                    val res = api.login(loginReq)
+
+                    if (res.isSuccessful && res.body() != null) {
+                        val authBody = res.body()!!
+
+                        UserPrefs.saveAuth(
+                            this@SignupActivity,
+                            authBody.token,
+                            authBody.userId,
+                            authBody.role,
+                            authBody.status,
+                            authBody.isVerified
+                        )
+
+                        val bootRes = api.bootstrap()
+
+                        if (!bootRes.isSuccessful || bootRes.body() == null) {
+                            setLoading(false)
+                            Toast.makeText(
+                                this@SignupActivity,
+                                "Bootstrap failed: ${bootRes.code()}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            return@launch
+                        }
+
+                        val body = bootRes.body()!!
+
+                        if (body.userId != null) {
+                            UserPrefs.putInt(this@SignupActivity, UserPrefs.KEY_USER_ID, body.userId)
+                        }
+
+                        if (body.profileComplete) {
+                            goToMain()
+                        } else {
+                            goToOnboard()
+                        }
+                    } else {
+                        openCreateUsername(user, firebaseToken)
+                    }
+
+                } catch (e: Exception) {
+                    setLoading(false)
+                    Toast.makeText(
+                        this@SignupActivity,
+                        e.message ?: "Login check failed",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                .addOnFailureListener {
-                    registerToBackendAndBootstrap(firebaseToken, name, username, null)
-                }
+            }
         }
     }
 
-    private fun registerToBackendAndBootstrap(
-        firebaseToken: String,
-        name: String,
-        username: String,
-        fcmToken: String?
-    ) {
-        lifecycleScope.launch {
-            try {
-                val api = ApiClient.get(this@SignupActivity)
-                    .create(ApiService::class.java)
-
-                val registerReq = RegisterRequest(
-                    firebaseIdToken = firebaseToken,
-                    name = name,
-                    username = username,
-                    fcmToken = fcmToken
-                )
-
-                val registerRes = api.register(registerReq)
-
-                if (!registerRes.isSuccessful || registerRes.body() == null) {
-                    setLoading(false)
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "Backend register failed: ${registerRes.code()}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@launch
-                }
-
-                val authBody = registerRes.body()!!
-
-                UserPrefs.saveAuth(
-                    this@SignupActivity,
-                    authBody.token,
-                    authBody.userId,
-                    authBody.role,
-                    authBody.status,
-                    authBody.isVerified
-                )
-
-                if (!fcmToken.isNullOrBlank()) {
-                    try {
-                        val loginReq = LoginRequest(
-                            firebaseIdToken = firebaseToken,
-                            fcmToken = fcmToken
-                        )
-                        api.login(loginReq)
-                    } catch (_: Exception) {
-                    }
-                }
-
-                val bootRes = api.bootstrap()
-
-                if (!bootRes.isSuccessful || bootRes.body() == null) {
-                    setLoading(false)
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "Bootstrap failed: ${bootRes.code()}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@launch
-                }
-
-                val body = bootRes.body()!!
-
-                if (body.userId != null) {
-                    UserPrefs.putInt(this@SignupActivity, UserPrefs.KEY_USER_ID, body.userId)
-                }
-
-                if (body.profileComplete) {
-                    goToMain()
-                } else {
-                    goToOnboard()
-                }
-
-            } catch (e: Exception) {
-                setLoading(false)
-                Toast.makeText(
-                    this@SignupActivity,
-                    e.message ?: "Unknown error",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+    private fun openCreateUsername(user: FirebaseUser, firebaseToken: String) {
+        val intent = Intent(this, CreateUsernameActivity::class.java).apply {
+            putExtra("firebaseToken", firebaseToken)
+            putExtra("name", user.displayName.orEmpty())
+            putExtra("email", user.email.orEmpty())
         }
+        startActivity(intent)
+        finish()
     }
 
     private fun goToMain() {
@@ -418,8 +357,10 @@ class SignupActivity : AppCompatActivity() {
         when (ex) {
             is FirebaseAuthUserCollisionException -> {
                 etEmail.error = "This email is already registered."
-                Toast.makeText(this, "Email already in use. Try logging in.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Email already in use. Try logging in.", Toast.LENGTH_LONG)
+                    .show()
             }
+
             else -> {
                 Toast.makeText(
                     this,
@@ -447,13 +388,6 @@ class SignupActivity : AppCompatActivity() {
         return okName && okEmail && okUser && okPass
     }
 
-    private fun validateGoogleFields(): Boolean {
-        val okName = validateName()
-        val okEmail = validateEmail()
-        val okUser = validateUsername()
-        return okName && okEmail && okUser
-    }
-
     private fun validateName(): Boolean {
         val v = safeText(etName)
         return when {
@@ -461,10 +395,12 @@ class SignupActivity : AppCompatActivity() {
                 etName.error = "Name cannot be empty"
                 false
             }
+
             v.length < 2 -> {
                 etName.error = "Name is too short"
                 false
             }
+
             else -> true
         }
     }
@@ -476,10 +412,12 @@ class SignupActivity : AppCompatActivity() {
                 etEmail.error = "Email cannot be empty"
                 false
             }
+
             !Patterns.EMAIL_ADDRESS.matcher(v).matches() -> {
                 etEmail.error = "Invalid email format"
                 false
             }
+
             else -> true
         }
     }
@@ -491,14 +429,17 @@ class SignupActivity : AppCompatActivity() {
                 etUsername.error = "Username cannot be empty"
                 false
             }
+
             v.contains(" ") -> {
                 etUsername.error = "Username cannot have spaces"
                 false
             }
+
             v.length < 2 -> {
                 etUsername.error = "Username must be at least 2 characters"
                 false
             }
+
             else -> true
         }
     }
@@ -510,10 +451,12 @@ class SignupActivity : AppCompatActivity() {
                 tilPassword.error = "Password cannot be empty"
                 false
             }
+
             v.length < 6 -> {
                 tilPassword.error = "Password must be at least 6 characters"
                 false
             }
+
             else -> {
                 tilPassword.error = null
                 true

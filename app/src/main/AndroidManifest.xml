@@ -37,6 +37,8 @@
             android:name=".EmailVerificationActivity"
             android:exported="false"/>
 
+        <activity android:name=".googleauth.CreateUsernameActivity" />
+
         <!-- ONBOARDING -->
         <activity
             android:name=".OnboardingActivity"
