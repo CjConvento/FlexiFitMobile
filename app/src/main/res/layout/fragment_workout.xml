@@ -26,12 +26,13 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDatePill"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
-            app:cardBackgroundColor="#E5E7EB"
             app:cardCornerRadius="20dp"
-            app:cardElevation="0dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp"
+            app:cardUseCompatPadding="true"
             app:layout_constraintBottom_toBottomOf="@id/btnBackWorkoutPlan"
             app:layout_constraintEnd_toStartOf="@id/btnOpenCalendar"
             app:layout_constraintStart_toEndOf="@id/btnBackWorkoutPlan"
@@ -42,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:padding="10dp"
                 android:text="Month 1 - Week 1 - Day 1"
                 android:textColor="#4B5563"
                 android:textSize="13sp"
@@ -56,7 +58,6 @@
             android:contentDescription="Calendar"
             android:padding="10dp"
             android:src="@drawable/iconly_calendar"
-            android:tint="#6F8FCB"
             app:layout_constraintBottom_toBottomOf="@id/btnBackWorkoutPlan"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/btnBackWorkoutPlan" />
@@ -70,7 +71,6 @@
             android:contentDescription="Previous Program"
             android:padding="8dp"
             android:src="@drawable/baseline_arrow_left_ios_new_24"
-            android:tint="#111827"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btnBackWorkoutPlan" />
 
@@ -95,7 +95,6 @@
             android:contentDescription="Next Program"
             android:padding="8dp"
             android:src="@drawable/baseline_arrow_right_ios_new_24"
-            android:tint="#111827"
             app:layout_constraintBottom_toBottomOf="@id/btnPrevProgram"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/btnPrevProgram" />
@@ -107,6 +106,8 @@
             android:layout_marginTop="22dp"
             android:layout_marginBottom="8dp"
             app:cardBackgroundColor="@android:color/white"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp"
             app:cardCornerRadius="28dp"
             app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -151,9 +152,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                app:cardBackgroundColor="#E5E7EB"
                                 app:cardCornerRadius="42dp"
-                                app:cardElevation="0dp">
+                                app:strokeWidth="0dp"
+                                app:cardUseCompatPadding="true"
+                                app:cardElevation="8dp">
 
                                 <TextView
                                     android:id="@+id/tvProgramName"
@@ -183,9 +185,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                app:cardBackgroundColor="#E5E7EB"
                                 app:cardCornerRadius="18dp"
-                                app:cardElevation="0dp">
+                                app:strokeWidth="0dp"
+                                app:cardUseCompatPadding="true"
+                                app:cardElevation="8dp">
 
                                 <TextView
                                     android:id="@+id/tvProgramLevel"
@@ -220,8 +223,8 @@
                                 android:layout_width="52dp"
                                 android:layout_height="52dp"
                                 android:layout_marginTop="12dp"
-                                android:src="@android:drawable/ic_menu_mylocation"
-                                android:tint="#111827" />
+                                android:src="@drawable/ic_home"
+                                android:tint="@color/colorBackground"/>
 
                             <TextView
                                 android:id="@+id/labelProgramDescription"
@@ -273,23 +276,25 @@
                         android:layout_height="30dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="Settings"
-                        android:src="@android:drawable/ic_menu_manage"
-                        android:tint="#111827" />
+                        android:src="@drawable/bg_circle_soft"
+/>
                 </LinearLayout>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardWorkoutSessionHeader"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="#E5E7EB"
+                    app:strokeWidth="0dp"
                     app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp">
+                    app:cardUseCompatPadding="true"
+                    app:cardElevation="10dp">
 
                     <TextView
                         android:id="@+id/tvWorkoutDayTitle"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:padding="10dp"
                         android:gravity="center"
                         android:text="Workout Session"
                         android:textColor="#111827"
@@ -364,8 +369,7 @@
                         android:layout_height="34dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="Toggle Warmup"
-                        android:src="@android:drawable/arrow_down_float"
-                        android:tint="#111827" />
+                        android:src="@drawable/baseline_keyboard_arrow_down_24" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -401,8 +405,7 @@
                         android:layout_height="34dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="Toggle Workouts"
-                        android:src="@android:drawable/arrow_down_float"
-                        android:tint="#111827" />
+                        android:src="@drawable/baseline_keyboard_arrow_down_24" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView

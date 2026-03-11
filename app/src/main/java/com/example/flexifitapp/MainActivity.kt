@@ -81,8 +81,8 @@ class MainActivity : AppCompatActivity() {
         val btnHeaderSettings = headerView.findViewById<ImageButton>(R.id.btnHeaderSettings)
         btnHeaderSettings.setOnClickListener {
             drawerLayout.close()
+            navController.navigate(R.id.nav_settings)
         }
-
         // Logout
         navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
 

@@ -37,7 +37,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val tvSumGender = view.findViewById<TextView>(R.id.tvSumGender)
         val tvSumHeight = view.findViewById<TextView>(R.id.tvSumHeight)
         val tvSumWeight = view.findViewById<TextView>(R.id.tvSumWeight)
-        val tvSumTargetWeight = view.findViewById<TextView>(R.id.tvSumTargetWeight)
+        val tvSumTargetWeight = view.findViewById<TextView>(R.id.tvTargetWeight)
         val tvSumHealth = view.findViewById<TextView>(R.id.tvSumHealth)
         val tvSumLifestyle = view.findViewById<TextView>(R.id.tvSumLifestyle)
         val tvSumLevel = view.findViewById<TextView>(R.id.tvSumLevel)

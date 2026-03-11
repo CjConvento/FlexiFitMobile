@@ -152,19 +152,6 @@
                                 android:textColorHint="@color/textPrimary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/signup_button"
-                            style="@style/Widget.Material3.Button"
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:layout_marginTop="30dp"
-                            android:background="@drawable/btn_gradient"
-                            android:text="Sign Up"
-                            android:textAllCaps="false"
-                            android:textColor="@color/white"
-                            app:backgroundTint="@null"
-                            app:cornerRadius="24dp" />
-
                         <CheckBox
                             android:id="@+id/cbTermsSignup"
                             android:layout_width="match_parent"
@@ -174,6 +161,19 @@
                             android:text="By continuing, you accept our Privacy Policy and Terms of Service"
                             android:textColor="@color/textPrimary"
                             android:textSize="13sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/signup_button"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/btn_gradient"
+                            android:text="Sign Up"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            app:backgroundTint="@null"
+                            app:cornerRadius="24dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"

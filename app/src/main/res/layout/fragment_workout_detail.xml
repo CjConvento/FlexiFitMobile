@@ -8,8 +8,8 @@
     <FrameLayout
         android:id="@+id/layoutWorkoutHero"
         android:layout_width="0dp"
-        android:layout_height="310dp"
-        android:background="@drawable/ic_workout"
+        android:layout_height="wrap_content"
+        android:background="transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -55,6 +55,7 @@
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="28dp"
         app:cardElevation="8dp"
+        app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +102,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:text="Upper Body"
-                    android:textColor="#4B5563"
+                    android:textColor="@color/wave_color"
                     android:textSize="13sp" />
 
                 <TextView
@@ -135,7 +136,7 @@
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="3 Sets"
-                            android:textColor="#4B5563"
+                            android:textColor="@color/white"
                             android:textSize="12sp" />
 
                         <TextView
@@ -147,7 +148,7 @@
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="8 Reps"
-                            android:textColor="#4B5563"
+                            android:textColor="@color/white"
                             android:textSize="12sp" />
 
                         <TextView
@@ -159,7 +160,7 @@
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="8 Rest"
-                            android:textColor="#4B5563"
+                            android:textColor="@color/white"
                             android:textSize="12sp" />
 
                         <TextView
@@ -170,7 +171,7 @@
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="15 mins"
-                            android:textColor="#4B5563"
+                            android:textColor="@color/white"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </HorizontalScrollView>
@@ -194,7 +195,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:text="100 kcal"
-                    android:textColor="#4B5563"
+                    android:textColor="@color/white"
                     android:textSize="13sp" />
 
                 <TextView
@@ -224,8 +225,7 @@
                     android:layout_marginTop="28dp"
                     android:text="Open Tutorial"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     app:backgroundTint="@null"
                     android:background="@drawable/btn_gradient"
                     app:cornerRadius="18dp" />

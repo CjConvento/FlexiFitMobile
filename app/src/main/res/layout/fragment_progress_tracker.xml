@@ -37,9 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="42dp"
                 android:text="Weekly"
+                app:backgroundTint="@color/gradientEnd"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                app:backgroundTint="@color/colorPrimary"
                 app:cornerRadius="18dp"/>
 
             <com.google.android.material.button.MaterialButton
@@ -66,10 +66,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
                 app:cardCornerRadius="18dp"
+                app:cardUseCompatPadding="true"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface"
-                app:cardElevation="4dp">
+                app:cardElevation="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -121,7 +122,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:cardCornerRadius="18dp"
-                app:cardElevation="4dp"
+                app:cardElevation="8dp"
+                app:cardUseCompatPadding="true"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
@@ -165,7 +168,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -173,9 +175,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
                 app:cardCornerRadius="18dp"
-                app:cardElevation="4dp"
+                app:cardElevation="8dp"
+                app:cardUseCompatPadding="true"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
@@ -218,7 +221,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:cardCornerRadius="18dp"
-                app:cardElevation="4dp"
+                app:cardElevation="8dp"
+                app:cardUseCompatPadding="true"
+                app:strokeWidth="0dp"
                 app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
@@ -263,16 +268,18 @@
             android:id="@+id/cardWeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="10dp"
             app:cardCornerRadius="20dp"
-            app:cardElevation="4dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp"
             app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -317,14 +324,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             app:cardCornerRadius="20dp"
-            app:cardElevation="4dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp"
             app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -359,13 +368,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp"
+            app:cardElevation="8dp"
             app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:padding="20dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -404,14 +415,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="0dp"
+            app:cardElevation="8dp"
             app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
