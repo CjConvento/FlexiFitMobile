@@ -376,74 +376,90 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+// I-replace ang loginToBackendAndBootstrap at idagdag ang autoRegisterUser sa LoginActivity.kt
+
     private fun loginToBackendAndBootstrap(firebaseToken: String, fcmToken: String?) {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.get(this@LoginActivity)
-                    .create(ApiService::class.java)
-
-                val req = LoginRequest(
-                    firebaseIdToken = firebaseToken,
-                    fcmToken = fcmToken
-                )
+                val api = ApiClient.get(this@LoginActivity).create(ApiService::class.java)
+                val req = LoginRequest(firebaseIdToken = firebaseToken, fcmToken = fcmToken)
 
                 val res = api.login(req)
 
-                if (!res.isSuccessful || res.body() == null) {
-                    setAuthLoading(false)
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Backend login failed: ${res.code()}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@launch
-                }
-
-                val auth = res.body()!!
-
-                UserPrefs.saveAuth(
-                    this@LoginActivity,
-                    auth.token,
-                    auth.userId,
-                    auth.role,
-                    auth.status,
-                    auth.isVerified
-                )
-
-                setLoadingMessage("Preparing your fitness profile...")
-
-                val bootRes = api.bootstrap()
-
-                if (!bootRes.isSuccessful || bootRes.body() == null) {
-                    setAuthLoading(false)
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Bootstrap failed: ${bootRes.code()}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@launch
-                }
-
-                val body = bootRes.body()!!
-
-                if (body.userId != null) {
-                    UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
-                }
-
-                if (body.profileComplete) {
-                    goToMain()
+                if (res.isSuccessful && res.body() != null) {
+                    // CASE: Success login
+                    handleSuccessfulAuth(res.body()!!, api)
+                } else if (res.code() == 401) {
+                    // CASE: Firebase verified but not in FlexiFit DB -> AUTO REGISTER
+                    setLoadingMessage("Setting up your account for the first time...")
+                    autoRegisterUser(firebaseToken, fcmToken, api)
                 } else {
-                    goToOnboard()
+                    setAuthLoading(false)
+                    Toast.makeText(this@LoginActivity, "Login failed: ${res.code()}", Toast.LENGTH_LONG).show()
                 }
-
             } catch (e: Exception) {
                 setAuthLoading(false)
-                Toast.makeText(
-                    this@LoginActivity,
-                    e.message ?: "Unknown error",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(this@LoginActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun autoRegisterUser(firebaseToken: String, fcmToken: String?, api: ApiService) {
+        val user = mAuth.currentUser
+        val regReq = RegisterRequest(
+            FirebaseIdToken = firebaseToken,
+            Name = user?.displayName ?: "FlexiFit User",
+            Username = null, // Hahayaan ang backend na gumawa ng random username
+            Address = "",
+            FcmToken = fcmToken
+        )
+
+        lifecycleScope.launch {
+            try {
+                val res = api.register(regReq)
+                if (res.isSuccessful && res.body() != null) {
+                    // Registered na! Tuloy na sa bootstrap
+                    handleSuccessfulAuth(res.body()!!, api)
+                } else {
+                    setAuthLoading(false)
+                    Toast.makeText(this@LoginActivity, "Registration failed: ${res.code()}", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                setAuthLoading(false)
+                Toast.makeText(this@LoginActivity, "Registration Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private suspend fun handleSuccessfulAuth(auth: AuthResponse, api: ApiService) {
+        // 1. Save Auth to Prefs
+        UserPrefs.saveAuth(
+            this@LoginActivity,
+            auth.token,
+            auth.userId,
+            auth.role,
+            auth.status,
+            auth.isVerified
+        )
+
+        // 2. Call Bootstrap to check if profile is complete
+        setLoadingMessage("Checking profile status...")
+        val bootRes = api.bootstrap()
+
+        if (bootRes.isSuccessful && bootRes.body() != null) {
+            val body = bootRes.body()!!
+            if (body.userId != null) {
+                UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
+            }
+
+            if (body.profileComplete) {
+                goToMain()
+            } else {
+                goToOnboard()
+            }
+        } else {
+            // Default to Onboarding if bootstrap fails but auth is ok
+            goToOnboard()
         }
     }
 
