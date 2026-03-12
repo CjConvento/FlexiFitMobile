@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_white"
+    android:padding="18dp">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_onboarding_header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardContainer"
+        android:layout_width="371dp"
+        android:layout_height="531dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="16dp"
+        app:contentPadding="18dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:strokeWidth="0dp">
+
+        <!-- ONE MAIN WRAPPER (required because MaterialCardView is FrameLayout-like) -->
+        <LinearLayout
+            android:id="@+id/pg2cardMainWrap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- TITLE + SUBTITLE WRAPPER (outside content container but inside card) -->
+            <LinearLayout
+                android:id="@+id/HealthtitleWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Health &amp; Safety Check"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Basic profile information"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- CONTENT AREA (fills the remaining space) -->
+            <FrameLayout
+                android:id="@+id/contentArea"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:foregroundGravity="center">
+
+                <!-- OPTIONAL: center the content vertically inside remaining space -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cardContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:paddingTop="18dp">
+
+                    <LinearLayout
+                        android:id="@+id/listWrap"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <CheckBox
+                            android:id="@+id/cbHBi"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/rounded_checkbox"
+                            android:buttonTint="@color/colorPrimary"
+                            android:paddingStart="10dp"
+                            android:text="Upper Body Injury"
+                            android:textColor="@color/colorPrimary"
+                            app:buttonTint="@color/colorPrimary" />
+
+                        <CheckBox
+                            android:id="@+id/cbLBi"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/rounded_checkbox"
+                            android:buttonTint="@color/colorPrimary"
+                            android:paddingStart="10dp"
+                            android:text="Lower Body Injury"
+                            android:textColor="@color/colorPrimary"
+                            app:buttonTint="@color/colorPrimary" />
+
+                        <CheckBox
+                            android:id="@+id/cbSB"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/rounded_checkbox"
+                            android:buttonTint="@color/colorPrimary"
+                            android:paddingStart="10dp"
+                            android:text="Short Breathe"
+                            android:textColor="@color/colorPrimary"
+                            app:buttonTint="@color/colorPrimary" />
+
+                        <CheckBox
+                            android:id="@+id/cbJoint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/rounded_checkbox"
+                            android:buttonTint="@color/colorPrimary"
+                            android:paddingStart="10dp"
+                            android:text="Joint Problems"
+                            android:textColor="@color/colorPrimary"
+                            app:buttonTint="@color/colorPrimary" />
+
+                        <CheckBox
+                            android:id="@+id/cbNone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/rounded_checkbox"
+                            android:buttonTint="@color/colorPrimary"
+                            android:paddingStart="10dp"
+                            android:text="None"
+                            android:textColor="@color/colorPrimary"
+                            app:buttonTint="@color/colorPrimary" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardHealthWarning"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:visibility="gone"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="0dp"
+                            android:backgroundTint="#FFF4E5">
+
+                            <TextView
+                                android:id="@+id/tvHealthWarning"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:textColor="#C62828"
+                                android:textSize="13sp"
+                                tools:text="Sample warning message"/>
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/btnConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/flexifit_border"
+        android:gravity="center"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:text="Confirm"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardContainer" />
+</androidx.constraintlayout.widget.ConstraintLayout>

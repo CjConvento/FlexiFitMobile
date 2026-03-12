@@ -1,397 +1,117 @@
 package com.example.flexifitapp
 
-import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
-import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.lifecycleScope
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginEmail: EditText
-    private lateinit var loginPassword: EditText
-    private lateinit var loginButton: MaterialButton
-    private lateinit var btnGoogleSignIn: MaterialButton
-    private lateinit var signupRedirectText: TextView
-    private lateinit var tvForgotPassword: TextView
-    private lateinit var loadingOverlay: View
-    private lateinit var tvLoadingMessage: TextView
+    private lateinit var loginPass: EditText
+    private lateinit var loginBtn: MaterialButton
+    private lateinit var signupRedirect: TextView
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var sharedPreferences: SharedPreferences
 
-    private val PREF_NAME = "flexifit_prefs"
     private val KEY_DARK_MODE = "dark_mode"
 
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var credentialManager: CredentialManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-        val isDark = sharedPreferences.getBoolean(KEY_DARK_MODE, false)
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
-
         super.onCreate(savedInstanceState)
-        Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
+        sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+        applyThemeFromPrefs()
         setContentView(R.layout.activity_login)
 
         mAuth = FirebaseAuth.getInstance()
-        credentialManager = CredentialManager.create(this)
+        loginEmail = findViewById(R.id.login_email)
+        loginPass = findViewById(R.id.login_password)
+        loginBtn = findViewById(R.id.login_button)
+        signupRedirect = findViewById(R.id.signupRedirectText)
 
-        setupUi()
-        checkExistingSession()
-    }
-
-    private fun checkExistingSession() {
-        val current = mAuth.currentUser ?: return
-
-        setLoadingMessage("Checking your account...")
-        setAuthLoading(true)
-
-        current.reload().addOnCompleteListener { reloadTask ->
-            if (!reloadTask.isSuccessful) {
-                setAuthLoading(false)
-                FirebaseAuth.getInstance().signOut()
-                UserPrefs.clearAll(this)
-                return@addOnCompleteListener
-            }
-
-            val freshUser = FirebaseAuth.getInstance().currentUser
-            if (freshUser != null && (
-                        freshUser.isEmailVerified ||
-                                freshUser.providerData.any { it.providerId == "google.com" }
-                        )) {
-                setLoadingMessage("Preparing your fitness profile...")
-                tokenThenBootstrap(freshUser, showTokenDialog = false)
-            } else {
-                setAuthLoading(false)
-            }
-        }
-    }
-
-    @SuppressLint("MissingInflatedId")
-    private fun setupUi() {
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
 
-        loginEmail = findViewById(R.id.login_email)
-        loginPassword = findViewById(R.id.login_password)
-        loginButton = findViewById(R.id.login_button)
-        btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
-        signupRedirectText = findViewById(R.id.signupRedirectText)
-        tvForgotPassword = findViewById(R.id.tvForgotPassword)
-        loadingOverlay = findViewById(R.id.loadingOverlay)
-        tvLoadingMessage = findViewById(R.id.tvLoadingMessage)
+        loginBtn.setOnClickListener {
+            val email = loginEmail.text.toString().trim()
+            val pass = loginPass.text.toString().trim()
 
-        tvForgotPassword.setOnClickListener { showForgotPasswordDialog() }
+            if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                loginEmail.error = "Enter a valid email"
+                return@setOnClickListener
+            }
+            if (pass.isEmpty()) {
+                loginPass.error = "Password cannot be empty"
+                return@setOnClickListener
+            }
 
-        loginButton.setOnClickListener {
-            if (!validateEmail() || !validatePassword()) return@setOnClickListener
-            signIn()
+            setAuthLoading(true)
+            mAuth.signInWithEmailAndPassword(email, pass)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val user = mAuth.currentUser
+                        if (user != null && user.isEmailVerified) {
+                            fetchFcmAndConnectToBackend(user)
+                        } else {
+                            setAuthLoading(false)
+                            mAuth.signOut()
+                            Toast.makeText(this, "Please verify your email first.", Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        setAuthLoading(false)
+                        Toast.makeText(this, "Login Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
 
-        btnGoogleSignIn.setOnClickListener {
-            startGoogleSignIn()
-        }
-
-        signupRedirectText.setOnClickListener {
+        signupRedirect.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
         }
     }
 
-    private fun validateEmail(): Boolean {
-        val valEmail = loginEmail.text.toString().trim()
-        if (valEmail.isEmpty()) {
-            loginEmail.error = "Email cannot be empty"
-            return false
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(valEmail).matches()) {
-            loginEmail.error = "Invalid email format"
-            return false
-        }
-        loginEmail.error = null
-        return true
-    }
-
-    private fun validatePassword(): Boolean {
-        val valPass = loginPassword.text.toString().trim()
-        if (valPass.isEmpty()) {
-            loginPassword.error = "Password cannot be empty"
-            return false
-        }
-        loginPassword.error = null
-        return true
-    }
-
-    private fun showForgotPasswordDialog() {
-        val input = EditText(this).apply {
-            hint = "Enter your email"
-            setText(loginEmail.text?.toString()?.trim().orEmpty())
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Reset Password")
-            .setMessage("We'll send a password reset link to your email.")
-            .setView(input)
-            .setPositiveButton("Send") { dialog, _ ->
-                val email = input.text?.toString()?.trim().orEmpty()
-
-                if (email.isEmpty()) {
-                    Toast.makeText(this, "Email is required.", Toast.LENGTH_LONG).show()
-                    return@setPositiveButton
-                }
-                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(this, "Invalid email format.", Toast.LENGTH_LONG).show()
-                    return@setPositiveButton
-                }
-
-                FirebaseAuth.getInstance()
-                    .sendPasswordResetEmail(email)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(
-                                this,
-                                "Reset link sent. Check your email (and spam).",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                this,
-                                "Failed: ${task.exception?.message ?: "Unknown error"}",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+    private fun fetchFcmAndConnectToBackend(user: FirebaseUser) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val fcmToken = if (task.isSuccessful) task.result else null
+            user.getIdToken(true).addOnCompleteListener { tokenTask ->
+                if (tokenTask.isSuccessful) {
+                    val idToken = tokenTask.result?.token
+                    if (idToken != null) {
+                        loginToBackendAndBootstrap(idToken, fcmToken)
                     }
-
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-            .show()
-    }
-
-    private fun signIn() {
-        val email = loginEmail.text.toString().trim()
-        val password = loginPassword.text.toString().trim()
-
-        setLoadingMessage("Signing you in...")
-        setAuthLoading(true)
-
-        mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    setAuthLoading(false)
-                    loginPassword.error = task.exception?.message ?: "Login failed"
-                    loginPassword.requestFocus()
-                    return@addOnCompleteListener
-                }
-
-                val user = mAuth.currentUser
-                if (user == null) {
-                    setAuthLoading(false)
-                    Toast.makeText(this, "Auth error.", Toast.LENGTH_SHORT).show()
-                    return@addOnCompleteListener
-                }
-
-                if (!user.isEmailVerified) {
-                    setAuthLoading(false)
-                    Toast.makeText(this, "Please verify your email first.", Toast.LENGTH_LONG)
-                        .show()
-                    mAuth.signOut()
-                    return@addOnCompleteListener
-                }
-
-                setLoadingMessage("Preparing your fitness profile...")
-                tokenThenBootstrap(user, showTokenDialog = true)
-            }
-    }
-
-    private fun startGoogleSignIn() {
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(getString(R.string.default_web_client_id))
-            .setAutoSelectEnabled(false)
-            .build()
-
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
-        setLoadingMessage("Connecting your Google account...")
-        setAuthLoading(true)
-
-        lifecycleScope.launch {
-            try {
-                val result = credentialManager.getCredential(
-                    context = this@LoginActivity,
-                    request = request
-                )
-
-                val credential = result.credential
-                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                val googleIdToken = googleIdTokenCredential.idToken
-
-                firebaseAuthWithGoogle(googleIdToken)
-
-            } catch (e: GoogleIdTokenParsingException) {
-                setAuthLoading(false)
-                Toast.makeText(
-                    this@LoginActivity,
-                    "Invalid Google credential.",
-                    Toast.LENGTH_LONG
-                ).show()
-            } catch (e: Exception) {
-                setAuthLoading(false)
-                Toast.makeText(
-                    this@LoginActivity,
-                    "Google sign in failed: ${e.message ?: "Unknown error"}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-
-        mAuth.signInWithCredential(firebaseCredential)
-            .addOnCompleteListener(this) { task ->
-                if (!task.isSuccessful) {
-                    setAuthLoading(false)
-                    Toast.makeText(
-                        this,
-                        "Firebase Google auth failed: ${task.exception?.message ?: "Unknown error"}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@addOnCompleteListener
-                }
-
-                val user = mAuth.currentUser
-                if (user == null) {
-                    setAuthLoading(false)
-                    Toast.makeText(this, "Google user not found.", Toast.LENGTH_LONG).show()
-                    return@addOnCompleteListener
-                }
-
-                UserPrefs.putString(this, UserPrefs.KEY_USER_EMAIL, user.email ?: "")
-
-                val existingName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
-                val firebaseName = user.displayName ?: ""
-                UserPrefs.putString(
-                    this,
-                    UserPrefs.KEY_NAME,
-                    if (firebaseName.isNotBlank()) firebaseName else existingName
-                )
-
-                setLoadingMessage("Preparing your fitness profile...")
-                tokenThenBootstrap(user, showTokenDialog = false)
-            }
-    }
-
-    private fun tokenThenBootstrap(user: FirebaseUser, showTokenDialog: Boolean) {
-        user.getIdToken(true).addOnCompleteListener { idTask ->
-
-            if (!idTask.isSuccessful) {
-                setAuthLoading(false)
-
-                val ex = idTask.exception
-
-                if (ex is FirebaseAuthInvalidUserException) {
-                    FirebaseAuth.getInstance().signOut()
-                    UserPrefs.clearAll(this)
-
-                    Toast.makeText(
-                        this,
-                        "This account no longer exists. Please sign in again.",
-                        Toast.LENGTH_LONG
-                    ).show()
                 } else {
-                    Toast.makeText(
-                        this,
-                        "Token error: ${ex?.message ?: "Unknown error"}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    setAuthLoading(false)
+                    Toast.makeText(this, "Failed to get ID Token", Toast.LENGTH_SHORT).show()
                 }
-                return@addOnCompleteListener
             }
-
-            val firebaseToken = idTask.result?.token
-            if (firebaseToken.isNullOrBlank()) {
-                setAuthLoading(false)
-                Toast.makeText(
-                    this,
-                    "Token error: empty token",
-                    Toast.LENGTH_LONG
-                ).show()
-                return@addOnCompleteListener
-            }
-
-            if (showTokenDialog) {
-                showTokenDialog(firebaseToken)
-            }
-
-            UserPrefs.putString(this, UserPrefs.KEY_USER_EMAIL, user.email ?: "")
-
-            val existingName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
-            val firebaseName = user.displayName ?: ""
-            UserPrefs.putString(
-                this,
-                UserPrefs.KEY_NAME,
-                if (firebaseName.isNotBlank()) firebaseName else existingName
-            )
-
-            FirebaseMessaging.getInstance().token
-                .addOnSuccessListener { fcmToken ->
-                    setLoadingMessage("Preparing your fitness profile...")
-                    loginToBackendAndBootstrap(firebaseToken, fcmToken)
-                }
-                .addOnFailureListener {
-                    setLoadingMessage("Preparing your fitness profile...")
-                    loginToBackendAndBootstrap(firebaseToken, null)
-                }
         }
     }
-
-// I-replace ang loginToBackendAndBootstrap at idagdag ang autoRegisterUser sa LoginActivity.kt
 
     private fun loginToBackendAndBootstrap(firebaseToken: String, fcmToken: String?) {
         lifecycleScope.launch {
             try {
                 val api = ApiClient.get(this@LoginActivity).create(ApiService::class.java)
+                // Gumagamit na ng nullable fields
                 val req = LoginRequest(firebaseIdToken = firebaseToken, fcmToken = fcmToken)
 
                 val res = api.login(req)
 
                 if (res.isSuccessful && res.body() != null) {
-                    // CASE: Success login
                     handleSuccessfulAuth(res.body()!!, api)
                 } else if (res.code() == 401) {
-                    // CASE: Firebase verified but not in FlexiFit DB -> AUTO REGISTER
-                    setLoadingMessage("Setting up your account for the first time...")
+                    // Dito yung auto-register kapag wala sa SQL DB
                     autoRegisterUser(firebaseToken, fcmToken, api)
                 } else {
                     setAuthLoading(false)
@@ -399,147 +119,80 @@ class LoginActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 setAuthLoading(false)
-                Toast.makeText(this@LoginActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("LOGIN_ERROR", e.message ?: "Unknown error")
+                Toast.makeText(this@LoginActivity, "Connection Error", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun autoRegisterUser(firebaseToken: String, fcmToken: String?, api: ApiService) {
-        val user = mAuth.currentUser
+        val firebaseUser = mAuth.currentUser
+
+        val savedUsername = UserPrefs.getString(this, UserPrefs.KEY_USER_NAME, "")
+        val savedName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
+
+        // Ito yung dating may error sa null. Ngayon okay na siya!
         val regReq = RegisterRequest(
-            FirebaseIdToken = firebaseToken,
-            Name = user?.displayName ?: "FlexiFit User",
-            Username = null, // Hahayaan ang backend na gumawa ng random username
-            Address = "",
-            FcmToken = fcmToken
+            firebaseIdToken = firebaseToken,
+            name = savedName ?: firebaseUser?.displayName ?: "FlexiFit User",
+            username = savedUsername,
+            fcmToken = fcmToken
         )
 
         lifecycleScope.launch {
             try {
                 val res = api.register(regReq)
                 if (res.isSuccessful && res.body() != null) {
-                    // Registered na! Tuloy na sa bootstrap
                     handleSuccessfulAuth(res.body()!!, api)
                 } else {
                     setAuthLoading(false)
-                    Toast.makeText(this@LoginActivity, "Registration failed: ${res.code()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@LoginActivity, "Auto-registration failed", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 setAuthLoading(false)
-                Toast.makeText(this@LoginActivity, "Registration Error: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@LoginActivity, "Registration Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private suspend fun handleSuccessfulAuth(auth: AuthResponse, api: ApiService) {
-        // 1. Save Auth to Prefs
-        UserPrefs.saveAuth(
-            this@LoginActivity,
-            auth.token,
-            auth.userId,
-            auth.role,
-            auth.status,
-            auth.isVerified
-        )
+        UserPrefs.saveAuth(this@LoginActivity, auth.token, auth.userId, auth.role, auth.status, auth.isVerified)
 
-        // 2. Call Bootstrap to check if profile is complete
-        setLoadingMessage("Checking profile status...")
         val bootRes = api.bootstrap()
-
         if (bootRes.isSuccessful && bootRes.body() != null) {
             val body = bootRes.body()!!
             if (body.userId != null) {
                 UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
             }
-
-            if (body.profileComplete) {
-                goToMain()
-            } else {
-                goToOnboard()
-            }
+            if (body.profileComplete) goToMain() else goToOnboard()
         } else {
-            // Default to Onboarding if bootstrap fails but auth is ok
             goToOnboard()
         }
     }
 
-    private fun showTokenDialog(token: String) {
-        val preview = token.take(40) + "..."
-
-        AlertDialog.Builder(this)
-            .setTitle("Firebase ID Token")
-            .setMessage("Preview:\n$preview\n\nFull token can be copied.")
-            .setPositiveButton("Copy Token") { _, _ ->
-                val clipboard =
-                    getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("Firebase ID Token", token))
-                Toast.makeText(this, "Token copied.", Toast.LENGTH_SHORT).show()
-            }
-            .setNeutralButton("Show Full") { _, _ ->
-                AlertDialog.Builder(this)
-                    .setTitle("Full Token")
-                    .setMessage(token)
-                    .setPositiveButton("OK", null)
-                    .show()
-            }
-            .setNegativeButton("Close", null)
-            .show()
-    }
-
-    private fun setLoadingMessage(message: String) {
-        tvLoadingMessage.text = message
-    }
-
-    private fun setAuthLoading(loading: Boolean) {
-        loginButton.isEnabled = !loading
-        btnGoogleSignIn.isEnabled = !loading
-        signupRedirectText.isEnabled = !loading
-        tvForgotPassword.isEnabled = !loading
-        loginEmail.isEnabled = !loading
-        loginPassword.isEnabled = !loading
-
-        loginButton.text = if (loading) "Loading..." else "Login"
-        btnGoogleSignIn.text = if (loading) "Please wait..." else "Continue with Google"
-
-        loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
+    private fun setAuthLoading(isLoading: Boolean) {
+        loginBtn.isEnabled = !isLoading
+        loginBtn.text = if (isLoading) "Connecting..." else "Login"
     }
 
     private fun goToMain() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
     private fun goToOnboard() {
         val intent = Intent(this, OnboardingActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
-    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_theme_switcher, menu)
-        val item = menu.findItem(R.id.action_toggle_theme)
+    private fun applyThemeFromPrefs() {
         val isDark = sharedPreferences.getBoolean(KEY_DARK_MODE, false)
-        item.icon = ContextCompat.getDrawable(
-            this,
-            if (isDark) R.drawable.ic_sun else R.drawable.ic_moon
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         )
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
-        if (item.itemId == R.id.action_toggle_theme) {
-            val isDark = sharedPreferences.getBoolean(KEY_DARK_MODE, false)
-            val newDark = !isDark
-            sharedPreferences.edit().putBoolean(KEY_DARK_MODE, newDark).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (newDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-            )
-            recreate()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 }

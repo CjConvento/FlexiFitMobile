@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_white"
+    android:padding="18dp">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_onboarding_header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardContainer"
+        android:layout_width="371dp"
+        android:layout_height="531dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="16dp"
+        app:contentPadding="18dp"
+        app:cardUseCompatPadding="true"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:strokeWidth="0dp">
+
+        <!-- ONE MAIN WRAPPER (required because MaterialCardView is FrameLayout-like) -->
+        <LinearLayout
+            android:id="@+id/pg3cardMainWrap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- TITLE + SUBTITLE WRAPPER (outside content container but inside card) -->
+            <LinearLayout
+                android:id="@+id/BcktitleWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Your Fitness Background"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Daily lifestyle and level"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- CONTENT AREA (fills the remaining space) -->
+            <FrameLayout
+                android:id="@+id/contentArea"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:foregroundGravity="center">
+
+                <!-- OPTIONAL: center the content vertically inside remaining space -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:padding="20dp">
+
+
+                    <TextView
+                        android:id="@+id/tvQ1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:gravity="center"
+                        android:text="How is your daily lifestyle?"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+
+                    <!-- Swipe target -->
+                    <LinearLayout
+                        android:id="@+id/lifestyleRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvQ1">
+
+                        <TextView
+                            android:id="@+id/tvLifestyleLeft"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Sedentary"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp" />
+
+                        <!-- kept for compatibility; you can hide in Kotlin for swipe-only -->
+                        <ImageButton
+                            android:id="@+id/btnLifestylePrev"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Lifestyle previous"
+                            android:src="@drawable/baseline_arrow_left_ios_new_24" />
+
+                        <TextView
+                            android:id="@+id/tvLifestyleSelected"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/flexifit_border"
+                            android:paddingLeft="18dp"
+                            android:paddingTop="8dp"
+                            android:paddingRight="18dp"
+                            android:paddingBottom="8dp"
+                            android:text=""
+                            tools:text="Lightly Active"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <ImageButton
+                            android:id="@+id/btnLifestyleNext"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Lifestyle next"
+                            android:src="@drawable/baseline_arrow_right_ios_new_24" />
+
+                        <TextView
+                            android:id="@+id/tvLifestyleRight"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Active"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvQ2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="54dp"
+                        android:gravity="center"
+                        android:text="What is your fitness level?"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lifestyleRow" />
+
+                    <!-- Swipe target -->
+                    <LinearLayout
+                        android:id="@+id/levelRow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvQ2">
+
+                        <TextView
+                            android:id="@+id/tvLevelLeft"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Beginner"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp" />
+
+                        <ImageButton
+                            android:id="@+id/btnLevelPrev"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Level previous"
+                            android:src="@drawable/baseline_arrow_left_ios_new_24" />
+
+                        <TextView
+                            android:id="@+id/tvLevelSelected"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/flexifit_border"
+                            android:paddingLeft="18dp"
+                            android:paddingTop="8dp"
+                            android:paddingRight="18dp"
+                            android:paddingBottom="8dp"
+                            android:text=""
+                            tools:text="Intermediate"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <ImageButton
+                            android:id="@+id/btnLevelNext"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="Level next"
+                            android:src="@drawable/baseline_arrow_right_ios_new_24" />
+
+                        <TextView
+                            android:id="@+id/tvLevelRight"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Advanced"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+
+    <TextView
+        android:id="@+id/btnConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/flexifit_border"
+        android:gravity="center"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:text="Confirm"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardContainer" />
+</androidx.constraintlayout.widget.ConstraintLayout>
