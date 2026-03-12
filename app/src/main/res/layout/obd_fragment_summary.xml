@@ -1,453 +1,429 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_screen_white"
-        android:padding="18dp">
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_white"
+    android:padding="18dp">
 
-        <include
-            android:id="@+id/header"
-            layout="@layout/view_onboarding_header"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+    <include
+        android:id="@+id/header"
+        layout="@layout/view_onboarding_header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardContainer"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="14dp"
-            android:layout_marginEnd="16dp"
-            app:contentPadding="18dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp"
-            app:layout_constraintBottom_toTopOf="@id/btnConfirm"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            app:strokeColor="@color/colorPrimary"
-            app:strokeWidth="0dp">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardContainer"
+        android:layout_width="371dp"
+        android:layout_height="531dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="16dp"
+        app:contentPadding="18dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:strokeColor="@color/colorPrimary"
+        app:strokeWidth="0dp">
 
+        <LinearLayout
+            android:id="@+id/pg9cardMainWrap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- Top Title -->
             <LinearLayout
-                android:id="@+id/pg9cardMainWrap"
+                android:id="@+id/sumtitleWrap"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-                <!-- Top Title -->
-                <LinearLayout
-                    android:id="@+id/sumtitleWrap"
+                <TextView
+                    android:id="@+id/sumTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal">
+                    android:gravity="center"
+                    android:text="Summary"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/sumTitle"
+            <!-- Content -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/card"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/sumTitle2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Your Workout and Nutrition Plan is ready!"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/scroll"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="14dp"
+                    android:fillViewport="true"
+                    android:overScrollMode="never"
+                    app:layout_constraintTop_toBottomOf="@id/sumTitle2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <LinearLayout
+                        android:id="@+id/summaryContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Summary"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        android:orientation="vertical">
 
-                <!-- Content -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/card"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:padding="20dp">
+                        <!-- AGE -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Age:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/sumTitle2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="Your Workout and Nutrition Plan is ready!"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"/>
+                        <TextView
+                            android:id="@+id/tvSumAge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:paddingLeft="16dp"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginTop="12dp"
+                            android:paddingRight="16dp"
+                            tools:text="18" />
 
-                    <androidx.core.widget.NestedScrollView
-                        android:id="@+id/scroll"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="14dp"
-                        android:fillViewport="true"
-                        android:overScrollMode="never"
-                        app:layout_constraintTop_toBottomOf="@id/sumTitle2"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
+                        <!-- GENDER -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Gender:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumGender"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:layout_marginTop="12dp"
+                            android:textColor="@color/colorPrimary"
+
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            tools:text="Male" />
+
+                        <!-- HEIGHT -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Height (cm):"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tvSumHeight"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+
+                            android:layout_marginTop="12dp"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            tools:text="170" />
+
+                        <!-- WEIGHT -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Weight (kg):"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumWeight"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="18dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+
+                            android:layout_marginTop="12dp"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            tools:text="70" />
+
+                        <!-- HEALTH & SAFETY -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Health &amp; Safety Check:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumHealth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:paddingLeft="16dp"
+                            android:textColor="@color/colorPrimary"
+                            android:paddingRight="16dp"
+                            android:layout_marginTop="12dp"
+                            tools:text="None" />
+
+                        <!-- DAILY LIFESTYLE -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Daily Lifestyle:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumLifestyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+                            android:paddingLeft="16dp"
+                            android:layout_marginTop="12dp"
+                            android:paddingRight="16dp"
+                            tools:text="Active" />
+
+                        <!-- FITNESS LEVEL -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Fitness Level:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumLevel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="18dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+                            android:paddingLeft="16dp"
+                            android:layout_marginTop="12dp"
+                            android:paddingRight="16dp"
+                            tools:text="Beginner" />
+
+                        <!-- WORKOUT LOCATION -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Workout Location:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold"
+                            android:layout_gravity="center" />
 
                         <LinearLayout
-                            android:id="@+id/summaryContent"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <!-- AGE -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Age:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="18dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/tvSumAge"
+                                android:id="@+id/chipGym"
                                 android:layout_width="wrap_content"
                                 android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
                                 android:background="@drawable/flexifit_border"
                                 android:gravity="center"
-                                android:paddingLeft="16dp"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginTop="12dp"
-                                android:paddingRight="16dp"
-                                tools:text="18" />
-
-                            <!-- GENDER -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Gender:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumGender"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:layout_marginTop="12dp"
-                                android:textColor="@color/colorPrimary"
-
-                                android:paddingLeft="16dp"
-                                android:paddingRight="16dp"
-                                tools:text="Male" />
-
-                            <!-- HEIGHT -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Height (cm):"
+                                android:paddingLeft="18dp"
+                                android:paddingRight="18dp"
+                                android:text="Gym"
                                 android:textColor="@color/colorPrimary"
                                 android:textStyle="bold"
-                                android:layout_gravity="center" />
+                                tools:visibility="visible"/>
 
                             <TextView
-                                android:id="@+id/tvSumHeight"
+                                android:id="@+id/chipHome"
                                 android:layout_width="wrap_content"
                                 android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
+                                android:layout_marginStart="12dp"
                                 android:background="@drawable/flexifit_border"
                                 android:gravity="center"
-                                android:textColor="@color/colorPrimary"
-
-                                android:layout_marginTop="12dp"
-                                android:paddingLeft="16dp"
-                                android:paddingRight="16dp"
-                                tools:text="170" />
-
-                            <!-- WEIGHT -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Weight (kg):"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumWeight"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="18dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:textColor="@color/colorPrimary"
-
-                                android:layout_marginTop="12dp"
-                                android:paddingLeft="16dp"
-                                android:paddingRight="16dp"
-                                tools:text="70" />
-
-                            <!-- TARGET WEIGHT -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Target Weight (kg):"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumTargetWeight"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="18dp"
-                                android:layout_marginTop="12dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:paddingLeft="16dp"
-                                android:paddingRight="16dp"
-                                android:textColor="@color/colorPrimary"
-                                tools:text="65" />
-
-                            <!-- HEALTH & SAFETY -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Health &amp; Safety Check:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumHealth"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:paddingLeft="16dp"
-                                android:textColor="@color/colorPrimary"
-                                android:paddingRight="16dp"
-                                android:layout_marginTop="12dp"
-                                tools:text="None" />
-
-                            <!-- DAILY LIFESTYLE -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Daily Lifestyle:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumLifestyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:textColor="@color/colorPrimary"
-                                android:paddingLeft="16dp"
-                                android:layout_marginTop="12dp"
-                                android:paddingRight="16dp"
-                                tools:text="Active" />
-
-                            <!-- FITNESS LEVEL -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Fitness Level:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumLevel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="18dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:textColor="@color/colorPrimary"
-                                android:paddingLeft="16dp"
-                                android:layout_marginTop="12dp"
-                                android:paddingRight="16dp"
-                                tools:text="Beginner" />
-
-                            <!-- WORKOUT LOCATION -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Workout Location:"
+                                android:paddingLeft="18dp"
+                                android:paddingRight="18dp"
+                                android:text="Home"
                                 android:textColor="@color/colorPrimary"
                                 android:textStyle="bold"
-                                android:layout_gravity="center" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:layout_marginBottom="18dp"
-                                android:gravity="center"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:id="@+id/chipGym"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="32dp"
-                                    android:background="@drawable/flexifit_border"
-                                    android:gravity="center"
-                                    android:paddingLeft="18dp"
-                                    android:paddingRight="18dp"
-                                    android:text="Gym"
-                                    android:textColor="@color/colorPrimary"
-                                    android:textStyle="bold"
-                                    tools:visibility="visible"/>
-
-                                <TextView
-                                    android:id="@+id/chipHome"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="32dp"
-                                    android:layout_marginStart="12dp"
-                                    android:background="@drawable/flexifit_border"
-                                    android:gravity="center"
-                                    android:paddingLeft="18dp"
-                                    android:paddingRight="18dp"
-                                    android:text="Home"
-                                    android:textColor="@color/colorPrimary"
-                                    android:textStyle="bold"
-                                    tools:visibility="visible"/>
-                            </LinearLayout>
-
-                            <!-- FITNESS GOAL -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Fitness Goal:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumGoal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:textColor="@color/colorPrimary"
-                                android:paddingLeft="16dp"
-                                android:layout_marginTop="12dp"
-                                android:paddingRight="16dp"
-                                tools:text="Muscle Gain" />
-
-                            <!-- BODY COMPOSITION GOAL -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Body Composition Goal:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumBodyComp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:paddingLeft="16dp"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginTop="12dp"
-                                android:paddingRight="16dp"
-                                tools:text="Lose Weight" />
-
-                            <!-- PREFERRED DIET -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Preferred Diet:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSumDiet"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:layout_gravity="center"
-                                android:layout_marginBottom="18dp"
-                                android:background="@drawable/flexifit_border"
-                                android:gravity="center"
-                                android:textColor="@color/colorPrimary"
-                                android:paddingLeft="16dp"
-                                android:paddingRight="16dp"
-                                android:layout_marginTop="12dp"
-                                tools:text="High Protein" />
-
-                            <!-- WORKOUT PROGRAMS -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Workout Program:"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="bold" />
-
-                            <LinearLayout
-                                android:id="@+id/programsWrap"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:orientation="vertical" />
-
-                            <TextView
-                                android:id="@+id/tvProgramsEmpty"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="No programs selected."
-                                android:textColor="@color/textPrimary"
-                                android:gravity="center"
-                                android:layout_marginTop="8dp"
-                                android:visibility="gone"/>
-
-                            <!-- bottom spacer -->
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="18dp"/>
+                                tools:visibility="visible"/>
                         </LinearLayout>
-                    </androidx.core.widget.NestedScrollView>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                        <!-- FITNESS GOAL -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Fitness Goal:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="Finish"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            app:cornerRadius="20dp"
-            app:strokeColor="@color/colorPrimary"
-            app:strokeWidth="2dp"
-            app:layout_constraintTop_toBottomOf="@id/cardContainer"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="14dp"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                        <TextView
+                            android:id="@+id/tvSumGoal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+                            android:paddingLeft="16dp"
+                            android:layout_marginTop="12dp"
+                            android:paddingRight="16dp"
+                            tools:text="Muscle Gain" />
+
+                        <!-- BODY COMPOSITION GOAL -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Body Composition Goal:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumBodyComp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:paddingLeft="16dp"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginTop="12dp"
+                            android:paddingRight="16dp"
+                            tools:text="Lose Weight" />
+
+                        <!-- PREFERRED DIET -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Preferred Diet:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumDiet"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="18dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:layout_marginTop="12dp"
+                            tools:text="High Protein" />
+
+                        <!-- WORKOUT PROGRAMS -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Workout Program:"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/programsWrap"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical" />
+
+                        <TextView
+                            android:id="@+id/tvProgramsEmpty"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="No programs selected."
+                            android:textColor="@color/textPrimary"
+                            android:gravity="center"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone"/>
+
+                        <!-- bottom spacer -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="18dp"/>
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Finish"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        app:cornerRadius="20dp"
+        app:strokeColor="@color/colorPrimary"
+        app:strokeWidth="2dp"
+        app:layout_constraintTop_toBottomOf="@id/cardContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="14dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

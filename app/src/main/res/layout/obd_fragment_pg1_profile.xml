@@ -17,16 +17,16 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="371dp"
-        android:layout_height="0dp"
+        android:layout_height="531dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
         app:contentPadding="18dp"
         app:cardCornerRadius="25dp"
+
         app:cardUseCompatPadding="true"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnConfirm"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:strokeWidth="0dp">
@@ -188,6 +188,7 @@
                             android:layout_marginTop="10dp"
                             android:gravity="center"
                             android:orientation="horizontal"
+                            app:layout_constraintBottom_toTopOf="@id/btnConfirm"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tvGender">
@@ -198,7 +199,7 @@
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:layout_width="0dp"
-                                android:layout_height="120dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginEnd="10dp"
                                 android:layout_weight="1"
                                 android:background="@drawable/bg_gender_card"
@@ -208,9 +209,10 @@
 
                                 <ImageView
                                     android:id="@+id/ivMale"
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    android:background="@drawable/ic_gender_male"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:tint="@color/colorPrimary"
+                                    android:src="@drawable/ic_gender_male"
                                     android:contentDescription="Male icon" />
 
                                 <TextView
@@ -240,10 +242,11 @@
 
                                 <ImageView
                                     android:id="@+id/ivFemale"
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    android:contentDescription="Female icon"
-                                    android:background="@drawable/ic_gender_female"/>
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:tint="@color/colorPrimary"
+                                    android:src="@drawable/ic_gender_female"
+                                    android:contentDescription="Female icon" />
 
                                 <TextView
                                     android:id="@+id/tvFemale"

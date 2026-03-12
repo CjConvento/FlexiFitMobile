@@ -18,14 +18,12 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="371dp"
-        android:layout_height="0dp"
+        android:layout_height="531dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
         app:contentPadding="18dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toTopOf="@id/btnConfirm"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -53,7 +51,7 @@
                 tools:ignore="DuplicateIds">
 
                 <TextView
-                    android:id="@+id/FitGtvTitle"
+                    android:id="@+id/FGoaltvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -121,7 +119,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/FitG2tvTitle"
+                            android:id="@+id/tvTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="What is your fitness goal?"
@@ -132,7 +130,7 @@
                             tools:ignore="DuplicateIds" />
 
                         <TextView
-                            android:id="@+id/FitGtvSubtitle"
+                            android:id="@+id/FgoaltvSubtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"

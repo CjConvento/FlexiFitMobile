@@ -17,7 +17,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="371dp"
-        android:layout_height="0dp"
+        android:layout_height="531dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
@@ -25,8 +25,6 @@
         app:contentPadding="18dp"
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toTopOf="@id/btnConfirm"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -49,7 +47,7 @@
                 android:gravity="center_horizontal">
 
                 <TextView
-                    android:id="@+id/WrktvTitle"
+                    android:id="@+id/LoctvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -59,7 +57,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/WrktvSubtitle"
+                    android:id="@+id/LoctvSubtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -80,7 +78,7 @@
 
                 <!-- OPTIONAL: center the content vertically inside remaining space -->
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/card"
+                    android:id="@+id/Loccard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
@@ -88,7 +86,7 @@
 
                     <!-- TITLE WRAP -->
                     <LinearLayout
-                        android:id="@+id/titleWrap"
+                        android:id="@+id/LocttitleWrap"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
@@ -99,7 +97,7 @@
                         tools:ignore="DuplicateIds">
 
                         <TextView
-                            android:id="@+id/Wrk2tvTitle"
+                            android:id="@+id/SloctvTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Where do you usually workout?"
@@ -109,11 +107,11 @@
                             tools:ignore="DuplicateIds" />
 
                         <TextView
-                            android:id="@+id/Wrk2tvSubtitle"
+                            android:id="@+id/SloctvSubtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Select one or more option"
+                            android:text="Select one option"
                             android:textColor="@color/colorPrimary"
                             android:textSize="14sp" />
 

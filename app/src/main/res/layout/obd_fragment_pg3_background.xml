@@ -20,7 +20,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="371dp"
-        android:layout_height="0dp"
+        android:layout_height="531dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
@@ -28,8 +28,6 @@
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="25dp"
         app:cardElevation="8dp"
-        app:layout_constraintBottom_toTopOf="@id/btnConfirm"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -52,7 +50,7 @@
                 android:gravity="center_horizontal">
 
                 <TextView
-                    android:id="@+id/FitBtvTitle"
+                    android:id="@+id/tvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -62,7 +60,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/FitBtvSubtitle"
+                    android:id="@+id/tvSubtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -94,6 +92,7 @@
                         android:id="@+id/tvQ1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
                         android:gravity="center"
                         android:text="How is your daily lifestyle?"
                         android:textColor="@color/colorPrimary"
@@ -101,7 +100,7 @@
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
 
                     <!-- Swipe target -->
                     <LinearLayout
