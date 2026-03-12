@@ -102,17 +102,17 @@ class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
         loadWorkoutImage(imageFileName)
     }
 
+    // Hanapin ang loadWorkoutImage function sa loob ng WorkoutDetailFragment.kt
     private fun loadWorkoutImage(imageFileName: String) {
         if (imageFileName.isBlank()) {
             ivWorkoutHeroImage?.setImageResource(R.drawable.ic_launcher_foreground)
             return
         }
 
-        val imageUrl = IMAGE_BASE_URL + imageFileName
-
+        // Direct use of imageFileName as it is now a full URL from the C# API
         ivWorkoutHeroImage?.let { imageView ->
             Glide.with(this)
-                .load(imageUrl)
+                .load(imageFileName)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(imageView)

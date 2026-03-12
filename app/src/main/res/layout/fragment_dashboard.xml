@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:paddingBottom="50dp">
 
-<!--        HEADER-->
+        <!--        HEADER-->
         <include
             android:id="@+id/dashboardHeader"
             layout="@layout/drawer_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/cardLevel" />
+
+            app:layout_constraintTop_toTopOf="parent" />
 
 <!--        FITNESS LEVEL-->
         <com.google.android.material.card.MaterialCardView
@@ -30,7 +31,7 @@
             app:cardUseCompatPadding="true"
             app:strokeWidth="0dp"
             app:cardElevation="8dp"
-            app:layout_constraintBottom_toTopOf="@id/cardGoals">
+            app:layout_constraintTop_toBottomOf="@id/dashboardHeader">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -74,41 +75,87 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-<!--        GOALS-->
+<!--        BMI-->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardGoals"
+            android:id="@+id/cardBMI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="15dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="24dp"
             app:cardElevation="8dp"
+            android:layout_marginTop="-5dp"
+            app:cardUseCompatPadding="true"
             app:strokeWidth="0dp"
             app:layout_constraintTop_toBottomOf="@id/cardLevel">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="23dp">
+                android:background="@drawable/bg_bmi_card_full"
+                android:padding="20dp">
 
                 <TextView
+                    android:id="@+id/tvBMITitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Fitness Goals"
-                    android:textSize="18sp"
+                    android:text="BMI (Body Mass Index)"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvGoals"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvBMIStatus"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_dshb_goalchip" />
+                    android:layout_marginTop="4dp"
+                    android:text="You have a normal weight"
+                    android:textColor="@color/white"
+                    android:alpha="0.9"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBMITitle" />
 
-            </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBMIViewMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="16dp"
+                    android:text="View More"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    android:background="@drawable/bg_btn_bmi"
+                    app:cornerRadius="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBMIStatus" />
+
+                <FrameLayout
+                    android:id="@+id/layoutBMIChart"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <View
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_white_circle_bmi" />
+
+                    <TextView
+                        android:id="@+id/txtBMIScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="20.1"
+                        android:textColor="#C58BF2"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
 <!--        CALORIE STATUS-->
@@ -117,11 +164,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="18dp"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="1dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="0dp"
             app:cardElevation="8dp"
-            app:layout_constraintTop_toBottomOf="@id/cardGoals">
+            app:layout_constraintTop_toBottomOf="@id/cardBMI">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -208,6 +255,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+<!--        CALORIE TRACK-->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardCalorieTrack"
             android:layout_width="match_parent"
@@ -288,18 +336,174 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
+<!--        WORKOUT CURRENT SESSION-->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardToday"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="8dp"
+            app:cardCornerRadius="22dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/cardCalorieTrack"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:cardBackgroundColor="@android:color/transparent"
+            app:layout_constraintTop_toBottomOf="@id/cardCalorieTrack">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp">
+                    <TextView
+                        android:id="@+id/txtDayWeek"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Upcoming Workout"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/btnSeeMoreWorkouts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="See more"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/itemWorkout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="8dp"
+                    app:cardUseCompatPadding="true"
+                    app:strokeWidth="0dp">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp">
+                        <ImageView
+                            android:id="@+id/imgWorkout1"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/ic_cardio"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/imgWorkout1"
+                            app:layout_constraintEnd_toStartOf="@id/btnGoWorkout1"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+                            <TextView
+                                android:id="@+id/txtWorkoutName1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="PushUp"
+                                android:textStyle="bold"
+                                android:textColor="@color/textPrimary" />
+                            <TextView
+                                android:id="@+id/txtWorkoutTime1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Workout 1"
+                                android:textSize="12sp"
+                                android:textColor="@color/textSecondary" />
+                        </LinearLayout>
+                        <ImageButton
+                            android:id="@+id/btnGoWorkout1"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/baseline_arrow_right_ios_new_24"
+                            android:padding="8dp"
+                            app:tint="@color/colorPrimary"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/itemWorkout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardElevation="8dp"
+                    app:strokeWidth="0dp">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp">
+                        <ImageView
+                            android:id="@+id/imgWorkout2"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/ic_cardio"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp"
+                            app:layout_constraintStart_toEndOf="@id/imgWorkout2"
+                            app:layout_constraintEnd_toStartOf="@id/btnGoWorkout2"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+                            <TextView
+                                android:id="@+id/txtWorkoutName2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Squats"
+                                android:textStyle="bold"
+                                android:textColor="@color/textPrimary" />
+                            <TextView
+                                android:id="@+id/txtWorkoutTime2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Workout 2"
+                                android:textSize="12sp"
+                                android:textColor="@color/textSecondary" />
+                        </LinearLayout>
+                        <ImageButton
+                            android:id="@+id/btnGoWorkout2"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/baseline_arrow_right_ios_new_24"
+                            android:padding="8dp"
+                            app:tint="@color/colorPrimary"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+<!--        TODAY MEALS-->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardMeal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintTop_toBottomOf="@id/cardToday">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -307,83 +511,71 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_marginBottom="16dp">
 
                     <TextView
-                        android:id="@+id/txtDayWeek"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Day 1 - Week 1"
-                        android:textColor="@color/textPrimary"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txtStatus"
+                        android:id="@+id/txtTodayMealsHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/textSecondary"
-                        tools:text="Skipped" />
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="Today Meals"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/spinnerMealType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/bg_spinner_soft"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        tools:listitem="@android:layout/simple_spinner_item"
+                        android:entries="@array/meal_categories" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/mealItemsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Programs:"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtPrograms"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    tools:text="Beginner Outdoor Cardio&#10;Beginner Outdoor Strength Push" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Workouts:"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtWorkouts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    tools:text="Pushups, Pullups, Squats, ..." />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!--        WATER INTAKE-->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardWater"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             app:cardCornerRadius="18dp"
             app:cardElevation="8dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/cardToday"
+            app:layout_constraintTop_toBottomOf="@id/cardMeal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp">
+                android:padding="33dp">
 
                 <LinearLayout
                     android:id="@+id/textGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="50dp"
                     android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -418,8 +610,8 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnAddWater"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
                         android:background="@drawable/btn_gradient"
                         android:minHeight="0dp"
                         android:paddingStart="18dp"
@@ -440,131 +632,6 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardMeal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="8dp"
-            app:cardUseCompatPadding="true"
-            app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/cardWater"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Nutrition Plan"
-                        android:textColor="@color/textPrimary"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txt_nutriStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/textSecondary"
-                        tools:text="Skipped" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/txtMealPlanType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/textPrimary"
-                    tools:text="Gain Weight • Balanced Meal Plan" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Breakfast"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtdshb_Bfast"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    tools:text="Oat Pancakes, Eggs..." />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Lunch"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtdshb_Lunch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    tools:text="Chicken Adobo, Rice..." />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Snacks"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtdshb_Snacks"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    tools:text="Apple, Boiled Eggs..." />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Dinner"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtdshb_Dinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    tools:text="Grilled Fish, Vegetables..." />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Total Calories"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtMealTotalCalories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textPrimary"
-                    tools:text="2000 kcal" />
-            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

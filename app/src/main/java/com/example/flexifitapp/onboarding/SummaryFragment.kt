@@ -13,6 +13,7 @@ import com.example.flexifitapp.ApiClient
 import com.example.flexifitapp.MobileApi
 import com.example.flexifitapp.OnboardingActivity
 import com.example.flexifitapp.OnboardingProfileRequest
+import com.example.flexifitapp.DetailedProgram // Siguraduhing imported ito babe
 import com.example.flexifitapp.R
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
@@ -51,6 +52,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val programsWrap = view.findViewById<LinearLayout>(R.id.programsWrap)
         val tvProgramsEmpty = view.findViewById<TextView>(R.id.tvProgramsEmpty)
 
+        // Pagkuha ng data mula sa OnboardingStore
         val age = OnboardingStore.getInt(ctx, "age", 0)
         val gender = OnboardingStore.getString(ctx, "gender")
         val height = OnboardingStore.getInt(ctx, "height_cm", 0)
@@ -66,6 +68,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val goals = OnboardingStore.getStringSet(ctx, "fitness_goal")
         val programs = OnboardingStore.getStringSet(ctx, "selected_programs")
 
+        // Health Checks display logic
         val healthItems = mutableListOf<String>()
         if (OnboardingStore.getBoolean(ctx, "upper_body_injury", false)) healthItems.add("Upper Body Injury")
         if (OnboardingStore.getBoolean(ctx, "lower_body_injury", false)) healthItems.add("Lower Body Injury")
@@ -73,11 +76,12 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         if (OnboardingStore.getBoolean(ctx, "short_breath", false)) healthItems.add("Shortness of Breath")
         if (OnboardingStore.getBoolean(ctx, "health_none", false)) healthItems.add("None")
 
+        // Binding to TextViews
         tvSumAge.text = if (age > 0) age.toString() else "-"
         tvSumGender.text = gender.ifBlank { "-" }
-        tvSumHeight.text = if (height > 0) height.toString() else "-"
-        tvSumWeight.text = if (weight > 0) weight.toString() else "-"
-        tvSumTargetWeight.text = if (targetWeight > 0) targetWeight.toString() else "-"
+        tvSumHeight.text = if (height > 0) "$height cm" else "-"
+        tvSumWeight.text = if (weight > 0) "$weight kg" else "-"
+        tvSumTargetWeight.text = if (targetWeight > 0) "$targetWeight kg" else "-"
         tvSumHealth.text = if (healthItems.isNotEmpty()) healthItems.joinToString(", ") else "-"
         tvSumLifestyle.text = lifestyle.ifBlank { "-" }
         tvSumLevel.text = level.ifBlank { "-" }
@@ -85,9 +89,10 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         tvSumBodyComp.text = bodyGoal.ifBlank { "-" }
         tvSumDiet.text = dietType.ifBlank { "-" }
 
-        chipGym.isVisible = environments.contains("Gym") || environments.contains("GYM")
-        chipHome.isVisible = environments.contains("Home") || environments.contains("HOME")
+        chipGym.isVisible = environments.any { it.equals("Gym", true) }
+        chipHome.isVisible = environments.any { it.equals("Home", true) }
 
+        // Program List Rendering
         programsWrap.removeAllViews()
         if (programs.isEmpty()) {
             tvProgramsEmpty.isVisible = true
@@ -102,7 +107,6 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
                     background = resources.getDrawable(R.drawable.flexifit_border, null)
                     gravity = android.view.Gravity.CENTER
                 }
-
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -110,7 +114,6 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
                 lp.topMargin = 8
                 lp.gravity = android.view.Gravity.CENTER_HORIZONTAL
                 tv.layoutParams = lp
-
                 programsWrap.addView(tv)
             }
         }
@@ -119,36 +122,25 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
     private fun submitProfile() {
         val ctx = requireContext()
 
-        Log.d(
-            "FlexiFitSubmit",
-            """
-            age=${OnboardingStore.getInt(ctx, "age", 0)}
-            gender=${OnboardingStore.getString(ctx, "gender")}
-            height_cm=${OnboardingStore.getInt(ctx, "height_cm", 0)}
-            weight_kg=${OnboardingStore.getInt(ctx, "weight_kg", 0)}
-            target_weight_kg=${OnboardingStore.getInt(ctx, "target_weight_kg", 0)}
-            upper_body_injury=${OnboardingStore.getBoolean(ctx, "upper_body_injury", false)}
-            lower_body_injury=${OnboardingStore.getBoolean(ctx, "lower_body_injury", false)}
-            joint_problems=${OnboardingStore.getBoolean(ctx, "joint_problems", false)}
-            short_breath=${OnboardingStore.getBoolean(ctx, "short_breath", false)}
-            health_none=${OnboardingStore.getBoolean(ctx, "health_none", false)}
-            fitness_lifestyle=${OnboardingStore.getString(ctx, "fitness_lifestyle")}
-            fitness_level=${OnboardingStore.getString(ctx, "fitness_level")}
-            environment=${OnboardingStore.getStringSet(ctx, "environment")}
-            fitness_goal=${OnboardingStore.getStringSet(ctx, "fitness_goal")}
-            bodycomp_goal=${OnboardingStore.getString(ctx, "bodycomp_goal")}
-            dietary_type=${OnboardingStore.getString(ctx, "dietary_type")}
-            selected_programs=${OnboardingStore.getStringSet(ctx, "selected_programs")}
-            """.trimIndent()
-        )
+        // 1. Parsing the programs to ensure we send structured data to C#
+        val rawPrograms = OnboardingStore.getStringSet(ctx, "selected_programs")
+        val detailedPrograms = rawPrograms.map { rawName ->
+            val info = ProgramNameParser.parse(rawName)
+            DetailedProgram(
+                category = info.category.uppercase(), // Matches DB: 'CARDIO', 'MUSCLE_GAIN'
+                level = info.level,                 // Matches DB: 'Beginner', etc.
+                environment = info.environment,     // Matches DB: 'GYM', 'HOME'
+                rawName = rawName
+            )
+        }
 
+        // 2. Build the final request object
         val request = OnboardingProfileRequest(
             age = OnboardingStore.getInt(ctx, "age", 0),
             gender = OnboardingStore.getString(ctx, "gender"),
-
-            heightCm = OnboardingStore.getInt(ctx, "height_cm", 0).toDouble(),
-            weightKg = OnboardingStore.getInt(ctx, "weight_kg", 0).toDouble(),
-            targetWeightKg = OnboardingStore.getInt(ctx, "target_weight_kg", 0).toDouble(),
+            heightCm = OnboardingStore.getInt(ctx, "height_cm", 0),
+            weightKg = OnboardingStore.getInt(ctx, "weight_kg", 0),
+            targetWeightKg = OnboardingStore.getInt(ctx, "target_weight_kg", 0),
 
             upperBodyInjury = OnboardingStore.getBoolean(ctx, "upper_body_injury", false),
             lowerBodyInjury = OnboardingStore.getBoolean(ctx, "lower_body_injury", false),
@@ -165,8 +157,11 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
             bodyGoal = OnboardingStore.getString(ctx, "bodycomp_goal"),
             dietType = OnboardingStore.getString(ctx, "dietary_type"),
 
-            selectedPrograms = OnboardingStore.getStringSet(ctx, "selected_programs").toList()
+            // Eto yung structured list babe!
+            selectedPrograms = detailedPrograms
         )
+
+        Log.d("FlexiFitSubmit", "Submitting structured profile with ${detailedPrograms.size} programs")
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -174,24 +169,16 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
                 val res = api.submitProfile(request)
 
                 if (res.isSuccessful) {
-                    Toast.makeText(ctx, "Profile submitted successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, "Profile submitted successfully!", Toast.LENGTH_SHORT).show()
                     (activity as? OnboardingActivity)?.goToMain()
                 } else {
                     val errorBody = res.errorBody()?.string().orEmpty()
-                    Log.e("FlexiFitSubmit", "HTTP ${res.code()} | $errorBody")
-                    Toast.makeText(
-                        ctx,
-                        "Submit failed: HTTP ${res.code()}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Log.e("FlexiFitSubmit", "HTTP Error ${res.code()}: $errorBody")
+                    Toast.makeText(ctx, "Error ${res.code()}: $errorBody", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                Log.e("FlexiFitSubmit", "Network error", e)
-                Toast.makeText(
-                    ctx,
-                    "Network error: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Log.e("FlexiFitSubmit", "Network/Unexpected Error", e)
+                Toast.makeText(ctx, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

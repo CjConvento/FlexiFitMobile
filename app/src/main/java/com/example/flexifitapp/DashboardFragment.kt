@@ -3,15 +3,14 @@ package com.example.flexifitapp
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.flexifitapp.dashboard.GoalsAdapter
 import com.example.flexifitapp.custom.WaterGlassView
 import com.example.flexifitapp.UserPrefs
 import com.example.flexifitapp.CalorieMacroCalculator
+import com.example.flexifitapp.dashboard.BmiDetailsDialog
 import com.example.flexifitapp.onboarding.FlexiFitKeys
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -42,7 +41,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     // ===== Views =====
     private var txtLevel: TextView? = null
     private var imgLevelIcon: ImageView? = null
-    private var rvGoals: RecyclerView? = null
     private var txtCalorieIntake: TextView? = null
     private var txtCaloriesBurned: TextView? = null
     private var tvNetCalories: TextView? = null
@@ -71,12 +69,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         bindViews(view)
         setupWaterCard()
         renderDynamicUI(view)
+        renderBMI(view)
     }
 
     private fun bindViews(view: View) {
         txtLevel = view.findViewById(R.id.txtLevel)
         imgLevelIcon = view.findViewById(R.id.imgLevelIcon)
-        rvGoals = view.findViewById(R.id.rvGoals)
         txtCalorieIntake = view.findViewById(R.id.txtCalorieIntake)
         txtCaloriesBurned = view.findViewById(R.id.txtCaloriesBurned)
         progressIntake = view.findViewById(R.id.progressIntake)
@@ -107,19 +105,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         val height = UserPrefs.getInt(ctx, FlexiFitKeys.HEIGHT_CM)
         val weight = UserPrefs.getInt(ctx, FlexiFitKeys.WEIGHT_KG)
         val userLevel = UserPrefs.getString(ctx, FlexiFitKeys.FITNESS_LEVEL)
-
-        val goalsString = UserPrefs.getString(ctx, FlexiFitKeys.FITNESS_GOAL)
-        val goalsList = goalsString.split(",").map { it.trim() }
-        setupGoalsRecyclerView(goalsList)
-
-        val primaryGoal = when {
-            goalsList.contains("Muscle Gain") -> "Gain"
-            goalsList.contains("Cardio") -> "Lose"
-            else -> "Recovery" // Default para sa Rehab
-        }
-
-        val calcResult = CalorieMacroCalculator.compute(age, gender, height, weight, userLevel, primaryGoal)
-        this.goalCalories = calcResult.calories
+        val primary_goal = UserPrefs.getString(ctx, FlexiFitKeys.FITNESS_GOAL)
 
         txtLevel?.text = "Level: $userLevel"
         updateLevelIcon(userLevel)
@@ -130,9 +116,37 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         renderWater()
     }
 
-    private fun setupGoalsRecyclerView(goals: List<String>) {
-        rvGoals?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        rvGoals?.adapter = GoalsAdapter(goals)
+    private fun renderBMI(view: View) {
+        val ctx = requireContext()
+        val weight = UserPrefs.getInt(ctx, FlexiFitKeys.WEIGHT_KG)
+        val heightCm = UserPrefs.getInt(ctx, FlexiFitKeys.HEIGHT_CM)
+        val heightM = heightCm / 100.0
+        val btnBMIViewMore = view.findViewById<Button>(R.id.btnBMIViewMore)
+
+        if (weight > 0 && heightM > 0) {
+            val bmi = weight / (heightM * heightM)
+
+            // I-format natin para 1 decimal place lang (parang sa picture mo)
+            val formattedBMI = String.format("%.1f", bmi)
+
+            val txtBMIScore = view.findViewById<TextView>(R.id.txtBMIScore)
+            val tvBMIStatus = view.findViewById<TextView>(R.id.tvBMIStatus)
+
+            txtBMIScore?.text = formattedBMI
+
+            tvBMIStatus?.text = when {
+                bmi < 18.5 -> "You are underweight"
+                bmi in 18.5..24.9 -> "You have a normal weight"
+                else -> "You are overweight"
+            }
+
+            btnBMIViewMore?.setOnClickListener {
+                val dialog = BmiDetailsDialog(bmi) // Gamitin na natin yung 'bmi' variable sa taas
+                dialog.show(parentFragmentManager, "bmi_details")
+            }
+
+        }
+
     }
 
     private fun updateLevelIcon(level: String) {
@@ -201,7 +215,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         // Cleanup all views
         txtLevel = null
         imgLevelIcon = null
-        rvGoals = null
         txtCalorieIntake = null
         txtCaloriesBurned = null
         tvNetCalories = null

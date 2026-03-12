@@ -63,7 +63,7 @@
         private var workoutExpanded = true
 
         companion object {
-            private const val IMAGE_BASE_URL = "https://your-api-domain.com/images/workouts/"
+            private const val IMAGE_BASE_URL = "https://0.0.0.0:5160/wwwroot/images/workouts/"
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -244,21 +244,16 @@
             }
         }
 
+        // 1. Sa loob ng fetchWorkoutSession()
         private fun fetchWorkoutSession() {
             lifecycleScope.launch {
                 showLoading()
-
                 try {
-                    val userId = UserPrefs.getUserId(requireContext())
-
-                    if (userId <= 0) {
-                        showError("User session not found.")
-                        return@launch
-                    }
-
                     val api = ApiClient.api(requireContext())
                     val repository = WorkoutRepository(api)
-                    val response = repository.getCurrentWorkoutSession(userId)
+
+                    // In-update para sa bagong repository method
+                    val response = repository.getTodayWorkout()
 
                     if (response == null) {
                         showError("Failed to load workout session.")
@@ -268,16 +263,12 @@
                     bindProgram(response.program)
                     bindWorkoutLists(response.warmups, response.workouts)
 
-                    val hasNoItems = response.warmups.isEmpty() && response.workouts.isEmpty()
-
-                    if (hasNoItems) {
+                    if (response.warmups.isEmpty() && response.workouts.isEmpty()) {
                         showEmpty()
                     } else {
                         showContent()
                     }
-
                 } catch (e: Exception) {
-                    e.printStackTrace()
                     showError("Failed to load workout session.")
                 }
             }
@@ -308,21 +299,10 @@
             }
         }
 
-        private fun bindWorkoutLists(
-            warmups: List<WorkoutItem>,
-            workouts: List<WorkoutItem>
-        ) {
-            rvWarmupItems?.adapter = WorkoutAdapter(
-                items = warmups,
-                imageBaseUrl = IMAGE_BASE_URL,
-                onClick = ::openWorkoutDetail
-            )
-
-            rvWorkoutItems?.adapter = WorkoutAdapter(
-                items = workouts,
-                imageBaseUrl = IMAGE_BASE_URL,
-                onClick = ::openWorkoutDetail
-            )
+        private fun bindWorkoutLists(warmups: List<WorkoutItem>, workouts: List<WorkoutItem>) {
+            // Inalis na ang IMAGE_BASE_URL dito babe
+            rvWarmupItems?.adapter = WorkoutAdapter(warmups, ::openWorkoutDetail)
+            rvWorkoutItems?.adapter = WorkoutAdapter(workouts, ::openWorkoutDetail)
         }
 
         private fun showLoading() {

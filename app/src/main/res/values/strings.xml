@@ -3,4 +3,12 @@
     <string name="nav_open">Open navigation</string>
     <string name="nav_close">Close navigation</string>
     <string name="default_web_client_id">775683906550-letts6e8tfoea1ph1ja6gh5s9t9euu8a.apps.googleusercontent.com</string>
+
+        <string-array name="meal_categories">
+            <item>Breakfast</item>
+            <item>Lunch</item>
+            <item>Snacks</item>
+            <item>Dinner</item>
+        </string-array>
+
 </resources>

@@ -1,10 +1,10 @@
 package com.example.flexifitapp.onboarding
 
 data class ProgramInfo(
-    val program: String,
-    val level: String,
-    val environment: String,
-    val safetyNote: String = ""
+    val category: String,    // CARDIO, MUSCLE_GAIN, REHAB
+    val level: String,       // Beginner, Intermediate, Advanced
+    val environment: String, // GYM, HOME, OUTDOOR
+    val rawName: String      // Para sa display
 )
 
 object ProgramNameParser {
@@ -36,10 +36,10 @@ object ProgramNameParser {
             // injury-safe rehab: "Rehab (Gym)"
             if (main.startsWith("Rehab", ignoreCase = true)) {
                 return ProgramInfo(
-                    program = "Rehab",
+                    category = "Rehab",
                     level = "Rehab",
                     environment = env,
-                    safetyNote = safety
+                    rawName = safety
                 )
             }
 
@@ -48,10 +48,10 @@ object ProgramNameParser {
             val (program, level) = parseProgramAndLevel(parts)
 
             return ProgramInfo(
-                program = program,
+                category = program,
                 level = level,
                 environment = env,
-                safetyNote = safety
+                rawName = safety
             )
         }
 
@@ -66,7 +66,7 @@ object ProgramNameParser {
                 .ifBlank { "Unknown" }
 
             return ProgramInfo(
-                program = "Rehab",
+                category = "Rehab",
                 level = "Rehab",
                 environment = env
             )

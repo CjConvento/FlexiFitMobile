@@ -8,7 +8,6 @@ import com.example.flexifitapp.databinding.ItemWorkoutEntryBinding
 
 class WorkoutAdapter(
     private val items: List<WorkoutItem>,
-    private val imageBaseUrl: String,
     private val onClick: (WorkoutItem) -> Unit
 ) : RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
@@ -19,33 +18,21 @@ class WorkoutAdapter(
         fun bind(item: WorkoutItem) {
             binding.tvWorkoutItemName.text = item.name
 
-            val imageUrl = if (item.imageFileName.isNotBlank()) {
-                imageBaseUrl + item.imageFileName
-            } else {
-                null
-            }
-
+            // Rekta load na tayo babe dahil full URL na ito galing sa C#
             Glide.with(binding.root.context)
-                .load(imageUrl)
+                .load(item.imageFileName)
                 .placeholder(android.R.drawable.ic_menu_gallery)
                 .error(android.R.drawable.ic_menu_gallery)
                 .into(binding.ivWorkoutThumb)
 
-            binding.root.setOnClickListener {
-                onClick(item)
-            }
-
-            binding.btnOpenWorkoutItem.setOnClickListener {
-                onClick(item)
-            }
+            binding.root.setOnClickListener { onClick(item) }
+            binding.btnOpenWorkoutItem.setOnClickListener { onClick(item) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val binding = ItemWorkoutEntryBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
+            LayoutInflater.from(parent.context), parent, false
         )
         return WorkoutViewHolder(binding)
     }

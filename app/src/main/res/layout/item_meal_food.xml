@@ -1,69 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rowMealFood"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingVertical="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:background="?attr/selectableItemBackgroundBorderless">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp"
+    app:cardUseCompatPadding="true">
 
-    <!-- Food image -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
-        app:strokeWidth="0dp"
-        app:cardBackgroundColor="@android:color/white">
-
-        <ImageView
-            android:id="@+id/imgFood"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:contentDescription="Food image"
-            android:src="@drawable/ic_food_placeholder"
-            tools:src="@drawable/ic_food_placeholder"/>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Food name + description -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/rowMealFood"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="12dp"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
 
-        <TextView
-            android:id="@+id/tvFoodName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            tools:text="Oatmeal Pancakes"/>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F6F7FB">
 
-        <TextView
-            android:id="@+id/tvFoodSub"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/imgFood"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_food_placeholder"
+                tools:src="@drawable/ic_food_placeholder"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:alpha="0.7"
-            tools:text="Tap to view / edit serving"/>
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvFoodName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="@color/textPrimary"
+                tools:text="Oatmeal Pancakes"/>
+
+            <TextView
+                android:id="@+id/tvFoodSub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:alpha="0.7"
+                tools:text="350 kcal • 1 serving"/>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnOpenFood"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_circle_soft"
+            android:src="@drawable/ic_chevron_r_circle"
+            app:tint="?attr/colorPrimary"
+            android:clickable="false"
+            android:focusable="false"/>
+
     </LinearLayout>
-
-    <!-- Open details button -->
-    <ImageButton
-        android:id="@+id/btnOpenFood"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/bg_circle_soft"
-        android:contentDescription="Open food details"
-        android:src="@drawable/ic_chevron_r_circle"
-        app:tint="?attr/colorPrimary" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>
