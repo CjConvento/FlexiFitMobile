@@ -1,6 +1,6 @@
 package com.example.flexifitapp
 
-import com.example.flexifitapp.dashboard.CalorieResponse
+import com.example.flexifitapp.dashboard.ProfileStatusResponse // Gamitin ang merged model
 import com.example.flexifitapp.workout.WorkoutSessionResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -9,35 +9,26 @@ import retrofit2.http.POST
 
 interface ApiService {
 
+    // --- AUTHENTICATION ---
     @POST("api/auth/register")
-    suspend fun register(
-        @Body body: RegisterRequest
-    ): Response<AuthResponse>
+    suspend fun register(@Body body: RegisterRequest): Response<AuthResponse>
 
     @POST("api/auth/login")
-    suspend fun login(
-        @Body body: LoginRequest
-    ): Response<AuthResponse>
+    suspend fun login(@Body body: LoginRequest): Response<AuthResponse>
 
+    // --- ONBOARDING & BOOTSTRAP ---
     @POST("api/mobile/bootstrap")
     suspend fun bootstrap(): Response<BootstrapResponse>
 
-    /**
-     * Ginagamit para sa Profile Screen at Nutrition Plan Screen.
-     * Ang backend na ang magka-calculate ng BMI, TDEE, at Macros
-     * base sa database record ng user.
-     */
+    @POST("api/mobile/onboarding/profile")
+    suspend fun submitProfile(@Body body: OnboardingProfileRequest): Response<Unit>
+
+    // --- USER PROFILE & NUTRITION ---
+    // Ngayon, ito na ang gagamitin natin sa Dashboard
     @GET("api/profile/status")
     suspend fun getProfileStatus(): Response<ProfileStatusResponse>
 
-    /**
-     * Kukunin ang workout session para sa araw na ito.
-     * Ang backend na ang mag-bubuo ng full Media URLs (IP + Filename).
-     */
+    // --- WORKOUT ENGINE ---
     @GET("api/workout/today")
     suspend fun getTodayWorkout(): Response<WorkoutSessionResponse>
-
-    // Kung kailangan mo pa rin ng manual calculator (optional):
-    // @POST("api/calculator/compute")
-    // suspend fun computeCalculator(@Body body: CalculatorRequest): Response<CalorieResponse>
 }

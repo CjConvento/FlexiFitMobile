@@ -48,9 +48,12 @@ class ProgramCardAdapter(
         fun bind(programName: String) {
             val info = ProgramNameParser.parse(programName)
 
-            tvTitle.text = "${info.program} Program"
+            // Gamitin ang category mula sa parser
+            tvTitle.text = "${info.category} Program"
             tvLevel.text = "Level: ${info.level}"
             tvEnv.text = "Environment: ${info.environment}"
+
+            // Dito papasok yung revised description logic gamit ang rawName
             tvDesc.text = buildDescription(info)
 
             renderSelectedState(programName)
@@ -89,16 +92,22 @@ class ProgramCardAdapter(
         }
 
         private fun buildDescription(info: ProgramInfo): String {
-            val safetyNote = if (info.safetyNote.isNotBlank()) "${info.safetyNote} " else ""
-            return when (info.program.lowercase()) {
+            // Pinalitan ang safetyNote ng rawName (ito yung injury-safe status)
+            val prefix = if (info.rawName.isNotBlank()) "${info.rawName} " else ""
+
+            val categoryLower = info.category.lowercase().replace(" ", "")
+            val levelLower = info.level.lowercase()
+            val envLower = info.environment.lowercase()
+
+            return when (categoryLower) {
                 "cardio" ->
-                    "${safetyNote}Recommended to improve endurance and burn calories for ${info.level.lowercase()} users training at ${info.environment.lowercase()}."
-                "musclegain", "muscle gain", "muscle_gain" ->
-                    "${safetyNote}Recommended to build muscle for ${info.level.lowercase()} users training at ${info.environment.lowercase()}."
+                    "${prefix}Recommended to improve endurance and burn calories for $levelLower users training at $envLower."
+                "musclegain", "muscle_gain" ->
+                    "${prefix}Recommended to build muscle for $levelLower users training at $envLower."
                 "rehab" ->
-                    "${safetyNote}Recommended for recovery-focused training at ${info.environment.lowercase()}."
+                    "${prefix}Recommended for recovery-focused training at $envLower."
                 else ->
-                    "${safetyNote}Recommended program for ${info.level.lowercase()} users at ${info.environment.lowercase()}."
+                    "${prefix}Recommended program for $levelLower users at $envLower."
             }
         }
     }

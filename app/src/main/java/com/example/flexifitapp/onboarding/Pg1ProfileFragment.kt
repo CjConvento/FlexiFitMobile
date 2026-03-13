@@ -2,8 +2,6 @@ package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
 import android.view.View
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -40,15 +38,19 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
         }
 
         fun selectGender(g: String) {
+            if (g.isBlank()) return // Huwag mag-save kung empty
             selectedGender = g
-            OnboardingStore.putString(requireContext(), "gender", g)
+            OnboardingStore.putString(requireContext(), FlexiFitKeys.GENDER, g)
             applyGenderSelection(g)
         }
 
-// restore saved selection
-        selectGender(OnboardingStore.getString(requireContext(), "gender"))
+        // Restore saved selection gamit ang FlexiFitKeys
+        val savedGender = OnboardingStore.getString(requireContext(), FlexiFitKeys.GENDER)
+        if (savedGender.isNotBlank()) {
+            selectGender(savedGender)
+        }
 
-// click listeners
+        // Click listeners
         cardMale.setOnClickListener { selectGender("Male") }
         cardFemale.setOnClickListener { selectGender("Female") }
     }
@@ -66,7 +68,7 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
         adapter.onBindNumber = { tv, _, isSelected ->
             tv.alpha = if (isSelected) 1f else 0.45f
             tv.textSize = if (isSelected) 22f else 16f
-            tv.gravity = android.view.Gravity.CENTER // extra safety
+            tv.gravity = android.view.Gravity.CENTER
         }
 
         rvAge.adapter = adapter
@@ -74,7 +76,8 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rvAge)
 
-        val savedAge = OnboardingStore.getInt(requireContext(), "age", 18).coerceIn(minAge, maxAge)
+        // Restore age gamit ang FlexiFitKeys
+        val savedAge = OnboardingStore.getInt(requireContext(), FlexiFitKeys.AGE, 25).coerceIn(minAge, maxAge)
         val startPos = adapter.getVirtualPosForNumber(savedAge)
 
         rvAge.post {
@@ -82,7 +85,8 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
             adapter.setSelectedVirtualPos(startPos)
             selectedAge = savedAge
             tvAgeSelected.text = savedAge.toString()
-            OnboardingStore.putInt(requireContext(), "age", savedAge)
+            // I-save ang initial/restored value
+            OnboardingStore.putInt(requireContext(), FlexiFitKeys.AGE, savedAge)
         }
 
         rvAge.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -96,34 +100,19 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
                 adapter.setSelectedVirtualPos(pos)
                 selectedAge = age
                 tvAgeSelected.text = age.toString()
-                OnboardingStore.putInt(requireContext(), "age", age)
+                OnboardingStore.putInt(requireContext(), FlexiFitKeys.AGE, age)
             }
         })
     }
 
     override fun validateBeforeNext(): String? {
-        val age = OnboardingStore.getInt(requireContext(), "age", 0)
-        val gender = OnboardingStore.getString(requireContext(), "gender")
+        val age = OnboardingStore.getInt(requireContext(), FlexiFitKeys.AGE, 0)
+        val gender = OnboardingStore.getString(requireContext(), FlexiFitKeys.GENDER)
 
         return when {
-            age <= 0 -> "Please select your age."
-            age < 10 || age > 100 -> "Please enter an age between 10 and 100."
+            age < 10 || age > 100 -> "Please select a valid age (10-100)."
             gender.isBlank() -> "Please select your gender."
             else -> null
-        }
-    }
-
-    private fun preloadRadio(rg: RadioGroup?, key: String) {
-        if (rg == null) return
-        val saved = OnboardingStore.getString(requireContext(), key)
-        if (saved.isBlank()) return
-
-        for (i in 0 until rg.childCount) {
-            val child = rg.getChildAt(i)
-            if (child is RadioButton && child.text.toString().equals(saved, ignoreCase = true)) {
-                child.isChecked = true
-                break
-            }
         }
     }
 }

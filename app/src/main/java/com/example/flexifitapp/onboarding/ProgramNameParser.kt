@@ -1,10 +1,10 @@
 package com.example.flexifitapp.onboarding
 
 data class ProgramInfo(
-    val category: String,    // CARDIO, MUSCLE_GAIN, REHAB
-    val level: String,       // Beginner, Intermediate, Advanced
-    val environment: String, // GYM, HOME, OUTDOOR
-    val rawName: String      // Para sa display
+    val category: String,
+    val level: String,
+    val environment: String,
+    val rawName: String
 )
 
 object ProgramNameParser {
@@ -12,97 +12,61 @@ object ProgramNameParser {
     fun parse(name: String): ProgramInfo {
         val trimmed = name.trim().replace(Regex("\\s+"), " ")
 
+        // 1. Injury Safe Check
         val injuryPrefix1 = "Upper Body Injury Safe "
         val injuryPrefix2 = "Lower Body Injury Safe "
 
-        // =========================
-        // 1) Injury-safe formats
-        // =========================
         if (trimmed.startsWith(injuryPrefix1) || trimmed.startsWith(injuryPrefix2)) {
-
-            val safety = if (trimmed.startsWith(injuryPrefix1)) {
-                "Upper body injury-safe."
-            } else {
-                "Lower body injury-safe."
-            }
-
-            val withoutPrefix = trimmed
-                .removePrefix(injuryPrefix1)
-                .removePrefix(injuryPrefix2)
+            val safety = if (trimmed.startsWith(injuryPrefix1)) "Upper body injury-safe" else "Lower body injury-safe"
+            val withoutPrefix = trimmed.removePrefix(injuryPrefix1).removePrefix(injuryPrefix2)
 
             val env = extractParen(withoutPrefix) ?: "Unknown"
             val main = withoutPrefix.replace("($env)", "").trim()
 
-            // injury-safe rehab: "Rehab (Gym)"
             if (main.startsWith("Rehab", ignoreCase = true)) {
-                return ProgramInfo(
-                    category = "Rehab",
-                    level = "Rehab",
-                    environment = env,
-                    rawName = safety
-                )
+                return ProgramInfo("Rehab", "Rehab", env, safety)
             }
 
             val parts = main.split(" ").filter { it.isNotBlank() }
-
             val (program, level) = parseProgramAndLevel(parts)
-
-            return ProgramInfo(
-                category = program,
-                level = level,
-                environment = env,
-                rawName = safety
-            )
+            return ProgramInfo(program, level, env, safety)
         }
 
-        // =========================
-        // 2) Normal Rehab formats
-        // =========================
+        // 2. Normal Rehab Check (e.g., "Rehab Gym Program")
         if (trimmed.startsWith("Rehab ", ignoreCase = true)) {
             val env = trimmed
-                .removePrefix("Rehab ")
-                .removeSuffix(" Program")
+                .replace("Rehab", "", ignoreCase = true)
+                .replace("Program", "", ignoreCase = true)
                 .trim()
                 .ifBlank { "Unknown" }
 
-            return ProgramInfo(
-                category = "Rehab",
-                level = "Rehab",
-                environment = env
-            )
+            return ProgramInfo("Rehab", "Rehab", env, "")
         }
 
-        // =========================
-        // 3) Normal Cardio/MuscleGain formats
-        // =========================
-        val noSuffix = trimmed.removeSuffix(" Program").trim()
-        val parts = noSuffix.split(" ").filter { it.isNotBlank() }
+        // 3. Normal Cardio/Muscle Gain (e.g., "Muscle Gain Beginner Gym Program")
+        // REVISION: Alisin muna lahat ng fillers para malinis ang parts
+        val cleanName = trimmed.replace(" Program", "").trim()
+        val parts = cleanName.split(" ").filter { it.isNotBlank() }
 
         val (program, level) = parseProgramAndLevel(parts)
 
-        // After program+level, env should be next token if exists
-        // Example: Cardio Beginner Gym -> env = Gym
-        val envIndex = when {
-            isMuscleGainTwoWords(parts) -> 3 // "Muscle Gain" + Level + Env
-            else -> 2                        // Program + Level + Env
-        }
-        val env = parts.getOrNull(envIndex) ?: "Unknown"
+        // REVISION: Kunin ang huling part bilang environment para flexible kahit 1 or 2 words ang category
+        val env = parts.lastOrNull() ?: "Unknown"
 
-        return ProgramInfo(program, level, env)
+        return ProgramInfo(program, level, env, "")
     }
 
-    // ---- Helpers ----
-
     private fun parseProgramAndLevel(parts: List<String>): Pair<String, String> {
-        if (isMuscleGainTwoWords(parts)) {
-            val program = "MuscleGain"
+        return if (isMuscleGainTwoWords(parts)) {
+            // Index 0: Muscle, Index 1: Gain, Index 2: Level
             val level = parts.getOrNull(2) ?: "Beginner"
-            return program to level
+            "MuscleGain" to level
+        } else {
+            // Index 0: Program (Cardio), Index 1: Level
+            val program = normalizeProgram(parts.getOrNull(0) ?: "Program")
+            val level = parts.getOrNull(1) ?: "Beginner"
+            program to level
         }
-
-        val program = normalizeProgram(parts.getOrNull(0) ?: "Program")
-        val level = parts.getOrNull(1) ?: "Beginner"
-        return program to level
     }
 
     private fun isMuscleGainTwoWords(parts: List<String>): Boolean {
@@ -120,10 +84,9 @@ object ProgramNameParser {
 
     private fun normalizeProgram(raw: String): String {
         return when (raw.lowercase()) {
-            "musclegain", "muscle_gain" -> "MuscleGain"
+            "musclegain", "muscle_gain", "muscle" -> "MuscleGain"
             "cardio" -> "Cardio"
             "rehab" -> "Rehab"
-            "muscle" -> "MuscleGain" // fallback if engine outputs just "Muscle"
             else -> raw
         }
     }

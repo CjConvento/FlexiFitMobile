@@ -18,14 +18,20 @@ class WaterGlassView @JvmOverloads constructor(
     private val outlinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = dp(3f)
-        color = Color.parseColor("#E0E7FF") // Light bluish-gray border
+        color = Color.parseColor("#9eb9d4")
         strokeCap = Paint.Cap.ROUND
     }
 
-    // Kulay ng tubig sa loob
+    // Paint para sa tubig (Gagamitan natin ng shader mamaya)
     private val waterPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.parseColor("#7B61FF") // Yung purple-blue color sa image mo
+    }
+
+    // Paint para sa bubbles
+    private val bubblePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.WHITE
+        alpha = 50
     }
 
     private val dropPath = Path()
@@ -48,7 +54,6 @@ class WaterGlassView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        // Gawin nating square-ish yung view para maganda yung shape ng drop
         val desiredSize = dp(80f).toInt()
         val size = resolveSize(desiredSize, widthMeasureSpec)
         setMeasuredDimension(size, size)
@@ -60,18 +65,25 @@ class WaterGlassView @JvmOverloads constructor(
         val w = width.toFloat()
         val h = height.toFloat()
         val centerX = w / 2f
-        val centerY = h / 2f
-        val size = minOf(w, h) * 0.8f // Para may padding sa paligid
+        val size = minOf(w, h) * 0.8f
 
-        // 1. I-calculate ang Drop Path (Yung hugis patak)
+        // 1. I-set ang Gradient (Vertical: Start Color sa taas, End Color sa baba)
+        // Ginamit ko yung colors na binigay mo: #6082B6 at #9eb9d4
+        waterPaint.shader = LinearGradient(
+            0f, h * 0.1f, // Simula sa itaas ng drop
+            0f, h * 0.95f, // Hanggang sa bottom ng drop
+            Color.parseColor("#6082B6"),
+            Color.parseColor("#9eb9d4"),
+            Shader.TileMode.CLAMP
+        )
+
+        // 2. I-calculate ang Drop Path
         dropPath.reset()
-        // Magsisimula sa taas (yung matulis na part)
         dropPath.moveTo(centerX, h * 0.1f)
-        // Gagawa ng curves para sa bilog na bottom
         dropPath.cubicTo(
-            centerX + size / 1.5f, h * 0.5f, // Control point 1
-            centerX + size / 2f, h * 0.95f,  // Control point 2
-            centerX, h * 0.95f               // Bottom center
+            centerX + size / 1.5f, h * 0.5f,
+            centerX + size / 2f, h * 0.95f,
+            centerX, h * 0.95f
         )
         dropPath.cubicTo(
             centerX - size / 2f, h * 0.95f,
@@ -80,19 +92,27 @@ class WaterGlassView @JvmOverloads constructor(
         )
         dropPath.close()
 
-        // 2. I-draw muna yung gray outline/background ng drop
+        // 3. I-draw ang outline
         canvas.drawPath(dropPath, outlinePaint)
 
-        // 3. I-calculate yung fill level
+        // 4. I-calculate ang fill level
         val ratio = (current.toFloat() / max.toFloat()).coerceIn(0f, 1f)
         val fillHeight = h * 0.95f - (ratio * (h * 0.85f))
 
-        // 4. Clip at Draw Water
+        // 5. Clip at Draw Water with Gradient & Bubbles
         canvas.save()
-        canvas.clipPath(dropPath) // Siguraduhin na sa loob lang ng drop ang kulay
+        canvas.clipPath(dropPath)
 
-        // Eto yung rectangle na tumataas base sa baso na nainom
+        // Draw Water with Gradient
         canvas.drawRect(0f, fillHeight, w, h, waterPaint)
+
+        // Draw Bubbles (para mas "pop" sila sa gradient background)
+        if (current > 0) {
+            canvas.drawCircle(centerX + dp(10f), h * 0.75f, dp(6f), bubblePaint)
+            canvas.drawCircle(centerX - dp(12f), h * 0.85f, dp(3f), bubblePaint)
+            canvas.drawCircle(centerX + dp(5f), h * 0.60f, dp(4f), bubblePaint)
+        }
+
         canvas.restore()
     }
 

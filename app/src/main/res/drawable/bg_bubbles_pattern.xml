@@ -7,20 +7,20 @@
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.1"
-        android:pathData="M280,110m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
+        android:pathData="M260,80m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0" />
 
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.15"
-        android:pathData="M150,80m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0" />
+        android:pathData="M150,75m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0" />
 
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.1"
-        android:pathData="M30,120m-25,0a25,25 0,1 1,50 0a25,25 0,1 1,-50 0" />
+        android:pathData="M50,90m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0" />
 
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.08"
-        android:pathData="M200,30m-15,0a15,15 0,1 1,30 0a15,15 0,1 1,-30 0" />
+        android:pathData="M200,35m-15,0a15,15 0,1 1,30 0a15,15 0,1 1,-30 0" />
 </vector>

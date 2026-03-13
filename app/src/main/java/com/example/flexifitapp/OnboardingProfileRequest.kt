@@ -2,7 +2,7 @@ package com.example.flexifitapp
 
 import com.google.gson.annotations.SerializedName
 
-// 1. Gawa tayo ng structure para sa Program details
+// 1. Structure para sa Program details (Walang bago dito, okay na 'to)
 data class DetailedProgram(
     @SerializedName("Category") val category: String,    // e.g. "CARDIO"
     @SerializedName("Level") val level: String,          // e.g. "Beginner"
@@ -33,6 +33,8 @@ data class OnboardingProfileRequest(
     @SerializedName("BodyGoal") val bodyGoal: String,
     @SerializedName("DietType") val dietType: String,
 
-    // 2. Revised: Imbes na List<String>, List na siya ng DetailedProgram
-    @SerializedName("SelectedPrograms") val selectedPrograms: List<DetailedProgram>
+    @SerializedName("SelectedPrograms") val selectedPrograms: List<DetailedProgram>,
+
+    // ITO ANG DINAGDAG NATIN BABE PARA MAWALA ANG ERROR:
+    @SerializedName("IsRehab") val isRehab: Boolean
 )

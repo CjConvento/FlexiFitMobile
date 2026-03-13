@@ -16,17 +16,16 @@ class Pg6BodyCompFragment : BaseOnboardingFragment(
 
         val rv = view.findViewById<RecyclerView>(R.id.rvbcmpgoal)
 
-        // ✅ SINGLE select body composition goal (palitan icons kung meron ka)
+        // ✅ IDs should match your backend's expected strings for Body Comp goals
         val options = listOf(
             OptionTile("lose_weight", "Lean / Toned", R.drawable.ic_goal_cutting),
             OptionTile("gain_weight", "Muscle Gain", R.drawable.ic_goal_bulking),
             OptionTile("maintain", "Recomposition", R.drawable.ic_goal_leanbulk)
         )
 
-        // restore saved selection
-        val preselectedId = OnboardingStore.getString(requireContext(), KEY_BODYCOMP_GOAL)
+        // --- HYDRATION: Restore using FlexiFitKeys ---
+        val preselectedId = OnboardingStore.getString(requireContext(), FlexiFitKeys.BODYCOMP_GOAL)
 
-        // 2-column grid + center last tile if odd count
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -36,24 +35,21 @@ class Pg6BodyCompFragment : BaseOnboardingFragment(
         }
 
         rv.layoutManager = glm
+
+        // Gagamit tayo ng OptionTileAdapter (Single Select logic)
         rv.adapter = OptionTileAdapter(
             items = options,
             initiallySelectedId = preselectedId
         ) { selected ->
-            // ✅ autosave selected ID
-            OnboardingStore.putString(requireContext(), KEY_BODYCOMP_GOAL, selected.id)
-
-            // optional enable next
-            // setNextEnabled(true)
+            // ✅ AUTOSAVE using FlexiFitKeys
+            OnboardingStore.putString(requireContext(), FlexiFitKeys.BODYCOMP_GOAL, selected.id)
         }
     }
 
     override fun validateBeforeNext(): String? {
-        val selected = OnboardingStore.getString(requireContext(), KEY_BODYCOMP_GOAL)
-        return if (selected.isBlank()) "Please select your body composition goal." else null
-    }
+        val selected = OnboardingStore.getString(requireContext(), FlexiFitKeys.BODYCOMP_GOAL)
 
-    companion object {
-        private const val KEY_BODYCOMP_GOAL = "bodycomp_goal"
+        // Fail-fast debug message
+        return if (selected.isBlank()) "DEBUG: Body composition goal is missing. Pick one!" else null
     }
 }

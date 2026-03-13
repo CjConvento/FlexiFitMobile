@@ -1,6 +1,8 @@
 package com.example.flexifitapp
 
 import android.content.Context
+import com.example.flexifitapp.onboarding.FlexiFitKeys
+import com.example.flexifitapp.OnboardingProfileRequest
 
 object UserPrefs {
     private const val PREF = "ff_user_profile"
@@ -32,7 +34,7 @@ object UserPrefs {
     const val KEY_WEIGHT_KG = "weight_kg"
     const val KEY_TARGET_WEIGHT_KG = "target_weight_kg"
 
-    // ACHIEVEMENTS
+    // ACHIEVEMENTS - (STAY LANG ITO, HINDI KO TANGGAL)
     const val KEY_COMPLETED_WORKOUTS = "completed_workouts_count"
     const val KEY_CURRENT_STREAK = "current_streak"
     const val KEY_HAS_WEIGHT_LOG = "has_weight_log"
@@ -41,9 +43,8 @@ object UserPrefs {
     const val KEY_COMPLETED_WORKOUTS_COUNT = "completed_workouts_count"
 
     // =========================================================
-    // ACHIEVEMENTS / BADGES
+    // ACHIEVEMENTS / BADGES - (STAY LANG ITO, HINDI KO TANGGAL)
     // =========================================================
-
     const val KEY_FIRST_PROGRAM_COMPLETED = "first_program_completed"
     const val KEY_SEVEN_WORKOUTS_WEEK = "seven_workouts_week"
 
@@ -76,6 +77,7 @@ object UserPrefs {
     // =========================================================
     const val KEY_HAS_INJURY = "has_injury"
     const val KEY_HAS_MEDICAL_CONDITION = "has_medical_condition"
+    const val KEY_IS_REHAB_USER = "is_rehab_user"
 
     // Optional detailed health notes / selections
     const val KEY_HEALTH_NOTES = "health_notes"
@@ -139,65 +141,39 @@ object UserPrefs {
     // =========================================================
     // BASIC PUT / GET
     // =========================================================
-    private fun prefs(ctx: Context) =
-        ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+    private fun prefs(ctx: Context) = ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE)
 
-    fun putString(ctx: Context, k: String, v: String) =
-        prefs(ctx).edit().putString(k, v).apply()
+    fun putString(ctx: Context, k: String, v: String) = prefs(ctx).edit().putString(k, v).apply()
+    fun putInt(ctx: Context, k: String, v: Int) = prefs(ctx).edit().putInt(k, v).apply()
+    fun putFloat(ctx: Context, k: String, v: Float) = prefs(ctx).edit().putFloat(k, v).apply()
+    fun putBool(ctx: Context, k: String, v: Boolean) = prefs(ctx).edit().putBoolean(k, v).apply()
+    fun putStringSet(ctx: Context, k: String, v: Set<String>) = prefs(ctx).edit().putStringSet(k, v).apply()
 
-    fun putInt(ctx: Context, k: String, v: Int) =
-        prefs(ctx).edit().putInt(k, v).apply()
+    fun getString(ctx: Context, k: String, def: String = ""): String = prefs(ctx).getString(k, def) ?: def
+    fun getInt(ctx: Context, k: String, def: Int = 0): Int = prefs(ctx).getInt(k, def)
+    fun getFloat(ctx: Context, k: String, def: Float = 0f): Float = prefs(ctx).getFloat(k, def)
+    fun getBool(ctx: Context, k: String, def: Boolean = false): Boolean = prefs(ctx).getBoolean(k, def)
+    fun getStringSet(ctx: Context, k: String): Set<String> = prefs(ctx).getStringSet(k, emptySet()) ?: emptySet()
 
-    fun putFloat(ctx: Context, k: String, v: Float) =
-        prefs(ctx).edit().putFloat(k, v).apply()
-
-    fun putBool(ctx: Context, k: String, v: Boolean) =
-        prefs(ctx).edit().putBoolean(k, v).apply()
-
-    fun putStringSet(ctx: Context, k: String, v: Set<String>) =
-        prefs(ctx).edit().putStringSet(k, v).apply()
-
-    fun getString(ctx: Context, k: String, def: String = ""): String =
-        prefs(ctx).getString(k, def) ?: def
-
-    fun getInt(ctx: Context, k: String, def: Int = 0): Int =
-        prefs(ctx).getInt(k, def)
-
-    fun getFloat(ctx: Context, k: String, def: Float = 0f): Float =
-        prefs(ctx).getFloat(k, def)
-
-    fun getBool(ctx: Context, k: String, def: Boolean = false): Boolean =
-        prefs(ctx).getBoolean(k, def)
-
-    fun getStringSet(ctx: Context, k: String): Set<String> =
-        prefs(ctx).getStringSet(k, emptySet()) ?: emptySet()
-
-    fun remove(ctx: Context, k: String) =
-        prefs(ctx).edit().remove(k).apply()
-
-    fun clearAll(ctx: Context) =
-        prefs(ctx).edit().clear().apply()
+    fun remove(ctx: Context, k: String) = prefs(ctx).edit().remove(k).apply()
+    fun clearAll(ctx: Context) = prefs(ctx).edit().clear().apply()
 
     // =========================================================
-    // ONBOARDING STATE HELPERS
+    // HELPERS
     // =========================================================
-    fun setOnboardingDone(ctx: Context, done: Boolean) =
-        putBool(ctx, KEY_ONBOARDING_DONE, done)
 
-    fun isOnboardingDone(ctx: Context): Boolean =
-        getBool(ctx, KEY_ONBOARDING_DONE, false)
+    fun setOnboardingDone(ctx: Context, done: Boolean) = putBool(ctx, KEY_ONBOARDING_DONE, done)
+    fun isOnboardingDone(ctx: Context): Boolean = getBool(ctx, KEY_ONBOARDING_DONE, false)
 
-    // =========================================================
-    // AUTH HELPERS
-    // =========================================================
-    fun saveAuth(
-        ctx: Context,
-        token: String,
-        userId: Int,
-        role: String?,
-        status: String?,
-        isVerified: Boolean
-    ) {
+    // REVISED: Idinagdag sa tamang pwesto para sa SummaryFragment
+    fun saveOnboardingResult(ctx: Context, isRehab: Boolean) {
+        prefs(ctx).edit()
+            .putBoolean(KEY_ONBOARDING_DONE, true)
+            .putBoolean(KEY_IS_REHAB_USER, isRehab)
+            .apply()
+    }
+
+    fun saveAuth(ctx: Context, token: String, userId: Int, role: String?, status: String?, isVerified: Boolean) {
         prefs(ctx).edit()
             .putString(KEY_JWT_TOKEN, token)
             .putInt(KEY_USER_ID, userId)
@@ -207,23 +183,12 @@ object UserPrefs {
             .apply()
     }
 
-    fun getToken(ctx: Context): String =
-        getString(ctx, KEY_JWT_TOKEN, "")
-
-    fun getUserId(ctx: Context): Int =
-        getInt(ctx, KEY_USER_ID, 0)
-
-    fun getRole(ctx: Context): String =
-        getString(ctx, KEY_ROLE, "")
-
-    fun getStatus(ctx: Context): String =
-        getString(ctx, KEY_STATUS, "")
-
-    fun isVerified(ctx: Context): Boolean =
-        getBool(ctx, KEY_IS_VERIFIED, false)
-
-    fun isLoggedIn(ctx: Context): Boolean =
-        getToken(ctx).isNotBlank() && getInt(ctx, KEY_USER_ID, 0) > 0
+    fun getToken(ctx: Context): String = getString(ctx, KEY_JWT_TOKEN, "")
+    fun getUserId(ctx: Context): Int = getInt(ctx, KEY_USER_ID, 0)
+    fun getRole(ctx: Context): String = getString(ctx, KEY_ROLE, "")
+    fun getStatus(ctx: Context): String = getString(ctx, KEY_STATUS, "")
+    fun isVerified(ctx: Context): Boolean = getBool(ctx, KEY_IS_VERIFIED, false)
+    fun isLoggedIn(ctx: Context): Boolean = getToken(ctx).isNotBlank() && getUserId(ctx) > 0
 
     fun clearAuth(ctx: Context) {
         prefs(ctx).edit()

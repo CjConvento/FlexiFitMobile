@@ -16,41 +16,43 @@ class Pg4LocationFragment : BaseOnboardingFragment(
 
         val rv = view.findViewById<RecyclerView>(R.id.rvEnvironment)
 
+        // Siguraduhin na ang IDs (home, gym, outdoor) ay match sa inaasahan ng backend
         val tiles = listOf(
             OptionTile("home", "Home", R.drawable.ic_home),
-            OptionTile("gym", "Gym", R.drawable.ic_home),
-            OptionTile("outdoor", "Outdoor", R.drawable.ic_home)
+            OptionTile("gym", "Gym", R.drawable.ic_workout), // updated drawable name
+            OptionTile("outdoor", "Outdoor", R.drawable.ic_sun) // updated drawable name
         )
 
-        val preselected = OnboardingStore.getStringSet(requireContext(), KEY_ENVIRONMENT)
+        // --- HYDRATION: No fallback, direct from store ---
+        val preselected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
 
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 val count = tiles.size
+                // Logic para mag-center ang huling item kung odd number
                 return if (count % 2 == 1 && position == count - 1) 2 else 1
             }
         }
 
         rv.layoutManager = glm
+
+        // Gamit ang MultiSelectTileAdapter na nire-restore ang state ng checkboxes/cards
         rv.adapter = MultiSelectTileAdapter(
             items = tiles,
             preselected = preselected
         ) { selectedIds ->
-            OnboardingStore.putStringSet(requireContext(), KEY_ENVIRONMENT, selectedIds)
+            // Auto-save every click
+            OnboardingStore.putStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT, selectedIds)
         }
     }
 
     override fun validateBeforeNext(): String? {
-        val selected = OnboardingStore.getStringSet(requireContext(), KEY_ENVIRONMENT)
+        val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
         return if (selected.isEmpty()) {
-            "Please select at least one workout environment."
+            "DEBUG: No environment selected. Please choose at least one."
         } else {
             null
         }
-    }
-
-    companion object {
-        private const val KEY_ENVIRONMENT = "environment"
     }
 }

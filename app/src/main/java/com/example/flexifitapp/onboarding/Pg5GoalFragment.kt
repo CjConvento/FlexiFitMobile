@@ -16,17 +16,17 @@ class Pg5GoalFragment : BaseOnboardingFragment(
 
         val rv = view.findViewById<RecyclerView>(R.id.rvFgoal)
 
-        // Fitness Goal options (DB-aligned: Recovery saved as "rehab")
+        // ✅ ID Check: Siguraduhin na ang "muscle_gain", "cardio", at "rehab"
+        // ay eksaktong match sa tinatanggap ng iyong Laravel/Node backend.
         val goals = listOf(
             OptionTile("muscle_gain", "Muscle Gain", R.drawable.ic_goal_bulking),
             OptionTile("cardio", "Cardio", R.drawable.ic_goal_cutting),
             OptionTile("rehab", "Recovery", R.drawable.ic_goal_leanbulk)
         )
 
-        // Restore previous selection (autosave)
-        val preselected = OnboardingStore.getStringSet(requireContext(), KEY_FITNESS_GOAL)
+        // --- HYDRATION: Direct from store, no local companion keys ---
+        val preselected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOAL)
 
-        // 2-column grid + center last tile if odd count
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -37,20 +37,15 @@ class Pg5GoalFragment : BaseOnboardingFragment(
 
         rv.layoutManager = glm
         rv.adapter = MultiSelectTileAdapter(goals, preselected) { selectedIds ->
-            // ✅ AUTOSAVE
-            OnboardingStore.putStringSet(requireContext(), KEY_FITNESS_GOAL, selectedIds)
-
-            // optional: enable next if your base supports it
-            // setNextEnabled(selectedIds.isNotEmpty())
+            // ✅ AUTOSAVE gamit ang FlexiFitKeys
+            OnboardingStore.putStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS, selectedIds)
         }
     }
 
     override fun validateBeforeNext(): String? {
-        val selected = OnboardingStore.getStringSet(requireContext(), KEY_FITNESS_GOAL)
-        return if (selected.isEmpty()) "Please select at least one fitness goal." else null
-    }
+        val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOAL)
 
-    companion object {
-        private const val KEY_FITNESS_GOAL = "fitness_goal"
+        // DEBUG: Mas madaling makita kung bakit ayaw lumipat kung may prefix
+        return if (selected.isEmpty()) "DEBUG: Fitness goal set is empty. Select one!" else null
     }
 }
