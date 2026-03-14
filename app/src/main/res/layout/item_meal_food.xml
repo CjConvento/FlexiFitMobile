@@ -65,11 +65,11 @@
 
         <ImageButton
             android:id="@+id/btnOpenFood"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
             android:background="@drawable/bg_circle_soft"
             android:src="@drawable/ic_chevron_r_circle"
-            app:tint="?attr/colorPrimary"
+            app:tint="@color/gradientStart"
             android:clickable="false"
             android:focusable="false"/>
 

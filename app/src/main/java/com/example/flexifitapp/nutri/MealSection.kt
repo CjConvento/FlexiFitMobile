@@ -1,4 +1,4 @@
-package com.example.flexifitapp
+package com.example.flexifitapp.nutri
 
 data class MealSection(
     val mealType: String,              // Breakfast, Lunch, Snacks, Dinner
@@ -10,6 +10,7 @@ data class MealFood(
     val mealItemId: Int,               // id ng daily plan item (important for updates)
     val foodId: Int,
     val name: String,
+    val description: String?, // DAGDAG NA WEAPON!
     val imageUrl: String?,             // from ASP.NET /images/foods/...
     var servingLabel: String,          // "1 serving (2 pancakes)"
     var qty: Int,

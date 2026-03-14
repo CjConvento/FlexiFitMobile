@@ -1,7 +1,10 @@
 package com.example.flexifitapp
 
 object ApiConfig {
-        // Emulator -> 10.0.2.2
-        // Physical device -> use your PC LAN IP
-        const val BASE_URL = "http://192.168.1.246:5160/"
+    // Port 5160 base sa setup mo
+    const val BASE_URL = "http://10.0.2.2:5160/"
+
+    // Eto ang "shortcut" para sa food images
+    // Siguraduhin na match ito sa wwwroot folder structure mo sa C#
+    const val FOOD_IMAGE_URL = "${BASE_URL}images/foods/"
 }

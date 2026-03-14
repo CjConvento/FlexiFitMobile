@@ -111,7 +111,7 @@
 
     <fragment
         android:id="@+id/foodDetailsFragment"
-        android:name="com.example.flexifitapp.FoodDetailsFragment"
+        android:name="com.example.flexifitapp.nutri.FoodDetailsFragment"
         android:label="FoodDetailsFragment"
         tools:layout="@layout/fragment_food_details" />
 

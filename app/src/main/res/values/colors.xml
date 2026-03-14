@@ -10,7 +10,9 @@
 
     <!-- Gradient like the template -->
     <color name="gradientStart">#6082B6</color>       <!-- aqua -->
-    <color name="gradientEnd">#9eb9d4   </color>         <!-- lilac -->
+    <color name="gradientEnd">#9eb9d4   </color>
+    <color name="gradientStart_alt">#92A3FD</color>       <!-- aqua -->
+    <color name="gradientEnd_alt">#9DCEFF   </color> <!-- lilac -->
 
     <!-- Primary accent -->     <!-- blue button -->
     <color name="colorButtonText">#FFFFFF</color>

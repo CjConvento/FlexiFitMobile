@@ -25,7 +25,7 @@ class Pg5GoalFragment : BaseOnboardingFragment(
         )
 
         // --- HYDRATION: Direct from store, no local companion keys ---
-        val preselected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOAL)
+        val preselected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
 
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -43,7 +43,7 @@ class Pg5GoalFragment : BaseOnboardingFragment(
     }
 
     override fun validateBeforeNext(): String? {
-        val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOAL)
+        val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS    )
 
         // DEBUG: Mas madaling makita kung bakit ayaw lumipat kung may prefix
         return if (selected.isEmpty()) "DEBUG: Fitness goal set is empty. Select one!" else null

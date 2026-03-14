@@ -59,8 +59,10 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
         super.onViewCreated(view, savedInstanceState)
         bindViews(view)
         setupClicks()
-        loadWorkoutSummary()
-        loadWorkoutStats()
+
+        // TAWAGIN MO ITONG DALAWA BABE:
+        loadWorkoutData()  // Para sa Programs at Goals
+        loadWorkoutStats() // Para sa Numbers (Sessions/Workouts)
     }
 
     override fun onDestroyView() {
@@ -133,7 +135,7 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
         }
     }
 
-    private fun loadWorkoutSummary() {
+    private fun loadWorkoutData() {
         val ctx = requireContext()
 
         val selectedPrograms = UserPrefs.getStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS)
@@ -153,9 +155,18 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
     }
 
     private fun loadWorkoutStats() {
+        val ctx = context ?: return // Safe way para sa context
+
+        // 1. Kuhanin ang total sessions na galing sa SQL Server sync
+        val sessions = UserPrefs.getInt(ctx, "total_sessions", 0)
+
+        // 2. Kuhanin ang locally tracked workouts (yung "Finish" counts)
+        val workouts = UserPrefs.getInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, 0)
+
+        // 3. I-pass sa render function para lumabas sa UI
         renderWorkoutStats(
-            totalWorkouts = 0,
-            totalSessions = 0
+            totalWorkouts = workouts,
+            totalSessions = sessions
         )
     }
 

@@ -4,7 +4,7 @@
     <corners android:radius="999dp" />
 
     <!-- soft gray -->
-    <solid android:color="#14000000" />
+    <solid android:color="#D1D9E0" />
 
     <!-- optional thin stroke -->
     <stroke

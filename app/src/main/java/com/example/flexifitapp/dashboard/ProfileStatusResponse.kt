@@ -2,34 +2,48 @@ package com.example.flexifitapp.dashboard
 
 import com.google.gson.annotations.SerializedName
 
-/**
- * PHASE 1: THE BUCKET
- * Ito ang sasalo sa lahat ng dinidilig na data mula sa ASP.NET.
- * Pinagsama natin ang Profile Completion, BMI, at Dashboard Stats.
- */
 data class ProfileStatusResponse(
-    // Mula sa ProfileStatusController.cs
-    @SerializedName("isProfileCompleted")
-    val isProfileCompleted: Boolean,
-
-    // Mula sa ProfileController.cs (Calculated fields)
-    @SerializedName("bmi") val bmi: Double,
-    @SerializedName("bmiCategory") val bmiCategory: String,
-    @SerializedName("calorieTarget") val dailyCalorieTarget: Int,
-    @SerializedName("proteinGrams") val proteinGrams: Int,
-    @SerializedName("carbsGrams") val carbsGrams: Int,
-    @SerializedName("fatGrams") val fatGrams: Int,
-    @SerializedName("macroPercents") val macroPercents: MacroPercents?,
-
-    // Mula sa MobileController.cs (Dashboard fields)
-    @SerializedName("weight") val currentWeight: Double?,
-    @SerializedName("targetWeight") val targetWeight: Double?,
+    @SerializedName("userName") val userName: String?,
     @SerializedName("fitnessLevel") val fitnessLevel: String?,
-    @SerializedName("goal") val fitnessGoal: String?
+    @SerializedName("goal") val fitnessGoal: String?,
+
+    // 1. BMI Card Data
+    @SerializedName("bmiData") val bmiData: BmiData?,
+
+    // 2. Nutrition & Calories Card Data
+    @SerializedName("nutrition") val nutrition: NutritionData?,
+
+    // 3. Program/Workout Info
+    @SerializedName("program") val program: ProgramData?,
+
+    // Dagdag natin 'to para sa "Current Day Meals" RecyclerView mo
+    @SerializedName("todayMeals") val todayMeals: List<DashboardMealDto>? = emptyList()
 )
 
-data class MacroPercents(
-    @SerializedName("protein") val protein: Double,
-    @SerializedName("carbs") val carbs: Double,
-    @SerializedName("fat") val fat: Double
+data class BmiData(
+    @SerializedName("value") val value: Double,
+    @SerializedName("status") val status: String // E.g., "You have a normal weight"
+)
+
+data class NutritionData(
+    @SerializedName("targetCalories") val target: Double,
+    @SerializedName("intake") val intake: Double,    // For Intake Bar
+    @SerializedName("burned") val burned: Double,    // For Burned Bar
+    @SerializedName("netCalories") val net: Double,  // For Circle Value
+    @SerializedName("remaining") val remaining: Double, // For Circle "Left"
+    @SerializedName("waterGlasses") val waterGlasses: Int,
+    @SerializedName("waterTarget") val waterTarget: Int
+)
+
+data class ProgramData(
+    @SerializedName("name") val programName: String?,
+    @SerializedName("dayNo") val dayNo: Int,
+    @SerializedName("isWorkoutDay") val isWorkoutDay: Boolean
+)
+
+data class DashboardMealDto(
+    @SerializedName("name") val name: String,
+    @SerializedName("kcal") val kcal: Double,
+    @SerializedName("serving") val serving: String,
+    @SerializedName("imageUrl") val imageUrl: String
 )

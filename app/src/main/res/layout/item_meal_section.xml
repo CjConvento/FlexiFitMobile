@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:background="#F6F7FB"
     tools:padding="12dp">
 
     <LinearLayout
@@ -38,7 +37,7 @@
             android:layout_height="20dp"
             android:contentDescription="Expand"
             android:src="@drawable/baseline_keyboard_arrow_down_24"
-            app:tint="@color/textPrimary" />
+            app:tint="@color/gradientStart" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

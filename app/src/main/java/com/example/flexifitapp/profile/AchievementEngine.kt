@@ -5,8 +5,8 @@ import com.example.flexifitapp.UserPrefs
 
 object AchievementEngine {
 
-    fun updateAchievements(ctx: Context) {
-
+    // 1. LOCAL CHECK: Tinatawag pagkatapos ng workout para sa instant unlock
+    fun updateAchievementsLocally(ctx: Context) {
         val workouts = UserPrefs.getInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, 0)
         val streak = UserPrefs.getInt(ctx, UserPrefs.KEY_ACTIVE_STREAK_DAYS, 0)
 
@@ -48,6 +48,12 @@ object AchievementEngine {
         if (workouts >= 30) {
             unlock(ctx, UserPrefs.BADGE_FIRST_PROGRAM_COMPLETED)
             unlock(ctx, UserPrefs.BADGE_30_WORKOUTS_TOTAL)
+        }
+    }
+
+    fun syncWithServer(ctx: Context, unlockedBadgeKeys: List<String>) {
+        unlockedBadgeKeys.forEach { key ->
+            UserPrefs.putBool(ctx, key, true)
         }
     }
 

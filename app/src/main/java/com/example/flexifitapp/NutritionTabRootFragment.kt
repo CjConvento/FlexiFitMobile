@@ -1,5 +1,6 @@
 package com.example.flexifitapp
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
@@ -7,39 +8,74 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.flexifitapp.nutri.*
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 
 class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
 
+    private val viewModel: NutritionViewModel by activityViewModels()
     private lateinit var sectionAdapter: MealSectionAdapter
-    private val sections = mutableListOf<MealSection>()
-
-    companion object {
-        private const val REQ_FOOD_EDIT = "req_food_edit"
-        private const val KEY_MEAL_ITEM_ID = "mealItemId"
-        private const val KEY_QTY = "qty"
-        private const val KEY_SERVING_LABEL = "servingLabel"
-        private const val KEY_CALORIES = "calories"
-        private const val KEY_PROTEIN = "protein"
-        private const val KEY_CARBS = "carbs"
-        private const val KEY_FATS = "fats"
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupCalendarButton(view)
         setupMealPlanRecyclerView(view)
-        setupFoodEditResultListener()
-        updateTotalsFromSections(view)
+
+        // 1. TRIGGER THE API FETCH: Hihigop ng data mula sa ASP.NET
+        viewModel.fetchTodayPlan(requireContext())
+
+        // 2. OBSERVE SECTIONS: Para sa listahan ng Breakfast, Lunch, etc.
+        viewModel.sections.observe(viewLifecycleOwner) { updatedSections ->
+            sectionAdapter.updateData(updatedSections ?: mutableListOf())
+        }
+
+        // 3. OBSERVE SUMMARY: Para sa PieChart at Progress Bars (Galing sa C# DTO)
+        viewModel.nutritionSummary.observe(viewLifecycleOwner) { summary ->
+            updateDashboardUI(view, summary)
+        }
+    }
+
+    private fun updateDashboardUI(view: View, summary: NutritionResponse) {
+        // TEXT VALUES: Target vs Consumed
+        view.findViewById<TextView>(R.id.tvCaloriesValue).text =
+            "${summary.consumedCalories.toInt()} / ${summary.targetCalories.toInt()} kcal"
+
+        view.findViewById<TextView>(R.id.tvCaloriesBurned).text =
+            "${summary.consumedCalories.toInt()} kcal"
+
+        // MACRO TEXTS (Cons vs Target direct from API)
+        view.findViewById<TextView>(R.id.tvProteinValue).text = "${summary.consumedProtein.toInt()}g / ${summary.targetProtein.toInt()}g"
+        view.findViewById<TextView>(R.id.tvCarbsValue).text = "${summary.consumedCarbs.toInt()}g / ${summary.targetCarbs.toInt()}g"
+        view.findViewById<TextView>(R.id.tvFatsValue).text = "${summary.consumedFats.toInt()}g / ${summary.targetFats.toInt()}g"
+
+        // PROGRESS BARS
+        view.findViewById<ProgressBar>(R.id.pbCalories).progress = percent(summary.consumedCalories.toInt(), summary.targetCalories.toInt())
+        view.findViewById<ProgressBar>(R.id.pbProtein).progress = percent(summary.consumedProtein.toInt(), summary.targetProtein.toInt())
+        view.findViewById<ProgressBar>(R.id.pbCarbs).progress = percent(summary.consumedCarbs.toInt(), summary.targetCarbs.toInt())
+        view.findViewById<ProgressBar>(R.id.pbFats).progress = percent(summary.consumedFats.toInt(), summary.targetFats.toInt())
+
+        // PIE CHART UPDATE
+        val chart = view.findViewById<PieChart>(R.id.nutritionPieChart)
+        updateChartData(
+            chart,
+            summary.consumedProtein.toInt(),
+            summary.consumedCarbs.toInt(),
+            summary.consumedFats.toInt(),
+            summary.consumedCalories.toInt()
+        )
     }
 
     private fun setupCalendarButton(view: View) {
         view.findViewById<ImageButton>(R.id.btnOpenCalendar).setOnClickListener {
-            val b = bundleOf(NavKeys.ARG_SOURCE_TAB to "NUTRITION")
+            val b = bundleOf("source_tab" to "NUTRITION")
             findNavController().navigate(R.id.unifiedCalendarFragment, b)
         }
     }
@@ -47,167 +83,64 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun setupMealPlanRecyclerView(view: View) {
         val rv = view.findViewById<RecyclerView>(R.id.rvMealSections)
         rv.layoutManager = LinearLayoutManager(requireContext())
-        rv.isNestedScrollingEnabled = false
+        rv.setHasFixedSize(false)
 
-        loadDemoSections()
-
-        sectionAdapter = MealSectionAdapter(sections) { mealType, food ->
+        sectionAdapter = MealSectionAdapter(mutableListOf()) { mealType, food ->
+            // I-pass lahat ng kailangan ng Details screen, pati description
             val b = bundleOf(
-                KEY_MEAL_ITEM_ID to food.mealItemId,
+                "mealType" to mealType, // <--- DAGDAG MO ITO
+                "mealItemId" to food.mealItemId,
                 "foodId" to food.foodId,
-                "mealType" to mealType,
-                KEY_QTY to food.qty,
-                KEY_SERVING_LABEL to food.servingLabel,
-                KEY_CALORIES to food.calories,
-                KEY_PROTEIN to food.protein,
-                KEY_CARBS to food.carbs,
-                KEY_FATS to food.fats
+                "name" to food.name,
+                "description" to food.description,
+                "servingLabel" to food.servingLabel,
+                "qty" to food.qty,
+                "calories" to food.calories,
+                "protein" to food.protein,
+                "carbs" to food.carbs,
+                "fats" to food.fats
             )
             findNavController().navigate(R.id.foodDetailsFragment, b)
         }
-
         rv.adapter = sectionAdapter
     }
 
-    private fun loadDemoSections() {
-        sections.clear()
+    private fun updateChartData(chart: PieChart, p: Int, c: Int, f: Int, totalKcal: Int) {
+        val entries = ArrayList<PieEntry>()
 
-        sections.add(
-            MealSection(
-                "Breakfast",
-                mutableListOf(
-                    MealFood(
-                        mealItemId = 101,
-                        foodId = 1,
-                        name = "Oatmeal Pancakes",
-                        imageUrl = null,
-                        servingLabel = "1 serving (2 pancakes)",
-                        qty = 1,
-                        calories = 180,
-                        protein = 10,
-                        carbs = 25,
-                        fats = 6
-                    )
-                )
-            )
-        )
-
-        sections.add(
-            MealSection(
-                "Lunch",
-                mutableListOf(
-                    MealFood(
-                        mealItemId = 102,
-                        foodId = 2,
-                        name = "Chicken Rice",
-                        imageUrl = null,
-                        servingLabel = "1 plate",
-                        qty = 1,
-                        calories = 450,
-                        protein = 35,
-                        carbs = 55,
-                        fats = 10
-                    )
-                )
-            )
-        )
-
-        sections.add(
-            MealSection(
-                "Snacks",
-                mutableListOf()
-            )
-        )
-
-        sections.add(
-            MealSection(
-                "Dinner",
-                mutableListOf()
-            )
-        )
-    }
-
-    private fun setupFoodEditResultListener() {
-        parentFragmentManager.setFragmentResultListener(
-            REQ_FOOD_EDIT,
-            viewLifecycleOwner
-        ) { _, bundle ->
-
-            val mealItemId = bundle.getInt(KEY_MEAL_ITEM_ID)
-            val qty = bundle.getInt(KEY_QTY)
-            val servingLabel = bundle.getString(KEY_SERVING_LABEL).orEmpty()
-            val calories = bundle.getInt(KEY_CALORIES)
-            val protein = bundle.getInt(KEY_PROTEIN)
-            val carbs = bundle.getInt(KEY_CARBS)
-            val fats = bundle.getInt(KEY_FATS)
-
-            val item = sections
-                .flatMap { it.foods }
-                .firstOrNull { it.mealItemId == mealItemId }
-
-            if (item != null) {
-                item.qty = qty
-                item.servingLabel = servingLabel
-                item.calories = calories
-                item.protein = protein
-                item.carbs = carbs
-                item.fats = fats
-
-                sectionAdapter.notifyDataSetChanged()
-
-                view?.let { root ->
-                    updateTotalsFromSections(root)
-                }
-            }
+        if (p == 0 && c == 0 && f == 0) {
+            entries.add(PieEntry(1f, ""))
+            chart.centerText = "0\nkcal"
+        } else {
+            entries.add(PieEntry(p.toFloat(), "Protein"))
+            entries.add(PieEntry(c.toFloat(), "Carbs"))
+            entries.add(PieEntry(f.toFloat(), "Fats"))
+            chart.centerText = "$totalKcal\nkcal"
         }
-    }
 
-    private fun updateTotalsFromSections(root: View) {
-        val allFoods = sections.flatMap { it.foods }
+        val dataSet = PieDataSet(entries, "").apply {
+            colors = listOf(
+                Color.parseColor("#4facfe"), // Protein (Blue)
+                Color.parseColor("#D1D9E0"), // Carbs (Glaucous)
+                Color.parseColor("#9EB9D4")  // Fats (Muted Blue)
+            )
+            setDrawValues(false)
+            sliceSpace = 3f
+        }
 
-        val caloriesConsumed = allFoods.sumOf { it.calories * it.qty }
-        val totalProtein = allFoods.sumOf { it.protein * it.qty }
-        val totalCarbs = allFoods.sumOf { it.carbs * it.qty }
-        val totalFats = allFoods.sumOf { it.fats * it.qty }
-
-        // Placeholder muna habang wala pang real workout/progress API
-        val caloriesBurned = 320
-
-        // TODO: replace these with actual targets from onboarding/profile/API
-        val targetCal = 2200
-        val targetProtein = 120
-        val targetCarbs = 220
-        val targetFats = 80
-
-        // right-side summary
-        root.findViewById<TextView>(R.id.tvCaloriesBurned).text =
-            "Calories Burned: ${caloriesBurned} kcal"
-
-        // intake vs target
-        root.findViewById<TextView>(R.id.tvProteinValue).text =
-            "${totalProtein}g / ${targetProtein}g"
-
-        root.findViewById<TextView>(R.id.tvCarbsValue).text =
-            "${totalCarbs}g / ${targetCarbs}g"
-
-        root.findViewById<TextView>(R.id.tvFatsValue).text =
-            "${totalFats}g / ${targetFats}g"
-
-        root.findViewById<TextView>(R.id.tvCaloriesValue).text =
-            "${caloriesConsumed} / ${targetCal} kcal"
-
-        // progress bars
-        root.findViewById<ProgressBar>(R.id.pbProtein).progress =
-            percent(totalProtein, targetProtein)
-
-        root.findViewById<ProgressBar>(R.id.pbCarbs).progress =
-            percent(totalCarbs, targetCarbs)
-
-        root.findViewById<ProgressBar>(R.id.pbFats).progress =
-            percent(totalFats, targetFats)
-
-        root.findViewById<ProgressBar>(R.id.pbCalories).progress =
-            percent(caloriesConsumed, targetCal)
+        chart.apply {
+            data = PieData(dataSet)
+            setCenterTextSize(18f)
+            setCenterTextColor(Color.BLACK)
+            setHoleColor(Color.TRANSPARENT)
+            holeRadius = 60f
+            transparentCircleRadius = 65f
+            description.isEnabled = false
+            legend.isEnabled = false
+            isDrawHoleEnabled = true
+            setDrawEntryLabels(false)
+            invalidate()
+        }
     }
 
     private fun percent(value: Int, target: Int): Int {

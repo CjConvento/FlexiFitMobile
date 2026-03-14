@@ -89,42 +89,35 @@ class WeightQuickEditDialogFragment :
 
         btnSave?.setOnClickListener {
             val input = etNewWeight?.text?.toString()?.trim().orEmpty()
+            // ... (keep your existing error checks)
 
-            if (input.isBlank()) {
-                etNewWeight?.error = "Enter weight"
-                return@setOnClickListener
-            }
-
-            val newWeight = input.toIntOrNull()
-            if (newWeight == null) {
-                etNewWeight?.error = "Invalid weight"
-                return@setOnClickListener
-            }
-
-            if (newWeight <= 0) {
-                etNewWeight?.error = "Weight must be greater than 0"
-                return@setOnClickListener
-            }
-
+            val newWeight = input.toIntOrNull() ?: return@setOnClickListener
             val ctx = requireContext()
 
-            // save weight
+            // 1. Save new weight
             UserPrefs.putInt(ctx, UserPrefs.KEY_WEIGHT_KG, newWeight)
-
-            // optional tracking fields
             UserPrefs.putInt(ctx, UserPrefs.KEY_LATEST_WEIGHT_KG, newWeight)
             UserPrefs.putBool(ctx, UserPrefs.KEY_HAS_WEIGHT_LOG, true)
 
-            // update achievements
-            AchievementEngine.updateAchievements(ctx)
+            // 2. AUTOMATIC BMI UPDATE (Eto yung bago babe)
+            val heightCm = UserPrefs.getFloat(ctx, UserPrefs.KEY_HEIGHT_CM, 0f)
+            if (heightCm > 0f) {
+                val heightM = heightCm / 100f
+                val newBmi = newWeight / (heightM * heightM)
+                UserPrefs.putFloat(ctx, UserPrefs.KEY_BMI, newBmi)
+
+                // I-clear din natin yung server category para magcompute ulit
+                // yung local display sa Nutritional Data dialog
+                UserPrefs.putString(ctx, "bmi_category", "")
+            }
+
+            // 3. Update achievements
+            AchievementEngine.updateAchievementsLocally(ctx) // Siguraduhin na match ang function name sa Engine mo
 
             parentFragmentManager.setFragmentResult(
                 REQUEST_KEY,
-                Bundle().apply {
-                    putInt(BUNDLE_NEW_WEIGHT, newWeight)
-                }
+                Bundle().apply { putInt(BUNDLE_NEW_WEIGHT, newWeight) }
             )
-
             dismiss()
         }
     }

@@ -6,16 +6,25 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.lifecycleScope
+import com.example.flexifitapp.auth.AuthResponse
+import com.example.flexifitapp.auth.LoginRequest
+import com.example.flexifitapp.auth.RegisterRequest
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
@@ -24,9 +33,11 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginEmail: EditText
     private lateinit var loginPass: EditText
     private lateinit var loginBtn: MaterialButton
+    private lateinit var btnGoogleLogin: MaterialButton // Added for Google Login
     private lateinit var signupRedirect: TextView
     private lateinit var mAuth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var credentialManager: CredentialManager // For Google Popup
 
     private val KEY_DARK_MODE = "dark_mode"
 
@@ -36,15 +47,20 @@ class LoginActivity : AppCompatActivity() {
         applyThemeFromPrefs()
         setContentView(R.layout.activity_login)
 
+        // 1. Initialize Components
         mAuth = FirebaseAuth.getInstance()
+        credentialManager = CredentialManager.create(this)
+
         loginEmail = findViewById(R.id.login_email)
         loginPass = findViewById(R.id.login_password)
         loginBtn = findViewById(R.id.login_button)
+        btnGoogleLogin = findViewById(R.id.btnGoogleSignIn) // Make sure this ID is in your XML
         signupRedirect = findViewById(R.id.signupRedirectText)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
 
+        // 2. Email/Password Login Listener
         loginBtn.setOnClickListener {
             val email = loginEmail.text.toString().trim()
             val pass = loginPass.text.toString().trim()
@@ -77,8 +93,52 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
 
+        // 3. Google Login Listener
+        btnGoogleLogin.setOnClickListener {
+            startGoogleSignIn()
+        }
+
         signupRedirect.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
+        }
+    }
+
+    private fun startGoogleSignIn() {
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(getString(R.string.default_web_client_id))
+            .setAutoSelectEnabled(false)
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        setAuthLoading(true)
+
+        lifecycleScope.launch {
+            try {
+                val result = credentialManager.getCredential(this@LoginActivity, request)
+                val credential = result.credential
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+
+                // Sign in to Firebase with the Google Token
+                val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val user = mAuth.currentUser
+                        if (user != null) {
+                            fetchFcmAndConnectToBackend(user)
+                        }
+                    } else {
+                        setAuthLoading(false)
+                        Toast.makeText(this@LoginActivity, "Google Auth Failed", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                setAuthLoading(false)
+                Log.e("GOOGLE_ERROR", e.message ?: "User cancelled or error")
+            }
         }
     }
 
@@ -103,7 +163,6 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val api = ApiClient.get(this@LoginActivity).create(ApiService::class.java)
-                // Gumagamit na ng nullable fields
                 val req = LoginRequest(firebaseIdToken = firebaseToken, fcmToken = fcmToken)
 
                 val res = api.login(req)
@@ -111,7 +170,6 @@ class LoginActivity : AppCompatActivity() {
                 if (res.isSuccessful && res.body() != null) {
                     handleSuccessfulAuth(res.body()!!, api)
                 } else if (res.code() == 401) {
-                    // Dito yung auto-register kapag wala sa SQL DB
                     autoRegisterUser(firebaseToken, fcmToken, api)
                 } else {
                     setAuthLoading(false)
@@ -127,16 +185,16 @@ class LoginActivity : AppCompatActivity() {
 
     private fun autoRegisterUser(firebaseToken: String, fcmToken: String?, api: ApiService) {
         val firebaseUser = mAuth.currentUser
-
         val savedUsername = UserPrefs.getString(this, UserPrefs.KEY_USER_NAME, "")
         val savedName = UserPrefs.getString(this, UserPrefs.KEY_NAME, "")
 
-        // Ito yung dating may error sa null. Ngayon okay na siya!
+        // Gumamit tayo ng Named Arguments para hindi malito ang compiler sa sequence
         val regReq = RegisterRequest(
             firebaseIdToken = firebaseToken,
-            name = savedName ?: firebaseUser?.displayName ?: "FlexiFit User",
+            name = if (savedName.isNullOrEmpty()) firebaseUser?.displayName ?: "FlexiFit User" else savedName,
             username = savedUsername,
-            fcmToken = fcmToken
+            fcmToken = fcmToken,
+            authProvider = "GOOGLE" // Siguraduhing "AuthProvider" ang name sa RegisterRequest.kt mo
         )
 
         lifecycleScope.launch {
@@ -146,7 +204,7 @@ class LoginActivity : AppCompatActivity() {
                     handleSuccessfulAuth(res.body()!!, api)
                 } else {
                     setAuthLoading(false)
-                    Toast.makeText(this@LoginActivity, "Auto-registration failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@LoginActivity, "Registration failed: ${res.code()}", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 setAuthLoading(false)
@@ -154,24 +212,42 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
     private suspend fun handleSuccessfulAuth(auth: AuthResponse, api: ApiService) {
-        UserPrefs.saveAuth(this@LoginActivity, auth.token, auth.userId, auth.role, auth.status, auth.isVerified)
+        UserPrefs.saveAuth(
+            ctx = this@LoginActivity,
+            token = auth.token,
+            userId = auth.userId,
+            role = auth.role,
+            status = auth.status,
+            isVerified = auth.isVerified,
+            name = auth.name ?: "",      // Idagdag mo ito babe
+            photoUrl = auth.photoUrl ?: "" // At ito rin
+        )
+
+        // Optional: I-save na rin natin yung Name at Photo para sa ProfileFragment
+        UserPrefs.putString(this@LoginActivity, UserPrefs.KEY_NAME, auth.name ?: "")
+        UserPrefs.putString(this@LoginActivity, "avatar_url", auth.photoUrl ?: "")
 
         val bootRes = api.bootstrap()
         if (bootRes.isSuccessful && bootRes.body() != null) {
             val body = bootRes.body()!!
-            if (body.userId != null) {
-                UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
+
+            // Sync the user ID to local prefs
+            if (auth.userId != 0) {
+                UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, auth.userId)
             }
+
+            // Determine where to go
             if (body.profileComplete) goToMain() else goToOnboard()
         } else {
+            // Default to onboarding if bootstrap fails but login succeeded
             goToOnboard()
         }
     }
 
     private fun setAuthLoading(isLoading: Boolean) {
         loginBtn.isEnabled = !isLoading
+        btnGoogleLogin.isEnabled = !isLoading
         loginBtn.text = if (isLoading) "Connecting..." else "Login"
     }
 

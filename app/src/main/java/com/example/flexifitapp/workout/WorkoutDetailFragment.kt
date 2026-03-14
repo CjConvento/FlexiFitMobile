@@ -62,9 +62,7 @@ class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
 
     private fun bindViews(view: View) {
         btnBackWorkoutDetail = view.findViewById(R.id.btnBackWorkoutDetail)
-        btnHelpWorkoutDetail = view.findViewById(R.id.btnHelpWorkoutDetail)
         btnOpenWorkoutTutorial = view.findViewById(R.id.btnOpenWorkoutTutorial)
-
         ivWorkoutHeroImage = view.findViewById(R.id.ivWorkoutHeroImage)
         tvWorkoutDetailTitle = view.findViewById(R.id.tvWorkoutDetailTitle)
         tvWorkoutMuscleGroup = view.findViewById(R.id.tvWorkoutMuscleGroup)

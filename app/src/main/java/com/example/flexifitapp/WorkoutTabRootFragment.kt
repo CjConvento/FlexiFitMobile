@@ -192,7 +192,7 @@
                 val currentWorkouts = UserPrefs.getInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, 0)
                 UserPrefs.putInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, currentWorkouts + 1)
 
-                AchievementEngine.updateAchievements(ctx)
+                AchievementEngine.updateAchievementsLocally(ctx)
 
                 // 2. streak tracking
                 val today = LocalDate.now()
@@ -220,7 +220,7 @@
                 UserPrefs.putString(ctx, UserPrefs.KEY_LAST_WORKOUT_DATE, today.toString())
 
                 // 3. update achievements
-                AchievementEngine.updateAchievements(ctx)
+                AchievementEngine.updateAchievementsLocally(ctx)
 
                 Toast.makeText(
                     ctx,

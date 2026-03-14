@@ -4,14 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:layout_margin="4dp"
-    app:cardCornerRadius="12dp"
-    app:strokeWidth="0dp">
+    app:cardCornerRadius="8dp" app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@android:color/transparent"> <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/btn_gradient">
 
     <TextView
         android:id="@+id/txtDay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="Day 10"
-        android:textStyle="normal"/>
+        android:text="0"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+</FrameLayout>
 </com.google.android.material.card.MaterialCardView>

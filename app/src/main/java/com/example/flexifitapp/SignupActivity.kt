@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.lifecycleScope
+import com.example.flexifitapp.auth.LoginRequest
 import com.example.flexifitapp.googleauth.CreateUsernameActivity
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -155,6 +156,9 @@ class SignupActivity : AppCompatActivity() {
     private fun sendVerificationAndRedirect(user: FirebaseUser, email: String) {
         user.sendEmailVerification()
             .addOnCompleteListener { verifyTask ->
+                // Check if the activity is still alive
+                if (isFinishing || isDestroyed) return@addOnCompleteListener
+
                 setLoading(false)
 
                 if (!verifyTask.isSuccessful) {
@@ -282,15 +286,17 @@ class SignupActivity : AppCompatActivity() {
                     if (res.isSuccessful && res.body() != null) {
                         val authBody = res.body()!!
 
+                        // Sa loob ng checkIfGoogleUserExists...
                         UserPrefs.saveAuth(
                             this@SignupActivity,
                             authBody.token,
                             authBody.userId,
                             authBody.role,
                             authBody.status,
-                            authBody.isVerified
+                            authBody.isVerified,
+                            authBody.name,    // Ika-anim na parameter
+                            authBody.photoUrl // Ika-pitong parameter
                         )
-
                         val bootRes = api.bootstrap()
 
                         if (!bootRes.isSuccessful || bootRes.body() == null) {
@@ -303,13 +309,15 @@ class SignupActivity : AppCompatActivity() {
                             return@launch
                         }
 
+// Hanapin mo itong line sa lifecycleScope.launch:
                         val body = bootRes.body()!!
 
                         if (body.userId != null) {
                             UserPrefs.putInt(this@SignupActivity, UserPrefs.KEY_USER_ID, body.userId)
                         }
 
-                        if (body.profileComplete) {
+// DAPAT MAG-MATCH SA BOOTSTRAPRESPONSE MODEL NATIN
+                        if (body.profileComplete) { // <--- Gamitin ang variable name na nasa Model mo
                             goToMain()
                         } else {
                             goToOnboard()

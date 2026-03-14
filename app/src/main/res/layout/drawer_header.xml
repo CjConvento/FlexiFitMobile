@@ -18,7 +18,7 @@
         android:id="@+id/txtHello"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Baybum"
+        android:text="User"
         android:textStyle="bold"
         android:textColor="@color/textPrimary"
         android:textSize="20sp"/>

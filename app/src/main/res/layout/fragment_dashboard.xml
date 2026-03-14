@@ -312,11 +312,11 @@
                     android:layout_height="100dp"
                     app:indicatorDirectionCircular="clockwise"
                     app:indicatorSize="100dp"
-                    app:indicatorColor="@color/colorPrimary"
+                    app:indicatorColor="@color/gradientEnd_alt"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:trackColor="@color/colorPrimary"
+                    app:trackColor="@color/gradientStart"
                     app:trackCornerRadius="999dp"
                     app:trackThickness="12dp" />
 
@@ -522,7 +522,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="Today Meals"
+                        android:text="Current Day Meals"
+                        android:layout_marginStart="5dp"
                         android:textColor="@color/textPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold" />

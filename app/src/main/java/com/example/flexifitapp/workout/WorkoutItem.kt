@@ -11,5 +11,9 @@ data class WorkoutItem(
     val durationMinutes: Int,
     val calories: Int,
     val description: String,
-    val videoUrl: String?
+    val videoUrl: String?,
+    // DAGDAG NATIN ITO:
+    val order: Int,           // Para sa tamang pagkakasunod-sunod
+    val isCompleted: Boolean,  // Para sa UI checkmark/strikethrough
+    val loadKg: Double?       // Para sa progressive overload tracking
 )

@@ -17,25 +17,12 @@
             android:id="@+id/btnBackWorkoutDetail"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="18dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="18dp"
-            android:background="@drawable/bg_circle_soft"
+            android:background="@android:color/transparent"
             android:contentDescription="Back"
             android:padding="10dp"
             android:src="@drawable/baseline_arrow_left_ios_new_24" />
-
-        <ImageButton
-            android:id="@+id/btnHelpWorkoutDetail"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="top|end"
-            android:layout_marginTop="18dp"
-            android:layout_marginEnd="18dp"
-            android:background="@drawable/bg_circle_soft"
-            android:contentDescription="Help"
-            android:padding="8dp"
-            android:src="@drawable/baseline_help_24"
-            android:tint="@android:color/white" />
 
         <ImageView
             android:id="@+id/ivWorkoutHeroImage"
@@ -49,12 +36,13 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardWorkoutDetailContent"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="-28dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="7dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="28dp"
         app:cardElevation="8dp"
-        app:cardUseCompatPadding="true"
+        app:cardUseCompatPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,6 +59,12 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
+                <View
+                    android:layout_width="44dp"
+                    android:layout_height="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/bg_handle" />
+
                 <TextView
                     android:id="@+id/tvWorkoutDetailTitle"
                     android:layout_width="wrap_content"
@@ -78,6 +72,7 @@
                     android:text="Workout Name Pushup"
                     android:textColor="#111827"
                     android:textSize="24sp"
+                    android:layout_marginTop="10dp"
                     android:textStyle="bold"
                     android:maxLines="2"
                     android:ellipsize="end" />
@@ -97,11 +92,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/btn_gradient"
+                    android:background="@drawable/bg_chip_soft"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:text="Upper Body"
-                    android:textColor="@color/wave_color"
+                    android:textColor="@color/gradientStart"
+                    android:textStyle="bold"
                     android:textSize="13sp" />
 
                 <TextView
@@ -131,46 +127,52 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/btn_gradient"
+                            android:background="@drawable/bg_chip_soft"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="3 Sets"
-                            android:textColor="@color/white"
-                            android:textSize="12sp" />
+                            android:textColor="@color/gradientStart"
+                            android:textSize="12sp"
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/tvWorkoutReps"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/btn_gradient"
+                            android:background="@drawable/bg_chip_soft"
                             android:paddingHorizontal="12dp"
+                            android:textColor="@color/gradientStart"
                             android:paddingVertical="8dp"
-                            android:text="8 Reps"
-                            android:textColor="@color/white"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:text="8 Reps" />
 
                         <TextView
                             android:id="@+id/tvWorkoutRest"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/btn_gradient"
+                            android:background="@drawable/bg_chip_soft"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="8s Rest"
-                            android:textColor="@color/white"
+                            android:textColor="@color/gradientStart"
+
+                            android:textStyle="bold"
                             android:textSize="12sp" />
 
                         <TextView
                             android:id="@+id/tvWorkoutDuration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/btn_gradient"
+                            android:background="@drawable/bg_chip_soft"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
                             android:text="15 mins"
-                            android:textColor="@color/white"
+                            android:textColor="@color/gradientStart"
+
+                            android:textStyle="bold"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </HorizontalScrollView>
@@ -190,12 +192,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/btn_gradient"
+                    android:background="@drawable/bg_chip_soft"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
+                    android:textColor="@color/gradientStart"
                     android:text="100 kcal"
-                    android:textColor="@color/white"
-                    android:textSize="13sp" />
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/labelWorkoutDescription"

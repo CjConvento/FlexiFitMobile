@@ -173,16 +173,26 @@ object UserPrefs {
             .apply()
     }
 
-    fun saveAuth(ctx: Context, token: String, userId: Int, role: String?, status: String?, isVerified: Boolean) {
+    fun saveAuth(
+        ctx: Context,
+        token: String,
+        userId: Int,
+        role: String?,
+        status: String?,
+        isVerified: Boolean,
+        name: String?,      // Idagdag ito babe
+        photoUrl: String?   // Idagdag din ito
+    ) {
         prefs(ctx).edit()
             .putString(KEY_JWT_TOKEN, token)
             .putInt(KEY_USER_ID, userId)
             .putString(KEY_ROLE, role ?: "")
             .putString(KEY_STATUS, status ?: "")
             .putBoolean(KEY_IS_VERIFIED, isVerified)
+            .putString("KEY_NAME", name ?: "")          // I-save ang Name
+            .putString("KEY_AVATAR_URL", photoUrl ?: "") // I-save ang Avatar URL
             .apply()
     }
-
     fun getToken(ctx: Context): String = getString(ctx, KEY_JWT_TOKEN, "")
     fun getUserId(ctx: Context): Int = getInt(ctx, KEY_USER_ID, 0)
     fun getRole(ctx: Context): String = getString(ctx, KEY_ROLE, "")
@@ -200,6 +210,7 @@ object UserPrefs {
             .remove(KEY_NAME)
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_EMAIL)
+            .remove(KEY_AVATAR_URL)
             .apply()
     }
 }

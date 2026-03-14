@@ -17,7 +17,7 @@ import com.example.flexifitapp.ApiService
 import com.example.flexifitapp.MainActivity
 import com.example.flexifitapp.OnboardingActivity
 import com.example.flexifitapp.R
-import com.example.flexifitapp.RegisterRequest
+import com.example.flexifitapp.auth.RegisterRequest
 import com.example.flexifitapp.UserPrefs
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -121,13 +121,17 @@ class CreateUsernameActivity : AppCompatActivity() {
 
                 val authBody = registerRes.body()!!
 
+                // Heto ang tamang paraan babe, kailangan nating gamitin ang 'authBody.'
+                // para makuha ang data mula sa server response.
                 UserPrefs.saveAuth(
-                    this@CreateUsernameActivity,
-                    authBody.token,
-                    authBody.userId,
-                    authBody.role,
-                    authBody.status,
-                    authBody.isVerified
+                    ctx = this@CreateUsernameActivity,
+                    token = authBody.token,
+                    userId = authBody.userId,
+                    role = authBody.role,
+                    status = authBody.status,
+                    isVerified = authBody.isVerified,
+                    name = authBody.name ?: "",
+                    photoUrl = authBody.photoUrl ?: ""
                 )
 
                 UserPrefs.putString(this@CreateUsernameActivity, UserPrefs.KEY_USER_EMAIL, googleEmail)

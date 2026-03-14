@@ -6,39 +6,20 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.flexifitapp.custom.WaterGlassView
-import com.example.flexifitapp.UserPrefs
-import com.example.flexifitapp.CalorieMacroCalculator
 import com.example.flexifitapp.dashboard.BmiDetailsDialog
-import com.example.flexifitapp.onboarding.FlexiFitKeys
+import com.example.flexifitapp.dashboard.ProfileStatusResponse // Gamitin yung bagong model babe
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import kotlinx.coroutines.launch
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
-    // ===== Dashboard Data (Clean Version) =====
-    private var intakeCalories: Int = 0
-    private var burnedCalories: Int = 0
-    private var goalCalories: Int = 0
-
-    private var workoutDayWeek: String = ""
-    private var workoutStatus: String = ""
-    private var workoutPrograms: String = ""
-    private var workoutNames: String = ""
-
-    private var nutritionStatus: String = ""
-    private var mealPlanType: String = ""
-    private var breakfast: String = ""
-    private var lunch: String = ""
-    private var snacks: String = ""
-    private var dinner: String = ""
-    private var mealTotalCalories: Int = 0
-    private var waterCurrent = 0
-    private val waterMax = 8
-
-    // ===== Views =====
+    // ===== Views (Null-safe handling) =====
     private var txtLevel: TextView? = null
     private var imgLevelIcon: ImageView? = null
     private var txtCalorieIntake: TextView? = null
@@ -48,18 +29,11 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private var progressRing: CircularProgressIndicator? = null
     private var progressIntake: LinearProgressIndicator? = null
     private var progressBurned: LinearProgressIndicator? = null
+    private var tvBMIStatus: TextView? = null
+    private var txtBMIScore: TextView? = null
+    private var btnBMIViewMore: Button? = null
 
-    private var txtDayWeek: TextView? = null
-    private var txtStatus: TextView? = null
-    private var txtPrograms: TextView? = null
-    private var txtWorkouts: TextView? = null
-    private var txtNutriStatus: TextView? = null
-    private var txtMealPlanType: TextView? = null
-    private var txtBreakfast: TextView? = null
-    private var txtLunch: TextView? = null
-    private var txtSnacks: TextView? = null
-    private var txtDinner: TextView? = null
-    private var txtMealTotalCalories: TextView? = null
+    // Water
     private var txtWaterCount: TextView? = null
     private var btnAddWater: MaterialButton? = null
     private var waterGlass: WaterGlassView? = null
@@ -67,9 +41,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViews(view)
-        setupWaterCard()
-        renderDynamicUI(view)
-        renderBMI(view)
+
+        // DITO TAYO KUKUHA NG DATA NGAYON BABE
+        fetchDashboardData()
     }
 
     private fun bindViews(view: View) {
@@ -82,150 +56,88 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         tvNetCalories = view.findViewById(R.id.tvNetCalories)
         tvLeftCalories = view.findViewById(R.id.tvLeftCalories)
         progressRing = view.findViewById(R.id.progressRing)
-        txtDayWeek = view.findViewById(R.id.txtDayWeek)
+        txtBMIScore = view.findViewById(R.id.txtBMIScore)
+        tvBMIStatus = view.findViewById(R.id.tvBMIStatus)
+        btnBMIViewMore = view.findViewById(R.id.btnBMIViewMore)
         txtWaterCount = view.findViewById(R.id.txtWaterCount)
         btnAddWater = view.findViewById(R.id.btnAddWater)
         waterGlass = view.findViewById(R.id.waterGlass)
     }
 
-    private fun renderDynamicUI(view: View) {
-        val ctx = requireContext()
-        val age = UserPrefs.getInt(ctx, FlexiFitKeys.AGE)
-        val gender = UserPrefs.getString(ctx, FlexiFitKeys.GENDER)
-        val height = UserPrefs.getInt(ctx, FlexiFitKeys.HEIGHT_CM)
-        val weight = UserPrefs.getInt(ctx, FlexiFitKeys.WEIGHT_KG)
-        val userLevel = UserPrefs.getString(ctx, FlexiFitKeys.FITNESS_LEVEL)
-        val primary_goal = UserPrefs.getString(ctx, FlexiFitKeys.FITNESS_GOALS)
+    private fun fetchDashboardData() {
+        lifecycleScope.launch {
+            try {
+                // Gamitin ang existing ApiClient mo babe
+                val response = ApiClient.api(requireContext()).getProfileStatus()
 
-        txtLevel?.text = "Level: $userLevel"
-        updateLevelIcon(userLevel)
-
-        bindCalories()
-        bindWorkoutSummary()
-        bindNutritionSummary()
-        renderWater()
+                if (response.isSuccessful && response.body() != null) {
+                    val data = response.body()!!
+                    updateUI(data)
+                } else {
+                    Toast.makeText(context, "Server error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    private fun renderBMI(view: View) {
-        val ctx = requireContext()
-        val weight = UserPrefs.getInt(ctx, FlexiFitKeys.WEIGHT_KG)
-        val heightCm = UserPrefs.getInt(ctx, FlexiFitKeys.HEIGHT_CM)
-        val heightM = heightCm / 100.0
-        val btnBMIViewMore = view.findViewById<Button>(R.id.btnBMIViewMore)
+    private fun updateUI(data: ProfileStatusResponse) {
+        // 1. Header & Level
+        txtLevel?.text = "Level: ${data.fitnessLevel}"
+        updateLevelIcon(data.fitnessLevel ?: "Beginner")
 
-        if (weight > 0 && heightM > 0) {
-            val bmi = weight / (heightM * heightM)
+        // 2. BMI Card (API DRIVEN NA BABE!)
+        txtBMIScore?.text = String.format("%.1f", data.bmiData?.value ?: 0.0)
+        tvBMIStatus?.text = data.bmiData?.status ?: "No data"
 
-            // I-format natin para 1 decimal place lang (parang sa picture mo)
-            val formattedBMI = String.format("%.1f", bmi)
-
-            val txtBMIScore = view.findViewById<TextView>(R.id.txtBMIScore)
-            val tvBMIStatus = view.findViewById<TextView>(R.id.tvBMIStatus)
-
-            txtBMIScore?.text = formattedBMI
-
-            tvBMIStatus?.text = when {
-                bmi < 18.5 -> "You are underweight"
-                bmi in 18.5..24.9 -> "You have a normal weight"
-                else -> "You are overweight"
-            }
-
-            btnBMIViewMore?.setOnClickListener {
-                val dialog = BmiDetailsDialog(bmi) // Gamitin na natin yung 'bmi' variable sa taas
-                dialog.show(parentFragmentManager, "bmi_details")
-            }
-
+        btnBMIViewMore?.setOnClickListener {
+            val dialog = BmiDetailsDialog(
+                data.bmiData?.value ?: 0.0,
+                data.bmiData?.status ?: "No data"
+            )
+            dialog.show(parentFragmentManager, "bmi_details")
         }
 
+        // 3. Nutrition Engine (The Circles and Bars)
+        val nutri = data.nutrition ?: return
+
+        // Progress Bars
+        progressIntake?.max = nutri.target.toInt()
+        progressIntake?.setProgress(nutri.intake.toInt(), true)
+        txtCalorieIntake?.text = "${nutri.intake.toInt()} / ${nutri.target.toInt()} kcal"
+
+        progressBurned?.progress = nutri.burned.toInt()
+        txtCaloriesBurned?.text = "${nutri.burned.toInt()} kcal"
+
+        // Middle Circle (Net Calories)
+        tvNetCalories?.text = "${nutri.net.toInt()} kcal"
+        tvLeftCalories?.text = "${nutri.remaining.toInt()} kcal\nleft"
+        progressRing?.max = nutri.target.toInt()
+        progressRing?.setProgress(nutri.net.toInt(), true)
+
+        // 4. Water
+        txtWaterCount?.text = "${nutri.waterGlasses}/${nutri.waterTarget}"
+        waterGlass?.setCurrentGlasses(nutri.waterGlasses)
     }
 
     private fun updateLevelIcon(level: String) {
-        when (level.lowercase()) {
-            "beginner" -> {
-                imgLevelIcon?.setColorFilter(Color.parseColor("#4CAF50"))
-            }
-            "intermediate" -> {
-                imgLevelIcon?.setColorFilter(Color.parseColor("#FF9800"))
-            }
-            "advanced" -> {
-                imgLevelIcon?.setColorFilter(Color.parseColor("#F44336"))
-            }
-            "rehab level" -> {
-                imgLevelIcon?.setColorFilter(Color.parseColor("#2196F3"))
-            }
+        val color = when (level.lowercase()) {
+            "beginner" -> "#4CAF50"
+            "intermediate" -> "#FF9800"
+            "advanced" -> "#F44336"
+            else -> "#2196F3"
         }
-    }
-
-    private fun bindCalories() {
-        val netCalories = intakeCalories - burnedCalories
-        val remaining = (goalCalories - intakeCalories).coerceAtLeast(0)
-        txtCalorieIntake?.text = "$intakeCalories / $goalCalories kcal"
-        txtCaloriesBurned?.text = "$burnedCalories kcal"
-        tvNetCalories?.text = "$netCalories kcal"
-        tvLeftCalories?.text = "$remaining kcal\nleft"
-        progressRing?.max = goalCalories.coerceAtLeast(1)
-        progressRing?.setProgress(intakeCalories.coerceIn(0, goalCalories), true)
-        progressIntake?.max = goalCalories
-        progressIntake?.setProgress(intakeCalories, true)
-    }
-
-    private fun bindWorkoutSummary() {
-        txtDayWeek?.text = workoutDayWeek
-        txtStatus?.text = workoutStatus
-        txtPrograms?.text = workoutPrograms
-        txtWorkouts?.text = workoutNames
-    }
-
-    private fun bindNutritionSummary() {
-        txtNutriStatus?.text = nutritionStatus
-        txtMealPlanType?.text = mealPlanType
-        txtBreakfast?.text = breakfast
-        txtLunch?.text = lunch
-        txtSnacks?.text = snacks
-        txtDinner?.text = dinner
-        txtMealTotalCalories?.text = "$mealTotalCalories kcal"
-    }
-
-    private fun setupWaterCard() {
-        waterGlass?.setMaxGlasses(waterMax)
-        btnAddWater?.setOnClickListener {
-            if (waterCurrent < waterMax) {
-                waterCurrent++
-                renderWater()
-            }
-        }
-    }
-
-    private fun renderWater() {
-        waterGlass?.setCurrentGlasses(waterCurrent)
-        txtWaterCount?.text = "$waterCurrent/$waterMax"
+        imgLevelIcon?.setColorFilter(Color.parseColor(color))
     }
 
     override fun onDestroyView() {
-        // Cleanup all views
-        txtLevel = null
-        imgLevelIcon = null
-        txtCalorieIntake = null
-        txtCaloriesBurned = null
-        tvNetCalories = null
-        tvLeftCalories = null
-        progressRing = null
-        progressIntake = null
-        progressBurned = null
-        txtDayWeek = null
-        txtStatus = null
-        txtPrograms = null
-        txtWorkouts = null
-        txtNutriStatus = null
-        txtMealPlanType = null
-        txtBreakfast = null
-        txtLunch = null
-        txtSnacks = null
-        txtDinner = null
-        txtMealTotalCalories = null
-        txtWaterCount = null
-        btnAddWater = null
-        waterGlass = null
+        // Cleanup to prevent memory leaks
+        txtLevel = null; imgLevelIcon = null; txtCalorieIntake = null
+        txtCaloriesBurned = null; tvNetCalories = null; tvLeftCalories = null
+        progressRing = null; progressIntake = null; progressBurned = null
+        txtBMIScore = null; tvBMIStatus = null; btnBMIViewMore = null
+        txtWaterCount = null; btnAddWater = null; waterGlass = null
         super.onDestroyView()
     }
 }

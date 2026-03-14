@@ -1,63 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:clipToPadding="false"
+    android:paddingBottom="5dp"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <!-- hero image -->
     <ImageView
         android:id="@+id/imgHero"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         android:src="@drawable/ic_food_placeholder"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@id/cardSheet"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cardSheet" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
-    <!-- back button -->
     <ImageButton
         android:id="@+id/btnBackFood"
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_margin="14dp"
         android:background="@drawable/bg_circle_soft"
-        android:src="@drawable/baseline_arrow_left_ios_new_24"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="Back"
+        android:src="@drawable/baseline_arrow_left_ios_new_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:tint="?attr/colorPrimary" />
 
-    <!-- bottom sheet card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSheet"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="@android:color/white"  app:cardCornerRadius="28dp"                     app:cardElevation="8dp"                         app:cardMaxElevation="12dp"
+        app:cardUseCompatPadding="false"                app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="10dp"
-        app:cardUseCompatPadding="true"
-        app:strokeWidth="0dp"
-        app:cardBackgroundColor="@android:color/white">
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="17dp">
 
-            <!-- drag handle -->
             <View
                 android:layout_width="44dp"
                 android:layout_height="5dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/bg_handle" />
 
-            <!-- title + author -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,55 +70,111 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Blueberry Pancake"
-                    android:textStyle="bold"
-                    android:textSize="16sp" />
+                    android:textColor="@color/textPrimary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvFoodAuthor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:alpha="0.7"
                     android:text="by FlexiFit"
-                    android:textSize="12sp"
-                    android:alpha="0.7" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- serving + qty row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvServingLabel"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/bg_chip_soft"
+                    android:orientation="vertical"
                     android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="1 serving (2 pancakes)"
-                    android:textStyle="bold"
-                    android:textSize="13sp" />
+                    android:paddingVertical="8dp">
 
-                <!-- qty stepper -->
+                    <TextView
+                        android:id="@+id/tvServingLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1 serving (2 pancakes)"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:alpha="0.7"
+                            android:text="Weight: "
+
+                            android:textSize="12sp" />
+
+                        <EditText
+                            android:id="@+id/etServingWeight"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:imeOptions="actionDone"
+                            android:includeFontPadding="false"
+                            android:inputType="number"
+                            android:minWidth="15dp"
+                            android:textColor="@color/gradientStart"
+                            android:padding="0dp"
+                            android:text="150"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:ignore="Autofill,LabelFor" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.7"
+                            android:text=" g"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_marginStart="4dp"
+                            android:alpha="0.5"
+                            android:src="@android:drawable/ic_menu_edit"
+                            app:tint="?attr/colorPrimary"
+                            tools:ignore="ContentDescription" />
+                    </LinearLayout>
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginStart="12dp"
                     android:gravity="center_vertical"
-
-                    android:padding="4dp">
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/btnMinus"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:background="@android:color/transparent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Decrease"
                         android:src="@drawable/ic_minus"
-                        android:contentDescription="Minus"
                         app:tint="?attr/colorPrimary" />
 
                     <TextView
@@ -126,15 +183,16 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="1"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <ImageButton
                         android:id="@+id/btnPlus"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:background="@android:color/transparent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Increase"
                         android:src="@drawable/ic_plus"
-                        android:contentDescription="Plus"
                         app:tint="?attr/colorPrimary" />
                 </LinearLayout>
             </LinearLayout>
@@ -143,80 +201,86 @@
                 android:id="@+id/tvAutoNote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Totals update automatically"
-                android:textSize="12sp"
-                android:alpha="0.65" />
+                android:layout_marginTop="8dp"
+                android:alpha="0.6"
+                android:text="Macros update dynamically with weight"
+                android:textSize="11sp" />
 
-            <!-- Nutrition chips -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Nutrition"
+                android:layout_marginTop="20dp"
+                android:text="Nutrition Facts"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
-                android:id="@+id/chipRow"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                android:scrollbars="none">
 
-                <TextView
-                    android:id="@+id/chipCalories"
+                <LinearLayout
+                    android:id="@+id/chipRow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_chip_soft"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="180 kcal"
-                    android:textStyle="bold"
-                    android:textSize="12sp" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/chipCarbs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_chip_soft"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="30g carbs"
-                    android:textStyle="bold"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/chipCalories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_soft"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:text="180 kcal"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/chipFats"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_chip_soft"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="30g fats"
-                    android:textStyle="bold"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/chipCarbs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_soft"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:text="30g carbs"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/chipProtein"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_chip_soft"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="20g proteins"
-                    android:textStyle="bold"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/chipFats"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_soft"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:text="10g fats"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
-            <!-- Description -->
+                    <TextView
+                        android:id="@+id/chipProtein"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_soft"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:text="15g protein"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Descriptions"
+                android:layout_marginTop="20dp"
+                android:text="Description"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -224,9 +288,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Pancakes are some people’s favorite breakfast..."
-                android:textSize="13sp"
-                android:alpha="0.85" />
+                android:alpha="0.8"
+                android:lineSpacingExtra="4dp"
+                android:text="Pancakes are some people’s favorite breakfast. Served with fresh blueberries for a boost of vitamins and fiber."
+                android:textSize="12sp" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

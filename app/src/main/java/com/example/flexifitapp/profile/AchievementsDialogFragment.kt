@@ -49,6 +49,8 @@ class AchievementsDialogFragment : DialogFragment(R.layout.dialog_achievements) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        AchievementEngine.updateAchievementsLocally(requireContext())
+
         bindViews(view)
         bindHeader()
         bindStats()
