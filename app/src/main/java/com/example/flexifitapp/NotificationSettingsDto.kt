@@ -12,7 +12,8 @@ data class NotificationSettingsDto(
     val waterEndTime: String?,
     val waterIntervalMinutes: Int?,
 
-    val dailyWaterGoal: Int?,
-    val glassSizeMl: Int?,
-    val calorieDisplayMode: String?
+// Siguraduhin na ganito ang structure para sa Glass at Calories
+    val dailyWaterGoal: Int?, // Halimbawa: 2000 (ml)
+    val glassSizeMl: Int?,    // Ito yung binago natin, halimbawa: 250 (ml)
+    val calorieDisplayMode: String? // "Remaining" vs "Consumed"
 )

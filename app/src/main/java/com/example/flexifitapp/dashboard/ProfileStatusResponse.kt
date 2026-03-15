@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ProfileStatusResponse(
     @SerializedName("userName") val userName: String?,
+    @SerializedName("userEmail") val userEmail: String?,
     @SerializedName("fitnessLevel") val fitnessLevel: String?,
     @SerializedName("goal") val fitnessGoal: String?,
 

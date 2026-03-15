@@ -2,20 +2,22 @@ package com.example.flexifitapp.workout
 
 import com.example.flexifitapp.ApiService
 
-class WorkoutRepository(
-    private val apiService: ApiService
-) {
-    /**
-     * Kukunin ang workout session para sa kasalukuyang araw.
-     * Ang backend ang nagbubuo ng full Media URLs (IP + Filename).
-     */
+// WorkoutRepository.kt
+class WorkoutRepository(private val apiService: ApiService) {
+
+    // Para sa normal na pagbukas ng app
     suspend fun getTodayWorkout(): WorkoutSessionResponse? {
         return try {
             val response = apiService.getTodayWorkout()
             if (response.isSuccessful) response.body() else null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+        } catch (e: Exception) { null }
+    }
+
+    // GUDIS UPDATE: Para sa pag-click sa Calendar
+    suspend fun getWorkoutByDate(day: Int, month: Int): WorkoutSessionResponse? {
+        return try {
+            val response = apiService.getWorkoutHistoryDetail(day, month)
+            if (response.isSuccessful) response.body() else null
+        } catch (e: Exception) { null }
     }
 }

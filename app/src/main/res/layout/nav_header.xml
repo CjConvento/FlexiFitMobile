@@ -1,58 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="210dp"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/bg_modern_wave">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp"
+    android:background="@android:color/transparent">
 
-    <!-- SETTINGS ICON – top right ng header -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@android:color/white"
+        app:shapeAppearanceOverlay="@style/CircleImage"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtHeaderName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="User"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/imgAvatar"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtHeaderEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FlexiFit User"
+        android:textColor="#D9E2F3"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/txtHeaderName"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageButton
         android:id="@+id/btnHeaderSettings"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/transparent"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_settings"
         app:tint="@android:color/white"
-        android:contentDescription="Settings" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgAvatar"
+        app:layout_constraintBottom_toBottomOf="@id/imgAvatar" /> <ImageButton
+    android:id="@+id/btnHeaderNotifications"
+    android:layout_width="32dp"
+    android:layout_height="32dp"
+    android:layout_marginEnd="12dp"
+    android:padding="4dp"
+    android:scaleType="fitCenter"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:src="@drawable/ic_notification"
+    app:tint="@android:color/white"
+    app:layout_constraintEnd_toStartOf="@id/btnHeaderSettings"
+    app:layout_constraintTop_toTopOf="@id/btnHeaderSettings"
+    app:layout_constraintBottom_toBottomOf="@id/btnHeaderSettings" />
 
-    <!-- Centered content (avatar + name + email) -->
-    <LinearLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingTop="36dp"
-        android:paddingBottom="24dp">
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="#40FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/txtHeaderEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <ImageView
-            android:id="@+id/imgProfile"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:src="@drawable/ic_person"
-            android:tint="@android:color/white"
-            android:padding="10dp" />
-
-        <TextView
-            android:id="@+id/txtHeaderName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WELCOME Manish"
-            android:textColor="@android:color/white"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp" />
-
-        <TextView
-            android:id="@+id/txtHeaderEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="user@email.com"
-            android:textColor="#D9E2F3"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

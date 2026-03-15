@@ -1,674 +1,772 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:fillViewport="true"
-    android:background="@color/background">
-
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:fillViewport="true"
+        android:background="@color/background">
 
-        <!-- TITLE -->
-        <TextView
-            android:id="@+id/tv_settings_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Settings"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="4dp" />
-
-        <TextView
-            android:id="@+id/tv_settings_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Customs, appearance, and account options."
-            android:textSize="14sp"
-            android:textColor="@color/textSecondary"
-            android:paddingBottom="16dp" />
-
-        <!-- NOTIFICATIONS CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_notifications"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/surface">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_marginTop="1dp"
+            <!-- TITLE -->
+            <TextView
+                android:id="@+id/tv_settings_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_settings_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Customs, appearance, and account options."
+                android:textSize="14sp"
+                android:textColor="@color/textSecondary"
+                android:paddingBottom="16dp" />
+
+            <!-- NOTIFICATIONS CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_notifications"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Notifications"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reminders for workouts, meals, and water."
-                    android:textSize="13sp"
-                    android:textColor="@color/textSecondary"
-                    android:paddingBottom="12dp" />
-
-                <!-- Workout Reminder -->
                 <LinearLayout
+                    android:layout_marginTop="1dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Workout Reminder"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="14sp" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_workout_reminder"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbTint="@color/gradientEnd"
-                        app:trackTint="@color/colorPrimary" />
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_workout_reminder_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Workout reminder time (e.g., 6:00 PM)"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="10dp"
-                    app:backgroundTint="@color/surface"
-                    app:cornerRadius="16dp"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/textSecondary" />
-
-                <!-- Meal Reminder -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Meal Reminder"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="14sp" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_meal_reminder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbTint="@color/gradientEnd"
-                        app:trackTint="@color/colorPrimary" />
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_meal_reminder_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Meal reminder time"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="10dp"
-                    app:cornerRadius="16dp"
-                    app:strokeColor="@color/colorPrimary"
-                    app:backgroundTint="@color/surface"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/textSecondary" />
-
-                <!-- Water Reminder -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Water Reminder"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="14sp" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_water_reminder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbTint="@color/gradientEnd"
-                        app:trackTint="@color/colorPrimary" />
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_water_start_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Start time"
-                    android:layout_marginTop="8dp"
-                    app:cornerRadius="16dp"
-                    app:backgroundTint="@color/surface"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/textSecondary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_water_end_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="End time"
-                    android:layout_marginTop="8dp"
-                    app:cornerRadius="16dp"
-                    app:backgroundTint="@color/surface"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/textSecondary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_water_interval"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Interval (60 / 90 / 120 mins)"
-                    android:layout_marginTop="8dp"
-                    app:cornerRadius="16dp"
-                    app:backgroundTint="@color/surface"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/textSecondary" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- GOALS & TARGETS CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_goals_targets"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/surface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Goals &amp; Targets"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Set water and calorie display preferences."
-                    android:textSize="13sp"
-                    android:textColor="@color/textSecondary"
-                    android:paddingBottom="12dp" />
-
-                <!-- Water goal -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Daily water goal"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="14sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_water_goal_minus"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:text=""
-                        app:cornerRadius="16dp"
-                        android:background="@drawable/ic_minus"
-                        app:strokeColor="@color/colorPrimary"
-                        app:strokeWidth="1dp"
-                        android:textColor="@color/textPrimary" />
-
-                    <TextView
-                        android:id="@+id/tv_water_goal_value"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="8 glasses"
-                        android:textStyle="bold"
+                        android:text="Notifications"
                         android:textSize="16sp"
-                        android:textColor="@color/textPrimary" />
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary"
+                        android:paddingBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reminders for workouts, meals, and water."
+                        android:textSize="13sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingBottom="12dp" />
+
+                    <!-- Workout Reminder -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Workout Reminder"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_workout_reminder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:thumbTint="@color/gradientEnd"
+                            app:trackTint="@color/colorPrimary" />
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_water_goal_plus"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:text=""
+                        android:id="@+id/btn_workout_reminder_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Workout reminder time (e.g., 6:00 PM)"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="10dp"
+                        app:backgroundTint="@color/surface"
                         app:cornerRadius="16dp"
-                        android:background="@drawable/ic_plus"
                         app:strokeColor="@color/colorPrimary"
                         app:strokeWidth="1dp"
+                        android:textColor="@color/textSecondary" />
+
+                    <!-- Meal Reminder -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Meal Reminder"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_meal_reminder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:thumbTint="@color/gradientEnd"
+                            app:trackTint="@color/colorPrimary" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_meal_reminder_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Meal reminder time"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="10dp"
+                        app:cornerRadius="16dp"
+                        app:strokeColor="@color/colorPrimary"
+                        app:backgroundTint="@color/surface"
+                        app:strokeWidth="1dp"
+                        android:textColor="@color/textSecondary" />
+
+                    <!-- Water Reminder -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Water Reminder"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_water_reminder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:thumbTint="@color/gradientEnd"
+                            app:trackTint="@color/colorPrimary" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_water_start_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Start time"
+                        android:layout_marginTop="8dp"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="@color/surface"
+                        app:strokeColor="@color/colorPrimary"
+                        app:strokeWidth="1dp"
+                        android:textColor="@color/textSecondary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_water_end_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="End time"
+                        android:layout_marginTop="8dp"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="@color/surface"
+                        app:strokeColor="@color/colorPrimary"
+                        app:strokeWidth="1dp"
+                        android:textColor="@color/textSecondary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_water_interval"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Interval (60 / 90 / 120 mins)"
+                        android:layout_marginTop="8dp"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="@color/surface"
+                        app:strokeColor="@color/colorPrimary"
+                        app:strokeWidth="1dp"
+                        android:textColor="@color/textSecondary" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- GOALS & TARGETS CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_goals_targets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Goals &amp; Targets"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary"
+                        android:paddingBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Set water and calorie display preferences."
+                        android:textSize="13sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingBottom="12dp" />
+
+                    <!-- Water goal -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Daily water goal"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="13dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_water_goal_minus"
+                            android:layout_width="33dp"
+                            android:layout_height="33dp"
+                            android:text=""
+                            app:cornerRadius="16dp"
+                            android:background="@drawable/ic_minus"
+                            app:strokeColor="@color/colorPrimary"
+                            app:strokeWidth="1dp"
+                            android:textColor="@color/textPrimary" />
+
+                        <TextView
+                            android:id="@+id/tv_water_goal_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="8 glasses"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/textPrimary" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_water_goal_plus"
+                            android:layout_width="33dp"
+                            android:layout_height="33dp"
+                            android:text=""
+                            app:cornerRadius="16dp"
+                            android:background="@drawable/ic_plus"
+                            app:strokeColor="@color/colorPrimary"
+                            app:strokeWidth="1dp"
+                            android:textColor="@color/textPrimary" />
+                    </LinearLayout>
+
+                    <!-- Glass size -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Glass size preference"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="14sp"
+                        android:layout_marginTop="18dp"
+                        android:paddingBottom="8dp" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_glass_selection_revised"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_glass_selection">
+
+                        <LinearLayout
+                            android:id="@+id/glassTextGroup"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/dropContainer">
+
+                            <TextView
+                                android:id="@+id/tvSelectedGlassLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Standard Glass"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvSelectedGlassDesc"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:alpha="0.7"
+                                android:text="Using 250ml per glass"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/dropContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:orientation="horizontal"
+                            android:gravity="bottom"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <ImageView
+                                android:id="@+id/iv_drop_small"
+                                android:layout_width="28dp"
+                                android:layout_height="34dp"
+                                android:layout_marginEnd="8dp"
+                                android:padding="2dp"
+                                android:src="@drawable/ic_water_drop"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                app:tint="@color/textSecondary" />
+
+                            <ImageView
+                                android:id="@+id/iv_drop_medium"
+                                android:layout_width="36dp"
+                                android:layout_height="44dp"
+                                android:layout_marginEnd="8dp"
+                                android:padding="2dp"
+                                android:src="@drawable/ic_water_drop"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                app:tint="@color/colorPrimary" />
+
+                            <ImageView
+                                android:id="@+id/iv_drop_large"
+                                android:layout_width="44dp"
+                                android:layout_height="54dp"
+                                android:padding="2dp"
+                                android:src="@drawable/ic_water_drop"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                app:tint="@color/textSecondary" />
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Calorie display mode -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Calories display mode"
+                        android:textColor="@color/textSecondary"
+                        android:textSize="14sp"
+                        android:layout_marginTop="16dp" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggle_calorie_mode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:singleSelection="true"
+                        app:selectionRequired="true"
+                        app:checkedButton="@+id/btn_cal_remaining">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_cal_remaining"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Remaining"
+                            android:textAllCaps="false"
+                            app:cornerRadius="12dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_cal_net"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Net Calories"
+                            android:textAllCaps="false"
+                            app:cornerRadius="12dp" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- APPEARANCE CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_appearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:strokeWidth="0dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Appearance"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
                         android:textColor="@color/textPrimary" />
-                </LinearLayout>
-
-                <!-- Glass size -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_glass_size"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Glass size (200ml / 250ml / 300ml)"
-                    android:layout_marginTop="12dp"
-                    app:cornerRadius="16dp"
-                    app:backgroundTint="@color/surface"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/textPrimary" />
-
-                <!-- Calorie display mode -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Calories display mode"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="14sp"
-                    android:layout_marginTop="12dp"
-                    android:paddingBottom="6dp" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rb_cal_remaining"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Remaining"
-                    android:textColor="@color/textPrimary" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rb_cal_net"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Net calories"
-                    android:textColor="@color/textPrimary" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- APPEARANCE CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_appearance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:strokeWidth="0dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="@color/surface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Appearance"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Customize display and readability."
-                    android:textSize="13sp"
-                    android:textColor="@color/textSecondary" />
-
-                <!-- Dark Mode -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Dark Mode"
+                        android:layout_marginTop="4dp"
+                        android:text="Customize display and readability."
+                        android:textSize="13sp"
+                        android:textColor="@color/textSecondary" />
+
+                    <!-- Dark Mode -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Dark Mode"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_dark_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            app:thumbTint="@color/gradientEnd"
+                            app:trackTint="@color/colorPrimary" />
+
+                    </LinearLayout>
+
+                    <!-- Theme mode -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:text="Theme mode"
                         android:textColor="@color/textSecondary"
                         android:textSize="14sp" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_dark_mode"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/themeModeContainer"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        app:thumbTint="@color/gradientEnd"
-                        app:trackTint="@color/colorPrimary" />
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_theme_auto"
+                            android:layout_width="0dp"
+                            android:layout_height="72dp"
+                            android:layout_weight="1"
+                            android:text="Auto"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            app:cornerRadius="24dp"
+                            app:backgroundTint="@null"
+                            android:background="@drawable/btn_gradient"
+                            />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_theme_dark"
+                            android:layout_width="0dp"
+                            android:layout_height="72dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:text="Dark"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            app:backgroundTint="@color/colorCardDark"
+                            app:cornerRadius="24dp"
+                            app:strokeWidth="1dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_theme_light"
+                            android:layout_width="0dp"
+                            android:layout_height="72dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:text="Light"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            app:backgroundTint="@null"
+                            android:background="@drawable/btn_gradient"
+                            app:cornerRadius="24dp"
+                            app:strokeWidth="1dp" />
+                    </LinearLayout>
+
+                    <!-- Read Mode -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Read Mode"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="14sp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switch_read_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            app:thumbTint="@color/gradientEnd"
+                            app:trackTint="@color/colorPrimary" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Theme mode -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:text="Theme mode"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="14sp" />
+            <!-- PRIVACY & DATA CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_privacy_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface">
 
-                <LinearLayout
-                    android:id="@+id/themeModeContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_theme_auto"
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:text="Auto"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        app:cornerRadius="24dp"
-                        app:backgroundTint="@null"
-                        android:background="@drawable/btn_gradient"
-                        />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_theme_dark"
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="10dp"
-                        android:text="Dark"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        app:backgroundTint="@color/colorCardDark"
-                        app:cornerRadius="24dp"
-                        app:strokeWidth="1dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_theme_light"
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="10dp"
-                        android:text="Light"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        app:backgroundTint="@null"
-                        android:background="@drawable/btn_gradient"
-                        app:cornerRadius="24dp"
-                        app:strokeWidth="1dp" />
-                </LinearLayout>
-
-                <!-- Read Mode -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Read Mode"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="14sp" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_read_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        app:thumbTint="@color/gradientEnd"
-                        app:trackTint="@color/colorPrimary" />
+                        android:text="Privacy &amp; Data"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary"
+                        android:paddingBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Manage your data and reset options."
+                        android:textSize="13sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingBottom="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_export_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Export My Data"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="12dp"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="20dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_reset_progress_logs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Reset Progress Logs (Danger)"
+                        android:textColor="@color/white"
+                        app:backgroundTint="@android:color/holo_red_dark"
+                        app:cornerRadius="20dp" />
 
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- PRIVACY & DATA CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_privacy_data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/surface">
-
-            <LinearLayout
+            <!-- ABOUT CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Privacy &amp; Data"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Manage your data and reset options."
-                    android:textSize="13sp"
-                    android:textColor="@color/textSecondary"
-                    android:paddingBottom="12dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_export_data"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Export My Data"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"
-                    app:cornerRadius="20dp" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_reset_progress_logs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Reset Progress Logs (Danger)"
-                    android:textColor="@color/white"
-                    app:backgroundTint="@android:color/holo_red_dark"
-                    app:cornerRadius="20dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary"
+                        android:paddingBottom="4dp" />
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Learn more and get support."
+                        android:textSize="13sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingBottom="12dp" />
 
-        <!-- ABOUT CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_about"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/surface">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_about_flexifit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="About FlexiFit"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="12dp"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="20dp" />
 
-            <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_contact_feedback"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Contact / Feedback"
+                        android:textColor="@color/white"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="20dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ACCOUNT CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="About"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Learn more and get support."
-                    android:textSize="13sp"
-                    android:textColor="@color/textSecondary"
-                    android:paddingBottom="12dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_about_flexifit"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="About FlexiFit"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"
-                    app:cornerRadius="20dp" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_contact_feedback"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Contact / Feedback"
-                    android:textColor="@color/white"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"
-                    app:cornerRadius="20dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Account"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/textPrimary"
+                        android:paddingBottom="4dp" />
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Manage your account options."
+                        android:textSize="13sp"
+                        android:textColor="@color/textSecondary"
+                        android:paddingBottom="12dp" />
 
-        <!-- ACCOUNT CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_account"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardUseCompatPadding="true"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="@color/surface">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_chpass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Change Password"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="12dp"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="20dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_update_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Update Email"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="12dp"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="20dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Account"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="4dp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_logout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Log Out"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="12dp"
+                        app:backgroundTint="@null"
+                        android:background="@drawable/btn_gradient"
+                        app:cornerRadius="20dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Manage your account options."
-                    android:textSize="13sp"
-                    android:textColor="@color/textSecondary"
-                    android:paddingBottom="12dp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_delete_account"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Delete Account"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="10dp"
+                        app:backgroundTint="@android:color/holo_red_dark"
+                        app:cornerRadius="20dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_chpass"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Change Password"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"
-                    app:cornerRadius="20dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_update_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Update Email"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"
-                    app:cornerRadius="20dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_logout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Log Out"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"
-                    app:backgroundTint="@null"
-                    android:background="@drawable/btn_gradient"
-                    app:cornerRadius="20dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_delete_account"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Delete Account"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="10dp"
-                    app:backgroundTint="@android:color/holo_red_dark"
-                    app:cornerRadius="20dp" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>

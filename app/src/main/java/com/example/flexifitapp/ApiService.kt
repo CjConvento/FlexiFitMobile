@@ -66,9 +66,33 @@ interface ApiService {
     @GET("api/workout/today")
     suspend fun getTodayWorkout(): Response<WorkoutSessionResponse>
 
+    // DAGDAG MO ITO BABE:
+    @GET("api/workout/history-detail")
+    suspend fun getWorkoutHistoryDetail(
+        @Query("day") day: Int,
+        @Query("month") month: Int
+    ): Response<WorkoutSessionResponse>
+
     // --- NUTRITION ENGINE ---
     @GET("api/nutrition/today-plan")
     suspend fun getTodayPlan(): Response<NutritionResponse>
+
+    // DAGDAG MO RIN ITO:
+    @GET("api/nutrition/history-detail")
+    suspend fun getNutritionHistoryDetail(
+        @Query("day") day: Int,
+        @Query("month") month: Int
+    ): Response<NutritionResponse>
+
+    //    NOTIFICATION
+    @GET("api/notifications") // Endpoint para sa ASP.NET mo
+    suspend fun getNotifications(): List<NotificationItem>
+
+    // PROGRESS TRACKER
+    @GET("api/workout/stats") // Siguraduhin na match sa route ng C# mo
+    suspend fun getProgressStats(
+        @Query("range") range: String
+    ): Response<ProgressTrackerDto>
 
     // --- TEST/ME ---
     @GET("api/test/me")

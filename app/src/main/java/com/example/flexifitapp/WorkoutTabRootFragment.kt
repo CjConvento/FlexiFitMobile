@@ -1,415 +1,281 @@
-    package com.example.flexifitapp
+package com.example.flexifitapp
 
-    import android.os.Bundle
-    import android.view.View
-    import android.widget.ImageButton
-    import android.widget.ImageView
-    import android.widget.ProgressBar
-    import android.widget.TextView
-    import android.widget.Toast
-    import androidx.core.os.bundleOf
-    import androidx.core.view.isVisible
-    import androidx.fragment.app.Fragment
-    import androidx.lifecycle.lifecycleScope
-    import androidx.navigation.fragment.findNavController
-    import androidx.recyclerview.widget.LinearLayoutManager
-    import androidx.recyclerview.widget.RecyclerView
-    import com.example.flexifitapp.profile.AchievementEngine
-    import com.example.flexifitapp.workout.WorkoutAdapter
-    import com.example.flexifitapp.workout.WorkoutDetailFragment
-    import com.example.flexifitapp.workout.WorkoutItem
-    import com.example.flexifitapp.workout.WorkoutProgram
-    import com.example.flexifitapp.workout.WorkoutRepository
-    import com.google.android.material.button.MaterialButton
-    import kotlinx.coroutines.launch
-    import java.time.LocalDate
-    import java.time.temporal.ChronoUnit
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.flexifitapp.profile.AchievementEngine
+import com.example.flexifitapp.workout.WorkoutAdapter
+import com.example.flexifitapp.workout.WorkoutItem
+import com.example.flexifitapp.workout.WorkoutRepository
+import com.example.flexifitapp.workout.WorkoutSessionResponse
+import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 
-    class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
+class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 
-        private var day: Int = -1
-        private var fromHost: Boolean = false
+    private var day: Int = -1
+    private var fromHost: Boolean = false
 
-        private var btnOpenCalendar: ImageButton? = null
-        private var btnPrevProgram: ImageButton? = null
-        private var btnNextProgram: ImageButton? = null
-        private var btnToggleWarmup: ImageButton? = null
-        private var btnToggleWorkouts: ImageButton? = null
-        private var btnRetryWorkout: MaterialButton? = null
-        private var btnSkipWorkoutSession: MaterialButton? = null
-        private var btnDoneWorkoutSession: MaterialButton? = null
+    // UI Variables
+    private var btnBackWorkoutPlan: ImageButton? = null
+    private var btnOpenCalendar: ImageButton? = null
+    private var btnPrevProgram: ImageButton? = null
+    private var btnNextProgram: ImageButton? = null
+    private var btnToggleWarmup: ImageView? = null
+    private var btnToggleWorkouts: ImageView? = null
+    private var btnRetryWorkout: MaterialButton? = null
+    private var btnSkipWorkoutSession: MaterialButton? = null
+    private var btnDoneWorkoutSession: MaterialButton? = null
 
-        private var tvWorkoutDayTitle: TextView? = null
-        private var tvWorkoutPlanDate: TextView? = null
-        private var tvProgramName: TextView? = null
-        private var tvProgramLevel: TextView? = null
-        private var tvProgramDescription: TextView? = null
-        private var tvWorkoutSessionStatus: TextView? = null
-        private var tvWorkoutError: TextView? = null
-        private var tvEmptyWorkout: TextView? = null
+    private var tvWorkoutDayTitle: TextView? = null
+    private var tvWorkoutPlanDate: TextView? = null
+    private var tvProgramHeader: TextView? = null
+    private var tvCurrentProgramName: TextView? = null
+    private var tvProgramProgress: TextView? = null
+    private var tvWorkoutError: TextView? = null
 
-        private var ivProgramEnvironment: ImageView? = null
+    // Summary Fields (Important for Totals!)
+    private var tvTotalTime: TextView? = null
+    private var tvTotalCalories: TextView? = null
 
-        private var progressWorkoutLoading: ProgressBar? = null
+    private var progressWorkoutLoading: ProgressBar? = null
+    private var layoutWarmupHeader: View? = null
+    private var layoutWorkoutHeader: View? = null
+    private var layoutWorkoutSessionBottomActions: View? = null
 
-        private var layoutWarmupHeader: View? = null
-        private var layoutWorkoutHeader: View? = null
-        private var layoutWorkoutSessionBottomActions: View? = null
+    private var rvWarmupItems: RecyclerView? = null
+    private var rvWorkoutItems: RecyclerView? = null
 
-        private var rvWarmupItems: RecyclerView? = null
-        private var rvWorkoutItems: RecyclerView? = null
+    private var warmupExpanded = true
+    private var workoutExpanded = true
 
-        private var warmupExpanded = true
-        private var workoutExpanded = true
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        companion object {
-            private const val IMAGE_BASE_URL = "https://0.0.0.0:5160/wwwroot/images/workouts/"
-        }
+        readArgs()
+        bindViews(view)
+        setupCalendarButton()
+        setupRecyclerViews()
+        setupExpandCollapse()
+        setupProgramNavigation()
+        setupSessionButtons()
+        setupRetry()
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        fetchWorkoutSession()
+    }
 
-            readArgs()
-            bindViews(view)
-            setupCalendarButton()
-            setupTitle()
-            setupRecyclerViews()
-            setupExpandCollapse()
-            setupProgramNavigation()
-            setupSessionButtons()
-            setupRetry()
+    private fun readArgs() {
+        day = arguments?.getInt("ARG_DAY", -1) ?: -1
+        fromHost = arguments?.getBoolean("ARG_FROM_HOST", false) ?: false
+    }
 
-            fetchWorkoutSession()
-        }
+    private fun bindViews(view: View) {
+        btnBackWorkoutPlan = view.findViewById(R.id.btnBackWorkoutPlan)
+        btnOpenCalendar = view.findViewById(R.id.btnOpenCalendar)
+        tvWorkoutPlanDate = view.findViewById(R.id.tvWorkoutPlanDate)
+        tvWorkoutDayTitle = view.findViewById(R.id.tvSessionLabel)
 
-        private fun readArgs() {
-            day = arguments?.getInt(NavKeys.ARG_DAY, -1) ?: -1
-            fromHost = arguments?.getBoolean(NavKeys.ARG_FROM_HOST, false) ?: false
-        }
+        btnPrevProgram = view.findViewById(R.id.btnPrevProgram)
+        btnNextProgram = view.findViewById(R.id.btnNextProgram)
+        tvProgramHeader = view.findViewById(R.id.tvProgramHeader)
+        tvCurrentProgramName = view.findViewById(R.id.tvCurrentProgramName)
+        tvProgramProgress = view.findViewById(R.id.tvProgramProgress)
 
-        private fun bindViews(view: View) {
-            btnOpenCalendar = view.findViewById(R.id.btnOpenCalendar)
-            btnPrevProgram = view.findViewById(R.id.btnPrevProgram)
-            btnNextProgram = view.findViewById(R.id.btnNextProgram)
-            btnToggleWarmup = view.findViewById(R.id.btnToggleWarmup)
-            btnToggleWorkouts = view.findViewById(R.id.btnToggleWorkouts)
-            btnRetryWorkout = view.findViewById(R.id.btnRetryWorkout)
-            btnSkipWorkoutSession = view.findViewById(R.id.btnSkipWorkoutSession)
-            btnDoneWorkoutSession = view.findViewById(R.id.btnDoneWorkoutSession)
+        // I-bind natin yung totals para sa duration at calories card
+        tvTotalTime = view.findViewById(R.id.tvWorkoutDuration)
+        tvTotalCalories = view.findViewById(R.id.tvWorkoutCalories)
 
-            tvWorkoutDayTitle = view.findViewById(R.id.tvWorkoutDayTitle)
-            tvWorkoutPlanDate = view.findViewById(R.id.tvWorkoutPlanDate)
-            tvProgramName = view.findViewById(R.id.tvProgramName)
-            tvProgramLevel = view.findViewById(R.id.tvProgramLevel)
-            tvProgramDescription = view.findViewById(R.id.tvProgramDescription)
-            tvWorkoutSessionStatus = view.findViewById(R.id.tvWorkoutSessionStatus)
-            tvWorkoutError = view.findViewById(R.id.tvWorkoutError)
-            tvEmptyWorkout = view.findViewById(R.id.tvEmptyWorkout)
+        layoutWarmupHeader = view.findViewById(R.id.layoutWarmupHeader)
+        btnToggleWarmup = view.findViewById(R.id.btnToggleWarmup)
+        layoutWorkoutHeader = view.findViewById(R.id.layoutWorkoutHeader)
+        btnToggleWorkouts = view.findViewById(R.id.btnToggleWorkouts)
 
-            ivProgramEnvironment = view.findViewById(R.id.ivProgramEnvironment)
+        rvWarmupItems = view.findViewById(R.id.rvWarmupItems)
+        rvWorkoutItems = view.findViewById(R.id.rvWorkoutItems)
 
-            progressWorkoutLoading = view.findViewById(R.id.progressWorkoutLoading)
+        btnSkipWorkoutSession = view.findViewById(R.id.btnSkipWorkoutSession)
+        btnDoneWorkoutSession = view.findViewById(R.id.btnDoneWorkoutSession)
+        layoutWorkoutSessionBottomActions = view.findViewById(R.id.layoutWorkoutSessionBottomActions)
 
-            layoutWarmupHeader = view.findViewById(R.id.layoutWarmupHeader)
-            layoutWorkoutHeader = view.findViewById(R.id.layoutWorkoutHeader)
-            layoutWorkoutSessionBottomActions =
-                view.findViewById(R.id.layoutWorkoutSessionBottomActions)
+        progressWorkoutLoading = view.findViewById(R.id.progressWorkoutLoading)
+        tvWorkoutError = view.findViewById(R.id.tvWorkoutError)
+        btnRetryWorkout = view.findViewById(R.id.btnRetryWorkout)
+    }
 
-            rvWarmupItems = view.findViewById(R.id.rvWarmupItems)
-            rvWorkoutItems = view.findViewById(R.id.rvWorkoutItems)
-        }
+    private fun fetchWorkoutSession() {
+        lifecycleScope.launch {
+            showLoading()
+            try {
+                val api = ApiClient.api(requireContext())
+                val repository = WorkoutRepository(api)
+                val monthArg = arguments?.getInt("ARG_MONTH", 1) ?: 1
 
-        private fun setupCalendarButton() {
-            btnOpenCalendar?.visibility = if (fromHost) View.GONE else View.VISIBLE
-
-            if (fromHost) {
-                btnOpenCalendar?.setOnClickListener(null)
-                return
-            }
-
-            btnOpenCalendar?.setOnClickListener {
-                val bundle = bundleOf(
-                    NavKeys.ARG_SOURCE_TAB to "WORKOUT"
-                )
-
-                findNavController().navigate(
-                    R.id.action_workoutTabRootFragment_to_unifiedCalendarFragment,
-                    bundle
-                )
-            }
-        }
-
-        private fun setupTitle() {
-            tvWorkoutDayTitle?.text = if (day > 0) {
-                "Workout - Day $day"
-            } else {
-                "Workout Session"
-            }
-        }
-
-        private fun setupRecyclerViews() {
-            rvWarmupItems?.layoutManager = LinearLayoutManager(requireContext())
-            rvWorkoutItems?.layoutManager = LinearLayoutManager(requireContext())
-        }
-
-        private fun setupExpandCollapse() {
-            btnToggleWarmup?.setOnClickListener {
-                warmupExpanded = !warmupExpanded
-                rvWarmupItems?.isVisible = warmupExpanded
-                btnToggleWarmup?.rotation = if (warmupExpanded) 0f else -90f
-            }
-
-            btnToggleWorkouts?.setOnClickListener {
-                workoutExpanded = !workoutExpanded
-                rvWorkoutItems?.isVisible = workoutExpanded
-                btnToggleWorkouts?.rotation = if (workoutExpanded) 0f else -90f
-            }
-        }
-
-        private fun setupProgramNavigation() {
-            btnPrevProgram?.setOnClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Previous program coming soon.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            btnNextProgram?.setOnClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Next program coming soon.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        private fun setupSessionButtons() {
-            btnDoneWorkoutSession?.setOnClickListener {
-                val ctx = requireContext()
-
-                // 1. increment completed workouts
-                val currentWorkouts = UserPrefs.getInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, 0)
-                UserPrefs.putInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, currentWorkouts + 1)
-
-                AchievementEngine.updateAchievementsLocally(ctx)
-
-                // 2. streak tracking
-                val today = LocalDate.now()
-                val lastWorkoutDate = UserPrefs.getString(ctx, UserPrefs.KEY_LAST_WORKOUT_DATE, "")
-                val currentStreak = UserPrefs.getInt(ctx, UserPrefs.KEY_ACTIVE_STREAK_DAYS, 0)
-
-                val newStreak = if (lastWorkoutDate.isBlank()) {
-                    1
+                val response = if (fromHost && day > 0) {
+                    repository.getWorkoutByDate(day, monthArg)
                 } else {
-                    try {
-                        val lastDate = LocalDate.parse(lastWorkoutDate)
-                        val diff = ChronoUnit.DAYS.between(lastDate, today)
-
-                        when {
-                            diff == 0L -> currentStreak      // same day, no double count
-                            diff == 1L -> currentStreak + 1  // consecutive day
-                            else -> 1                        // streak broken
-                        }
-                    } catch (_: Exception) {
-                        1
-                    }
+                    repository.getTodayWorkout()
                 }
 
-                UserPrefs.putInt(ctx, UserPrefs.KEY_ACTIVE_STREAK_DAYS, newStreak)
-                UserPrefs.putString(ctx, UserPrefs.KEY_LAST_WORKOUT_DATE, today.toString())
+                if (response != null) {
+                    updateUI(response)
+                    showContent()
 
-                // 3. update achievements
-                AchievementEngine.updateAchievementsLocally(ctx)
-
-                Toast.makeText(
-                    ctx,
-                    "Workout marked done.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            btnSkipWorkoutSession?.setOnClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Workout skipped (API coming soon).",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        private fun setupRetry() {
-            btnRetryWorkout?.setOnClickListener {
-                fetchWorkoutSession()
-            }
-        }
-
-        // 1. Sa loob ng fetchWorkoutSession()
-        private fun fetchWorkoutSession() {
-            lifecycleScope.launch {
-                showLoading()
-                try {
-                    val api = ApiClient.api(requireContext())
-                    val repository = WorkoutRepository(api)
-
-                    // In-update para sa bagong repository method
-                    val response = repository.getTodayWorkout()
-
-                    if (response == null) {
-                        showError("Failed to load workout session.")
-                        return@launch
+                    // Kung historical view (from calendar), itago ang buttons
+                    if (fromHost) {
+                        layoutWorkoutSessionBottomActions?.visibility = View.GONE
                     }
-
-                    bindProgram(response.program)
-                    bindWorkoutLists(response.warmups, response.workouts)
-
-                    if (response.warmups.isEmpty() && response.workouts.isEmpty()) {
-                        showEmpty()
-                    } else {
-                        showContent()
-                    }
-                } catch (e: Exception) {
-                    showError("Failed to load workout session.")
+                } else {
+                    showError("No record found for this day.")
                 }
+            } catch (e: Exception) {
+                showError("Connection error. Check your API, babe!")
             }
-        }
-
-        private fun bindProgram(program: WorkoutProgram) {
-            tvProgramName?.text = program.programName
-            tvProgramLevel?.text = program.level
-            tvProgramDescription?.text = program.description
-            tvWorkoutSessionStatus?.text = program.status
-            tvWorkoutPlanDate?.text = "Month ${program.month} - Week ${program.week} - Day ${program.day}"
-
-            ivProgramEnvironment?.setImageResource(
-                getEnvironmentIcon(program.environment)
-            )
-
-            if (day <= 0) {
-                tvWorkoutDayTitle?.text = "Workout - Day ${program.day}"
-            }
-        }
-
-        private fun getEnvironmentIcon(environment: String?): Int {
-            return when (environment?.trim()?.lowercase()) {
-                "gym" -> android.R.drawable.ic_menu_compass
-                "home" -> android.R.drawable.ic_menu_myplaces
-                "outdoor" -> android.R.drawable.ic_menu_mapmode
-                else -> android.R.drawable.ic_menu_help
-            }
-        }
-
-        private fun bindWorkoutLists(warmups: List<WorkoutItem>, workouts: List<WorkoutItem>) {
-            // Inalis na ang IMAGE_BASE_URL dito babe
-            rvWarmupItems?.adapter = WorkoutAdapter(warmups, ::openWorkoutDetail)
-            rvWorkoutItems?.adapter = WorkoutAdapter(workouts, ::openWorkoutDetail)
-        }
-
-        private fun showLoading() {
-            progressWorkoutLoading?.isVisible = true
-            tvWorkoutError?.isVisible = false
-            btnRetryWorkout?.isVisible = false
-            tvEmptyWorkout?.isVisible = false
-
-            layoutWarmupHeader?.isVisible = false
-            rvWarmupItems?.isVisible = false
-            layoutWorkoutHeader?.isVisible = false
-            rvWorkoutItems?.isVisible = false
-            layoutWorkoutSessionBottomActions?.isVisible = false
-        }
-
-        private fun showContent() {
-            progressWorkoutLoading?.isVisible = false
-            tvWorkoutError?.isVisible = false
-            btnRetryWorkout?.isVisible = false
-            tvEmptyWorkout?.isVisible = false
-
-            layoutWarmupHeader?.isVisible = true
-            layoutWorkoutHeader?.isVisible = true
-            layoutWorkoutSessionBottomActions?.isVisible = true
-
-            rvWarmupItems?.isVisible = warmupExpanded
-            rvWorkoutItems?.isVisible = workoutExpanded
-        }
-
-        private fun showEmpty() {
-            progressWorkoutLoading?.isVisible = false
-            tvWorkoutError?.isVisible = false
-            btnRetryWorkout?.isVisible = false
-            tvEmptyWorkout?.isVisible = true
-
-            layoutWarmupHeader?.isVisible = false
-            rvWarmupItems?.isVisible = false
-            layoutWorkoutHeader?.isVisible = false
-            rvWorkoutItems?.isVisible = false
-            layoutWorkoutSessionBottomActions?.isVisible = false
-        }
-
-        private fun showError(message: String) {
-            progressWorkoutLoading?.isVisible = false
-            tvWorkoutError?.isVisible = true
-            tvWorkoutError?.text = message
-            btnRetryWorkout?.isVisible = true
-            tvEmptyWorkout?.isVisible = false
-
-            layoutWarmupHeader?.isVisible = false
-            rvWarmupItems?.isVisible = false
-            layoutWorkoutHeader?.isVisible = false
-            rvWorkoutItems?.isVisible = false
-            layoutWorkoutSessionBottomActions?.isVisible = false
-        }
-
-        private fun openWorkoutDetail(item: WorkoutItem) {
-            val bundle = bundleOf(
-                WorkoutDetailFragment.ARG_WORKOUT_ID to item.id,
-                WorkoutDetailFragment.ARG_WORKOUT_NAME to item.name,
-                WorkoutDetailFragment.ARG_WORKOUT_IMAGE_FILE_NAME to item.imageFileName,
-                WorkoutDetailFragment.ARG_WORKOUT_MUSCLE_GROUP to item.muscleGroup,
-                WorkoutDetailFragment.ARG_WORKOUT_SETS to item.sets,
-                WorkoutDetailFragment.ARG_WORKOUT_REPS to item.reps,
-                WorkoutDetailFragment.ARG_WORKOUT_REST_SECONDS to item.restSeconds,
-                WorkoutDetailFragment.ARG_WORKOUT_DURATION_MINUTES to item.durationMinutes,
-                WorkoutDetailFragment.ARG_WORKOUT_CALORIES to item.calories,
-                WorkoutDetailFragment.ARG_WORKOUT_DESCRIPTION to item.description,
-                WorkoutDetailFragment.ARG_WORKOUT_VIDEO_URL to item.videoUrl
-            )
-
-            findNavController().navigate(
-                R.id.workoutDetailFragment,
-                bundle
-            )
-        }
-
-        override fun onDestroyView() {
-            btnOpenCalendar = null
-            btnPrevProgram = null
-            btnNextProgram = null
-            btnToggleWarmup = null
-            btnToggleWorkouts = null
-            btnRetryWorkout = null
-            btnSkipWorkoutSession = null
-            btnDoneWorkoutSession = null
-
-            tvWorkoutDayTitle = null
-            tvWorkoutPlanDate = null
-            tvProgramName = null
-            tvProgramLevel = null
-            tvProgramDescription = null
-            tvWorkoutSessionStatus = null
-            tvWorkoutError = null
-            tvEmptyWorkout = null
-
-            ivProgramEnvironment = null
-
-            progressWorkoutLoading = null
-
-            layoutWarmupHeader = null
-            layoutWorkoutHeader = null
-            layoutWorkoutSessionBottomActions = null
-
-            rvWarmupItems = null
-            rvWorkoutItems = null
-
-            super.onDestroyView()
         }
     }
+
+    private fun updateUI(response: WorkoutSessionResponse) {
+        // 1. Header Information
+        tvWorkoutPlanDate?.text = "Month ${response.program.month} - Week ${response.program.week} - Day ${response.dayNo}"
+        tvProgramHeader?.text = "Program ${response.program.programId}"
+        tvCurrentProgramName?.text = response.program.programName
+        tvProgramProgress?.text = response.program.description
+
+        // 2. Display Totals from C# Calculations
+        tvTotalTime?.text = "${response.totalDuration} mins"
+        tvTotalCalories?.text = "${response.estimatedCalories} kcal"
+
+        // 3. Status handling para sa "Complete" Button
+        val status = response.program.status
+        if (status.equals("Completed", ignoreCase = true)) {
+            btnDoneWorkoutSession?.isEnabled = false
+            btnDoneWorkoutSession?.text = "Session Completed"
+            btnSkipWorkoutSession?.isVisible = false
+        } else {
+            btnDoneWorkoutSession?.isEnabled = true
+            btnDoneWorkoutSession?.text = "Complete"
+            btnSkipWorkoutSession?.isVisible = true
+        }
+
+        tvWorkoutDayTitle?.text = if (fromHost && day > 0) "Workout - Day $day" else "Workout - Day ${response.dayNo}"
+
+        // 4. Set Adapters
+        rvWarmupItems?.adapter = WorkoutAdapter(response.warmups) { item -> openWorkoutDetail(item) }
+        rvWorkoutItems?.adapter = WorkoutAdapter(response.workouts) { item -> openWorkoutDetail(item) }
+    }
+
+    private fun openWorkoutDetail(item: com.example.flexifitapp.workout.WorkoutItem) {
+        // Bridge from List to Details: Siguraduhin na match ang keys dito sa getString/getInt ng DetailsFragment
+        val bundle = bundleOf(
+            "workoutId" to item.id,
+            "workoutName" to item.name,
+            "image" to item.imageFileName,
+            "muscleGroup" to item.muscleGroup,
+            "sets" to item.sets,
+            "reps" to item.reps,
+            "rest" to item.restSeconds,
+            "duration" to item.durationMinutes, // Mapasa ang duration galing C# logic
+            "calories" to item.calories,         // Mapasa ang calories galing C# logic
+            "description" to item.description,
+            "videoUrl" to item.videoUrl
+        )
+        findNavController().navigate(R.id.workoutDetailFragment, bundle)
+    }
+
+    private fun setupRecyclerViews() {
+        rvWarmupItems?.layoutManager = LinearLayoutManager(requireContext())
+        rvWorkoutItems?.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun setupExpandCollapse() {
+        btnToggleWarmup?.setOnClickListener {
+            warmupExpanded = !warmupExpanded
+            rvWarmupItems?.isVisible = warmupExpanded
+            btnToggleWarmup?.rotation = if (warmupExpanded) 0f else -90f
+        }
+
+        btnToggleWorkouts?.setOnClickListener {
+            workoutExpanded = !workoutExpanded
+            rvWorkoutItems?.isVisible = workoutExpanded
+            btnToggleWorkouts?.rotation = if (workoutExpanded) 0f else -90f
+        }
+    }
+
+    private fun setupSessionButtons() {
+        btnDoneWorkoutSession?.setOnClickListener {
+            val ctx = requireContext()
+            // Mark as done logic (Locally + Achievement fire)
+            UserPrefs.putInt(ctx, "COMPLETED_WORKOUTS_COUNT", UserPrefs.getInt(ctx, "COMPLETED_WORKOUTS_COUNT", 0) + 1)
+            UserPrefs.putString(ctx, "LAST_WORKOUT_DATE", LocalDate.now().toString())
+
+            AchievementEngine.updateAchievementsLocally(ctx)
+            Toast.makeText(ctx, "Workout marked done! ✨", Toast.LENGTH_SHORT).show()
+
+            // Dito mo pwedeng tawagin yung API POST /api/workout/complete kung gusto mo i-save sa DB
+        }
+
+        btnBackWorkoutPlan?.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun showLoading() {
+        progressWorkoutLoading?.isVisible = true
+        layoutWarmupHeader?.isVisible = false
+        layoutWorkoutHeader?.isVisible = false
+        layoutWorkoutSessionBottomActions?.isVisible = false
+    }
+
+    private fun showContent() {
+        progressWorkoutLoading?.isVisible = false
+        layoutWarmupHeader?.isVisible = true
+        layoutWorkoutHeader?.isVisible = true
+        layoutWorkoutSessionBottomActions?.isVisible = true
+        rvWarmupItems?.isVisible = warmupExpanded
+        rvWorkoutItems?.isVisible = workoutExpanded
+    }
+
+    private fun showError(message: String) {
+        progressWorkoutLoading?.isVisible = false
+        tvWorkoutError?.isVisible = true
+        tvWorkoutError?.text = message
+        btnRetryWorkout?.isVisible = true
+    }
+
+    private fun setupCalendarButton() {
+        btnOpenCalendar?.isVisible = !fromHost
+        btnOpenCalendar?.setOnClickListener {
+            val bundle = bundleOf("ARG_SOURCE_TAB" to "WORKOUT")
+            findNavController().navigate(R.id.action_workoutTabRootFragment_to_unifiedCalendarFragment, bundle)
+        }
+    }
+
+    private fun setupProgramNavigation() {
+        btnPrevProgram?.setOnClickListener { Toast.makeText(requireContext(), "Prev day logic here", Toast.LENGTH_SHORT).show() }
+        btnNextProgram?.setOnClickListener { Toast.makeText(requireContext(), "Next day logic here", Toast.LENGTH_SHORT).show() }
+    }
+
+    private fun setupRetry() { btnRetryWorkout?.setOnClickListener { fetchWorkoutSession() } }
+
+    override fun onDestroyView() {
+        // Clean up references to prevent memory leaks
+        btnBackWorkoutPlan = null; btnOpenCalendar = null; btnPrevProgram = null; btnNextProgram = null
+        btnToggleWarmup = null; btnToggleWorkouts = null; tvWorkoutDayTitle = null; tvWorkoutPlanDate = null
+        tvProgramHeader = null; tvCurrentProgramName = null; tvProgramProgress = null; rvWarmupItems = null
+        rvWorkoutItems = null; layoutWarmupHeader = null; layoutWorkoutHeader = null
+        layoutWorkoutSessionBottomActions = null; progressWorkoutLoading = null
+        tvTotalTime = null; tvTotalCalories = null
+        super.onDestroyView()
+    }
+}

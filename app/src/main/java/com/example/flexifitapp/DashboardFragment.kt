@@ -33,9 +33,19 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private var txtBMIScore: TextView? = null
     private var btnBMIViewMore: Button? = null
 
+    private var txtHeaderName: TextView? = null    // Para mawala red sa txtHeaderName
+    private var txtHeaderEmail: TextView? = null   // Para mawala red sa txtHeaderEmail
+
+    // I-dagdag sa declarations sa itaas ng class
+    private var txtWorkoutName1: TextView? = null
+    private var txtWorkoutl1: TextView? = null
+    private var txtWorkoutName2: TextView? = null
+    private var txtWorkoutl2: TextView? = null
+
+    private var btnUpdateWater: TextView? = null
+
     // Water
     private var txtWaterCount: TextView? = null
-    private var btnAddWater: MaterialButton? = null
     private var waterGlass: WaterGlassView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,8 +70,23 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         tvBMIStatus = view.findViewById(R.id.tvBMIStatus)
         btnBMIViewMore = view.findViewById(R.id.btnBMIViewMore)
         txtWaterCount = view.findViewById(R.id.txtWaterCount)
-        btnAddWater = view.findViewById(R.id.btnAddWater)
         waterGlass = view.findViewById(R.id.waterGlass)
+
+        // --- DAGDAG MO ITO PARA LUMABAS YUNG NAME AT EMAIL ---
+        txtHeaderName = view.findViewById(R.id.txtHeaderName)
+        txtHeaderEmail = view.findViewById(R.id.txtHeaderEmail)
+
+        // DITO MO ILALAGAY YUNG BINAGO NATIN BABE
+        btnUpdateWater = view.findViewById(R.id.btnUpdateWater) // I-bind ang TextView
+        btnUpdateWater?.setOnClickListener {
+            // Lilipat sa Nutrition tab shortcut
+            (requireActivity() as? MainActivity)?.navigateToNutritionTab()
+        }
+
+        txtWorkoutName1 = view.findViewById(R.id.txtWorkoutName1)
+        txtWorkoutl1 = view.findViewById(R.id.txtWorkoutl1) // Ito yung 'txtWorkoutl1' mo babe
+        txtWorkoutName2 = view.findViewById(R.id.txtWorkoutName2)
+        txtWorkoutl2 = view.findViewById(R.id.txtWorkoutl2)
     }
 
     private fun fetchDashboardData() {
@@ -86,6 +111,10 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         // 1. Header & Level
         txtLevel?.text = "Level: ${data.fitnessLevel}"
         updateLevelIcon(data.fitnessLevel ?: "Beginner")
+        // 1. I-sync ang Name at Email sa Header
+        // 'data.user' o kung ano man ang tawag sa field ng user object sa response mo
+        txtHeaderName?.text = data.userName ?: "FlexiFit User"
+        txtHeaderEmail?.text = data.userEmail ?: "user@flexifit.com"
 
         // 2. BMI Card (API DRIVEN NA BABE!)
         txtBMIScore?.text = String.format("%.1f", data.bmiData?.value ?: 0.0)
@@ -119,6 +148,23 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         // 4. Water
         txtWaterCount?.text = "${nutri.waterGlasses}/${nutri.waterTarget}"
         waterGlass?.setCurrentGlasses(nutri.waterGlasses)
+
+        // 5. ETO NA YUNG DINAGDAG NATIN BABE (Upcoming Workout)
+        val program = data.program
+        if (program != null) {
+            // Unang Card (Program Name at Day No)
+            txtWorkoutName1?.text = program.programName ?: "No Active Program"
+            txtWorkoutl1?.text = "Day ${program.dayNo}" // Ito yung label sa ilalim
+
+            // Pangalawang Card (Status update)
+            if (program.isWorkoutDay) {
+                txtWorkoutName2?.text = "Today is Workout Day!"
+                txtWorkoutl2?.text = "Tap to see exercises 🔥"
+            } else {
+                txtWorkoutName2?.text = "Rest Day"
+                txtWorkoutl2?.text = "Recovery time, babe! 💤"
+            }
+        }
     }
 
     private fun updateLevelIcon(level: String) {
@@ -137,7 +183,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         txtCaloriesBurned = null; tvNetCalories = null; tvLeftCalories = null
         progressRing = null; progressIntake = null; progressBurned = null
         txtBMIScore = null; tvBMIStatus = null; btnBMIViewMore = null
-        txtWaterCount = null; btnAddWater = null; waterGlass = null
+        txtWaterCount = null; btnUpdateWater = null; waterGlass = null
         super.onDestroyView()
     }
 }

@@ -13,6 +13,7 @@ class CalendarAdapter(
 
     class VH(v: View) : RecyclerView.ViewHolder(v) {
         val txtDay: TextView = v.findViewById(R.id.txtDay)
+        val indicatorDot: View = v.findViewById(R.id.indicatorDot)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -24,19 +25,38 @@ class CalendarAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = items[position]
 
+
+        // 1. Handle blanks
         if (item.dayNumber == null) {
             holder.txtDay.text = ""
-            holder.itemView.isClickable = false
             holder.itemView.alpha = 0f
-            holder.itemView.setOnClickListener(null)
+            holder.indicatorDot.visibility = View.GONE
             return
         }
 
-        val day = item.dayNumber!!   // safe dahil null-check sa taas
+        val day = item.dayNumber
         holder.txtDay.text = day.toString()
 
-        holder.itemView.alpha = if (item.isClickable) 1f else 0.5f
-        holder.itemView.isClickable = item.isClickable
+        // 2. Highlighting & Indicator Logic
+        if (item.isClickable) {
+            // ACTIVE DAY (May record sa DB)
+            holder.itemView.alpha = 1f
+            holder.indicatorDot.visibility = View.VISIBLE
+
+            if (item.isCompleted) {
+                // COMPLETED: Green Dot
+                holder.indicatorDot.backgroundTintList =
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.GREEN)
+            } else {
+                // PENDING/NOT COMPLETED: Orange Dot
+                holder.indicatorDot.backgroundTintList =
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFA500"))
+            }
+        } else {
+            // NOT STARTED / NO RECORD
+            holder.itemView.alpha = 0.5f
+            holder.indicatorDot.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener {
             if (item.isClickable) onDayClick(day)

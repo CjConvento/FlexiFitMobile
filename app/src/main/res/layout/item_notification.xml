@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="15dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imgNotifType"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_water_drop"
+            android:padding="8dp"
+            android:background="@drawable/bg_icon_notif"
+            app:tint="#6082B6" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtNotifTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time to Hydrate!"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@color/textPrimary" />
+
+            <TextView
+                android:id="@+id/txtNotifBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drink 250ml of water now to stay on track."
+                android:textSize="13sp"
+                android:textColor="@color/textSecondary"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtNotifTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2m ago"
+            android:textSize="11sp"
+            android:textColor="#9E9E9E" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

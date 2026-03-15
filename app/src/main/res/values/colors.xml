@@ -7,6 +7,8 @@
     <color name="colorBackground">#F7F9FC</color>      <!-- soft light bg -->
     <color name="colorCardDark">#0A0A0A</color>       <!-- jet black -->
     <color name="colorCardLight">#FFFFFF</color>
+    <color name="flexifit_primary">#6082B6</color>
+    <color name="flexifit_primary_dark">#4A6A96</color>
 
     <!-- Gradient like the template -->
     <color name="gradientStart">#6082B6</color>       <!-- aqua -->

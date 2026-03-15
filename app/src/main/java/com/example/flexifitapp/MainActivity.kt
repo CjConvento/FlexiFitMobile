@@ -102,6 +102,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Idagdag mo ito sa loob ng MainActivity class, babe
+    fun navigateToNutritionTab() {
+        // Dahil gumagamit ka ng Jetpack Navigation,
+        // tatawagin lang natin yung ID ng nutrition fragment mo
+        navController.navigate(R.id.nutritionTabRootFragment)
+
+        // Kung gusto mo ring isara yung drawer (kung sakaling nakabukas)
+        drawerLayout.closeDrawers()
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
     }

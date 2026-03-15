@@ -60,6 +60,14 @@
         android:name="com.example.flexifitapp.AboutFragment"
         android:label="About" />
 
+    <!--    NOTIFICATIONS-->
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.flexifitapp.NotificationFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notification" />
+
+    <!-- ✅ SETTINGS -->
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.example.flexifitapp.SettingsFragment"

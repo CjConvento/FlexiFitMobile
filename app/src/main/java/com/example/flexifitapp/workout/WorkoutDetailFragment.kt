@@ -37,7 +37,6 @@ class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
     private var helpPopupWindow: PopupWindow? = null
 
     companion object {
-        private const val IMAGE_BASE_URL = "https://your-api-domain.com/images/workouts/"
 
         const val ARG_WORKOUT_ID = "workout_id"
         const val ARG_WORKOUT_NAME = "workout_name"
@@ -75,29 +74,39 @@ class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
     }
 
     private fun bindWorkoutData() {
-        val args = arguments ?: return
+        // 1. Kunin ang data mula sa Bundle (arguments)
+        val title = arguments?.getString("workoutName")
+        val image = arguments?.getString("image")
+        val sets = arguments?.getInt("sets") ?: 0
+        val reps = arguments?.getInt("reps") ?: 0
+        val rest = arguments?.getInt("rest") ?: 0
 
-        val workoutName = args.getString(ARG_WORKOUT_NAME).orEmpty()
-        val imageFileName = args.getString(ARG_WORKOUT_IMAGE_FILE_NAME).orEmpty()
-        val muscleGroup = args.getString(ARG_WORKOUT_MUSCLE_GROUP).orEmpty()
-        val sets = args.getInt(ARG_WORKOUT_SETS, 0)
-        val reps = args.getInt(ARG_WORKOUT_REPS, 0)
-        val restSeconds = args.getInt(ARG_WORKOUT_REST_SECONDS, 0)
-        val durationMinutes = args.getInt(ARG_WORKOUT_DURATION_MINUTES, 0)
-        val calories = args.getInt(ARG_WORKOUT_CALORIES, 0)
-        val description = args.getString(ARG_WORKOUT_DESCRIPTION).orEmpty()
-        videoUrl = args.getString(ARG_WORKOUT_VIDEO_URL)
+        // ETO YUNG DINADAGDAG NATIN BABE:
+        val duration = arguments?.getInt("duration") ?: 0
+        val calories = arguments?.getInt("calories") ?: 0
 
-        tvWorkoutDetailTitle?.text = workoutName
-        tvWorkoutMuscleGroup?.text = muscleGroup
+        val description = arguments?.getString("description")
+        videoUrl = arguments?.getString("videoUrl")
+
+        // 2. I-bind sa UI Elements
+        tvWorkoutDetailTitle?.text = title
         tvWorkoutSets?.text = "$sets Sets"
         tvWorkoutReps?.text = "$reps Reps"
-        tvWorkoutRest?.text = "$restSeconds sec"
-        tvWorkoutDuration?.text = "$durationMinutes mins"
+        tvWorkoutRest?.text = "$rest sec"
+
+        // DISPLAY PARA SA DURATION AT CALORIES:
+        tvWorkoutDuration?.text = "$duration mins"
         tvWorkoutCalories?.text = "$calories kcal"
+
         tvWorkoutDetailDescription?.text = description
 
-        loadWorkoutImage(imageFileName)
+        // 3. Load Image gamit ang Glide
+        ivWorkoutHeroImage?.let {
+            Glide.with(this)
+                .load(image)
+                .placeholder(R.drawable.ic_workout) // Placeholder habang naglo-load
+                .into(it)
+        }
     }
 
     // Hanapin ang loadWorkoutImage function sa loob ng WorkoutDetailFragment.kt
@@ -107,10 +116,10 @@ class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
             return
         }
 
-        // Direct use of imageFileName as it is now a full URL from the C# API
+// Direct loading dahil full URL na ito galing sa API
         ivWorkoutHeroImage?.let { imageView ->
             Glide.with(this)
-                .load(imageFileName)
+                .load(imageFileName) // Rekta na dito babe
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(imageView)
