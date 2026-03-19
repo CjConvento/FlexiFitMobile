@@ -3,6 +3,7 @@ package com.example.flexifitapp
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.view.Menu
 import android.view.MenuItem
@@ -15,6 +16,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.lifecycleScope
 import com.example.flexifitapp.auth.LoginRequest
 import com.example.flexifitapp.googleauth.CreateUsernameActivity
@@ -202,6 +206,8 @@ class SignupActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
+                setLoading(true) // 1. Simulan ang loading animation
+
                 val result = credentialManager.getCredential(
                     context = this@SignupActivity,
                     request = request
@@ -211,25 +217,45 @@ class SignupActivity : AppCompatActivity() {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val googleIdToken = googleIdTokenCredential.idToken
 
+                // Ituloy sa Firebase integration
                 firebaseAuthWithGoogle(googleIdToken)
+
+            } catch (e: GetCredentialException) {
+                setLoading(false) // 2. Patayin ang loading kung nag-error ang framework
+                Log.e("GOOGLE_SIGNUP", "Type: ${e::class.java.simpleName}, Msg: ${e.message}")
+
+                when (e) {
+                    is GetCredentialCancellationException -> {
+                        // User lang ang nag-cancel, no biggie
+                        Toast.makeText(this@SignupActivity, "Sign-up cancelled", Toast.LENGTH_SHORT).show()
+                    }
+                    is NoCredentialException -> {
+                        // Ito yung case mo sa emulator babe
+                        Toast.makeText(
+                            this@SignupActivity,
+                            "No Google Account found. Please add one in Settings first, babe!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    else -> {
+                        Toast.makeText(this@SignupActivity, "Google Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
             } catch (e: GoogleIdTokenParsingException) {
                 setLoading(false)
-                Toast.makeText(
-                    this@SignupActivity,
-                    "Invalid Google credential.",
-                    Toast.LENGTH_LONG
-                ).show()
+                Log.e("GOOGLE_SIGNUP", "Parsing error: ${e.message}")
+                Toast.makeText(this@SignupActivity, "Invalid Google credential.", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
                 setLoading(false)
+                Log.e("GOOGLE_SIGNUP", "Unexpected: ${e.message}")
                 Toast.makeText(
                     this@SignupActivity,
                     "Google sign up failed: ${e.message ?: "Unknown error"}",
                     Toast.LENGTH_LONG
                 ).show()
             }
-        }
-    }
+        }    }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
@@ -343,6 +369,8 @@ class SignupActivity : AppCompatActivity() {
             putExtra("firebaseToken", firebaseToken)
             putExtra("name", user.displayName.orEmpty())
             putExtra("email", user.email.orEmpty())
+            // 🔥 DAGDAG MO ITO PARA MALAMAN NG NEXT SCREEN NA GOOGLE USER TO
+            putExtra("authProvider", "GOOGLE")
         }
         startActivity(intent)
         finish()

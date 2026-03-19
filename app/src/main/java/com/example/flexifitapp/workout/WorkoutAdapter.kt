@@ -16,17 +16,17 @@ class WorkoutAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: WorkoutItem) {
-            binding.tvWorkoutItemName.text = item.name
+            binding.tvWorkoutName.text = item.name
 
             // Rekta load na tayo babe dahil full URL na ito galing sa C#
             Glide.with(binding.root.context)
                 .load(item.imageFileName)
                 .placeholder(android.R.drawable.ic_menu_gallery)
                 .error(android.R.drawable.ic_menu_gallery)
-                .into(binding.ivWorkoutThumb)
+                .into(binding.ivWorkoutIcon)
 
             binding.root.setOnClickListener { onClick(item) }
-            binding.btnOpenWorkoutItem.setOnClickListener { onClick(item) }
+            binding.btnStartExercise.setOnClickListener { onClick(item) }
         }
     }
 

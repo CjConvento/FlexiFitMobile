@@ -156,7 +156,15 @@ object UserPrefs {
     fun getStringSet(ctx: Context, k: String): Set<String> = prefs(ctx).getStringSet(k, emptySet()) ?: emptySet()
 
     fun remove(ctx: Context, k: String) = prefs(ctx).edit().remove(k).apply()
-    fun clearAll(ctx: Context) = prefs(ctx).edit().clear().apply()
+
+    fun clearAll(ctx: Context) {
+        // Burahin ang main profile prefs
+        ctx.getSharedPreferences("ff_user_profile", Context.MODE_PRIVATE).edit().clear().apply()
+        // Burahin din ang theme prefs kung gusto mo talagang fresh start
+        ctx.getSharedPreferences("theme_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+        // Burahin din yung ginamit mo sa SignupActivity
+        ctx.getSharedPreferences("flexifit_prefs", Context.MODE_PRIVATE).edit().clear().apply()
+    }
 
     // =========================================================
     // HELPERS

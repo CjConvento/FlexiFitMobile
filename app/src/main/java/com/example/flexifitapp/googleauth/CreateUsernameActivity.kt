@@ -92,6 +92,7 @@ class CreateUsernameActivity : AppCompatActivity() {
     private fun registerGoogleUser(fcmToken: String?) {
         val username = safeText(etUsername)
         val finalName = googleName.ifBlank { "Google User" }
+        val provider = intent.getStringExtra("authProvider") ?: "GOOGLE"
 
         setLoading(true)
 
@@ -104,7 +105,8 @@ class CreateUsernameActivity : AppCompatActivity() {
                     firebaseIdToken = firebaseToken,
                     name = finalName,
                     username = username,
-                    fcmToken = fcmToken
+                    fcmToken = fcmToken,
+                    authProvider = provider
                 )
 
                 val registerRes = api.register(registerReq)

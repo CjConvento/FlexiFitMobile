@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -76,13 +77,29 @@ class MainActivity : AppCompatActivity() {
         // Connect drawer menu clicks
         NavigationUI.setupWithNavController(navView, navController)
 
-        // Header settings button
-        val headerView: View = navView.getHeaderView(0)
-        val btnHeaderSettings = headerView.findViewById<ImageButton>(R.id.btnHeaderSettings)
-        btnHeaderSettings.setOnClickListener {
-            drawerLayout.close()
-            navController.navigate(R.id.nav_settings)
+        // 🔥 DITO MO ILALAGAY YUNG SAFE HEADER ACCESS BABE:
+        if (navView.headerCount > 0) {
+            val headerView: View = navView.getHeaderView(0)
+
+            // 1. Settings Button (Safe Call)
+            val btnHeaderSettings = headerView.findViewById<ImageButton>(R.id.btnHeaderSettings)
+            btnHeaderSettings?.setOnClickListener {
+                drawerLayout.closeDrawers() // Gamitin natin closeDrawers() para sure
+                navController.navigate(R.id.nav_settings)
+            }
+
+            // 2. User Info Update (Para lumabas pangalan mo babe!)
+            val txtName = headerView.findViewById<TextView>(R.id.txtHeaderName)
+            val txtEmail = headerView.findViewById<TextView>(R.id.txtHeaderEmail)
+
+            // Kunin natin sa Prefs yung sinave natin sa Onboarding
+            txtName?.text = getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
+                .getString("user_name", "FlexiFit User")
+            txtEmail?.text = getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
+                .getString("user_handle", "@user")
         }
+
+
         // Logout
         navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
 

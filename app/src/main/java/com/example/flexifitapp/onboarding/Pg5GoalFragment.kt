@@ -1,6 +1,7 @@
 package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,36 +17,50 @@ class Pg5GoalFragment : BaseOnboardingFragment(
 
         val rv = view.findViewById<RecyclerView>(R.id.rvFgoal)
 
-        // ✅ ID Check: Siguraduhin na ang "muscle_gain", "cardio", at "rehab"
-        // ay eksaktong match sa tinatanggap ng iyong Laravel/Node backend.
+        // 1. GOAL OPTIONS: Siguraduhing match ang "muscle_gain" at "cardio" sa folder names sa API
         val goals = listOf(
-            OptionTile("muscle_gain", "Muscle Gain", R.drawable.ic_goal_bulking),
-            OptionTile("cardio", "Cardio", R.drawable.ic_goal_cutting),
-            OptionTile("rehab", "Recovery", R.drawable.ic_goal_leanbulk)
+            OptionTile("MUSCLE_GAIN", "Muscle Gain", R.drawable.ic_goal_bulking),
+            OptionTile("CARDIO", "Cardio", R.drawable.ic_goal_cutting),
+            OptionTile("REHAB", "Recovery", R.drawable.ic_goal_leanbulk)
         )
 
-        // --- HYDRATION: Direct from store, no local companion keys ---
-        val preselected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
+        // 2. HYDRATION: Restore from Store
+        val savedGoals = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
+        val isRehabUser = OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.IS_REHAB_USER)
 
+        Log.d("FLEXIFIT_DEBUG", "--- Page 5 Hydration ---")
+        Log.d("FLEXIFIT_DEBUG", "Restored Goals: $savedGoals")
+        Log.d("FLEXIFIT_DEBUG", "Current User Status: ${if(isRehabUser) "REHAB" else "REGULAR"}")
+
+        // 3. LAYOUT LOGIC: Centering the last item if odd
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val count = goals.size
-                return if (count % 2 == 1 && position == count - 1) 2 else 1
+                return if (goals.size % 2 == 1 && position == goals.size - 1) 2 else 1
             }
         }
-
         rv.layoutManager = glm
-        rv.adapter = MultiSelectTileAdapter(goals, preselected) { selectedIds ->
-            // ✅ AUTOSAVE gamit ang FlexiFitKeys
+
+        // 4. ADAPTER: Multi-select logic with Auto-save
+        rv.adapter = MultiSelectTileAdapter(
+            items = goals,
+            preselected = savedGoals
+        ) { selectedIds ->
+            Log.d("FLEXIFIT_DEBUG", "Fitness Goals Updated: $selectedIds")
             OnboardingStore.putStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS, selectedIds)
         }
     }
 
     override fun validateBeforeNext(): String? {
-        val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS    )
+        val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
 
-        // DEBUG: Mas madaling makita kung bakit ayaw lumipat kung may prefix
-        return if (selected.isEmpty()) "DEBUG: Fitness goal set is empty. Select one!" else null
+        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 5 ---")
+        Log.d("FLEXIFIT_DEBUG", "Final Goals to Save: $selected")
+
+        return if (selected.isEmpty()) {
+            "Please select at least one fitness goal to continue."
+        } else {
+            null
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.flexifitapp.onboarding
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +25,7 @@ class ProgramCardAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val programName = items[position]
-        holder.bind(programName)
+        holder.bind(items[position])
     }
 
     override fun getItemCount(): Int = items.size
@@ -48,37 +48,43 @@ class ProgramCardAdapter(
         fun bind(programName: String) {
             val info = ProgramNameParser.parse(programName)
 
-            // Gamitin ang category mula sa parser
-            tvTitle.text = "${info.category} Program"
+            // 1. CLEAN TITLES: Gawing may space ang category (e.g., MuscleGain -> Muscle Gain)
+            val cleanCategory = if (info.category.equals("MuscleGain", true)) "Muscle Gain" else info.category
+            tvTitle.text = "$cleanCategory Program"
+
             tvLevel.text = "Level: ${info.level}"
             tvEnv.text = "Environment: ${info.environment}"
 
-            // Dito papasok yung revised description logic gamit ang rawName
+            // 2. DYNAMIC DESCRIPTION
             tvDesc.text = buildDescription(info)
 
             renderSelectedState(programName)
 
+            // 3. UI LOCKING
             itemView.isEnabled = !isLocked
-            itemView.alpha = if (isLocked) 0.65f else 1f
+            itemView.alpha = if (isLocked) 0.5f else 1f
 
             itemView.setOnClickListener {
                 if (isLocked) return@setOnClickListener
-                if (bindingAdapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
 
                 val currentlySelected = selected.contains(programName)
-                val next = !currentlySelected
+                val isAdding = !currentlySelected
 
-                if (next) {
-                    if (!selected.contains(programName) && selected.size >= maxSelection) {
+                // 4. LIMIT LOGIC with Logs
+                if (isAdding) {
+                    if (selected.size >= maxSelection) {
+                        Log.w("FLEXIFIT_DEBUG", "Selection Limit Reached ($maxSelection). Cannot add: $programName")
                         onLimitReached?.invoke()
                         return@setOnClickListener
                     }
                     selected.add(programName)
+                    Log.d("FLEXIFIT_DEBUG", "Program Added: $programName (Total: ${selected.size})")
                 } else {
                     selected.remove(programName)
+                    Log.d("FLEXIFIT_DEBUG", "Program Removed: $programName (Total: ${selected.size})")
                 }
 
-                onToggle(programName, next)
+                onToggle(programName, isAdding)
                 renderSelectedState(programName)
             }
         }
@@ -92,8 +98,8 @@ class ProgramCardAdapter(
         }
 
         private fun buildDescription(info: ProgramInfo): String {
-            // Pinalitan ang safetyNote ng rawName (ito yung injury-safe status)
-            val prefix = if (info.rawName.isNotBlank()) "${info.rawName} " else ""
+            // Mas natural na prefix (e.g., "Injury-Safe: Recommended...")
+            val prefix = if (info.rawName.isNotBlank()) "${info.rawName}: " else ""
 
             val categoryLower = info.category.lowercase().replace(" ", "")
             val levelLower = info.level.lowercase()
@@ -101,13 +107,13 @@ class ProgramCardAdapter(
 
             return when (categoryLower) {
                 "cardio" ->
-                    "${prefix}Recommended to improve endurance and burn calories for $levelLower users training at $envLower."
+                    "${prefix}Designed to boost endurance and heart health for $levelLower users in a $envLower setting."
                 "musclegain", "muscle_gain" ->
-                    "${prefix}Recommended to build muscle for $levelLower users training at $envLower."
+                    "${prefix}Hypertrophy-focused training to build muscle for $levelLower users at the $envLower."
                 "rehab" ->
-                    "${prefix}Recommended for recovery-focused training at $envLower."
+                    "${prefix}Focused on safe recovery and joint mobility within a $envLower environment."
                 else ->
-                    "${prefix}Recommended program for $levelLower users at $envLower."
+                    "${prefix}A customized $levelLower program tailored for $envLower workouts."
             }
         }
     }

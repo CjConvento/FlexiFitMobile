@@ -191,6 +191,28 @@
                             android:paddingRight="16dp"
                             tools:text="70" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Target Weight (kg):"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSumTargetWeight"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="18dp"
+                            android:background="@drawable/flexifit_border"
+                            android:gravity="center"
+                            android:textColor="@color/colorPrimary"
+                            android:layout_marginTop="12dp"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            tools:text="65" />
+
                         <!-- HEALTH & SAFETY -->
                         <TextView
                             android:layout_width="wrap_content"
@@ -379,26 +401,36 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="Workout Program:"
+                            android:layout_marginTop="10dp"
+                            android:text="Selected Programs:"
                             android:textColor="@color/colorPrimary"
                             android:textStyle="bold" />
 
                         <LinearLayout
                             android:id="@+id/programsWrap"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
                             android:orientation="vertical" />
 
                         <TextView
-                            android:id="@+id/tvProgramsEmpty"
+                        android:id="@+id/tvProgramsEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="No programs selected."
+                        android:textColor="@android:color/darker_gray"
+                        android:visibility="gone" />
+
+                        <View
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="No programs selected."
-                            android:textColor="@color/textPrimary"
-                            android:gravity="center"
-                            android:layout_marginTop="8dp"
-                            android:visibility="gone"/>
+                            android:layout_height="32dp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="32dp" />
 
                         <!-- bottom spacer -->
                         <View

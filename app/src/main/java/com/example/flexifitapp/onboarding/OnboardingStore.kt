@@ -23,16 +23,17 @@ object OnboardingStore {
         putBoolean(ctx, FlexiFitKeys.SHORT_BREATH, profile.shortBreath)
         putBoolean(ctx, FlexiFitKeys.HEALTH_NONE, profile.healthNone)
 
+        // 🔥 FIXED: Ginamit natin yung activityLevel variable name mula sa request class
         putString(ctx, FlexiFitKeys.FITNESS_LIFESTYLE, profile.activityLevel)
         putString(ctx, FlexiFitKeys.FITNESS_LEVEL, profile.fitnessLevel)
 
         putStringSet(ctx, FlexiFitKeys.ENVIRONMENT, profile.environment.toSet())
-
-        // Siguraduhin na 'FITNESS_GOALS' ang gamit (consistent with Pg5/Pg8)
         putStringSet(ctx, FlexiFitKeys.FITNESS_GOALS, profile.fitnessGoals.toSet())
 
         putString(ctx, FlexiFitKeys.BODYCOMP_GOAL, profile.bodyGoal)
         putString(ctx, FlexiFitKeys.DIETARY_TYPE, profile.dietType)
+
+        putBoolean(ctx, FlexiFitKeys.IS_REHAB_USER, profile.isRehab)
     }
 
     // =========================================================

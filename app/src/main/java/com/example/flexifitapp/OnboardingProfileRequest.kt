@@ -2,15 +2,18 @@ package com.example.flexifitapp
 
 import com.google.gson.annotations.SerializedName
 
-// 1. Structure para sa Program details (Walang bago dito, okay na 'to)
 data class DetailedProgram(
-    @SerializedName("Category") val category: String,    // e.g. "CARDIO"
-    @SerializedName("Level") val level: String,          // e.g. "Beginner"
-    @SerializedName("Environment") val environment: String, // e.g. "GYM"
-    @SerializedName("RawName") val rawName: String       // e.g. "Cardio Beginner Gym Program"
+    @SerializedName("Category") val category: String,
+    @SerializedName("Level") val level: String,
+    @SerializedName("Environment") val environment: String,
+    @SerializedName("RawName") val rawName: String
 )
 
 data class OnboardingProfileRequest(
+    // Match sa C# [JsonPropertyName("Name")] at [JsonPropertyName("Username")]
+    @SerializedName("Name") val name: String = "",
+    @SerializedName("Username") val username: String = "",
+
     @SerializedName("Age") val age: Int,
     @SerializedName("Gender") val gender: String,
 
@@ -24,7 +27,8 @@ data class OnboardingProfileRequest(
     @SerializedName("ShortBreath") val shortBreath: Boolean,
     @SerializedName("HealthNone") val healthNone: Boolean,
 
-    @SerializedName("ActivityLevel") val activityLevel: String,
+    // 🔥 FIXED: Dapat "FitnessLifestyle" para match sa C# JsonPropertyName
+    @SerializedName("FitnessLifestyle") val activityLevel: String,
     @SerializedName("FitnessLevel") val fitnessLevel: String,
 
     @SerializedName("Environment") val environment: List<String>,
@@ -34,7 +38,5 @@ data class OnboardingProfileRequest(
     @SerializedName("DietType") val dietType: String,
 
     @SerializedName("SelectedPrograms") val selectedPrograms: List<DetailedProgram>,
-
-    // ITO ANG DINAGDAG NATIN BABE PARA MAWALA ANG ERROR:
     @SerializedName("IsRehab") val isRehab: Boolean
 )

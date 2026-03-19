@@ -370,6 +370,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:layout_marginTop="5dp"
                         android:text="See more"
                         android:textColor="@color/textSecondary"
                         android:textSize="12sp" />
@@ -528,17 +529,38 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <Spinner
-                        android:id="@+id/spinnerMealType"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/menuMealType"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:background="@drawable/bg_spinner_soft"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        tools:listitem="@android:layout/simple_spinner_item"
-                        android:entries="@array/meal_categories" />
+
+                        app:endIconDrawable="@drawable/baseline_keyboard_arrow_down_24"
+                        app:endIconTint="@color/colorPrimary" app:endIconMode="custom" app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:boxBackgroundColor="#F1F1F1"
+                        app:hintEnabled="false">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/autoCompleteMealType"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:paddingTop="0dp"
+                            android:paddingBottom="0dp"
+                            android:inputType="none"
+                            android:text="Breakfast"
+                            android:textSize="13sp"
+                            android:textColor="@color/textPrimary"
+                            android:background="@null" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
 
                 </RelativeLayout>
 
@@ -547,6 +569,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                 </LinearLayout>
 
             </LinearLayout>

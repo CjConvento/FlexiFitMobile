@@ -1,6 +1,7 @@
 package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -13,7 +14,7 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
     nextActionId = R.id.a4
 ) {
 
-    private data class WheelState(val options: List<String>, var index: Int = -1) // Start at -1 to detect abnormal state
+    private data class WheelState(val options: List<String>, var index: Int = 0)
 
     private lateinit var lifestyleState: WheelState
     private lateinit var levelState: WheelState
@@ -21,38 +22,63 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val lifestyleRow = view.findViewById<View>(R.id.lifestyleRow)
-        val tvLifestyleLeft = view.findViewById<TextView>(R.id.tvLifestyleLeft)
-        val tvLifestyleSelected = view.findViewById<TextView>(R.id.tvLifestyleSelected)
-        val tvLifestyleRight = view.findViewById<TextView>(R.id.tvLifestyleRight)
+        // 1. OPTIONS DEFINITION (Dapat match sa database categories mo babe)
+        val lifestyleOptions = listOf("Sedentary", "Lightly Active", "Active", "Very Active")
+        val levelOptions = listOf("Beginner", "Intermediate", "Advanced")
 
-        val levelRow = view.findViewById<View>(R.id.levelRow)
-        val tvLevelLeft = view.findViewById<TextView>(R.id.tvLevelLeft)
-        val tvLevelSelected = view.findViewById<TextView>(R.id.tvLevelSelected)
-        val tvLevelRight = view.findViewById<TextView>(R.id.tvLevelRight)
+        // 2. HYDRATION: Restore from Store with Logs
+        val savedLifestyle = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE)
+        val savedLevel = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LEVEL)
 
-        val lifestyleOptions = listOf("Sedentary", "Lightly Active", "Active", "Very Active", "Extra Active")
-        val levelOptions = listOf("Beginner", "Intermediate", "Advanced", "Elite")
+        Log.d("FLEXIFIT_DEBUG", "--- Page 3 Hydration ---")
+        Log.d("FLEXIFIT_DEBUG", "Restoring Lifestyle: '$savedLifestyle', Level: '$savedLevel'")
 
-        // --- HYDRATION: Strict Restore ---
         lifestyleState = WheelState(
             options = lifestyleOptions,
-            index = lifestyleOptions.indexOfFirst { it.equals(OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE), true) }
+            index = lifestyleOptions.indexOfFirst { it.equals(savedLifestyle, true) }.let { if (it == -1) 0 else it }
         )
 
         levelState = WheelState(
             options = levelOptions,
-            index = levelOptions.indexOfFirst { it.equals(OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LEVEL), true) }
+            index = levelOptions.indexOfFirst { it.equals(savedLevel, true) }.let { if (it == -1) 0 else it }
         )
 
-        // --- Bind wheels ---
-        bindSwipeWheelWrap(lifestyleState, lifestyleRow, tvLifestyleLeft, tvLifestyleSelected, tvLifestyleRight) { selected ->
+        // 3. BIND LIFESTYLE WHEEL
+        bindSwipeWheelWrap(
+            state = lifestyleState,
+            swipeTarget = view.findViewById(R.id.lifestyleRow),
+            tvLeft = view.findViewById(R.id.tvLifestyleLeft),
+            tvSelected = view.findViewById(R.id.tvLifestyleSelected),
+            tvRight = view.findViewById(R.id.tvLifestyleRight)
+        ) { selected ->
+            Log.d("FLEXIFIT_DEBUG", "Lifestyle Swiped -> $selected")
             OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE, selected)
         }
 
-        bindSwipeWheelWrap(levelState, levelRow, tvLevelLeft, tvLevelSelected, tvLevelRight) { selected ->
+        // 4. BIND LEVEL WHEEL
+        bindSwipeWheelWrap(
+            state = levelState,
+            swipeTarget = view.findViewById(R.id.levelRow),
+            tvLeft = view.findViewById(R.id.tvLevelLeft),
+            tvSelected = view.findViewById(R.id.tvLevelSelected),
+            tvRight = view.findViewById(R.id.tvLevelRight)
+        ) { selected ->
+            Log.d("FLEXIFIT_DEBUG", "Level Swiped -> $selected")
             OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LEVEL, selected)
         }
+
+        // 5. INITIAL SAVE: Para siguradong may data kahit 'di mag-swipe
+        saveCurrentStates()
+    }
+
+    private fun saveCurrentStates() {
+        val lifestyle = lifestyleState.options[lifestyleState.index]
+        val level = levelState.options[levelState.index]
+
+        OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE, lifestyle)
+        OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LEVEL, level)
+
+        Log.d("FLEXIFIT_DEBUG", "Initial State Saved: Lifestyle=$lifestyle, Level=$level")
     }
 
     private fun bindSwipeWheelWrap(
@@ -73,26 +99,22 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
         }
 
         fun render() {
-            // ABNORMAL BEHAVIOR VISUALIZER:
-            // Kung ang index ay -1 (ibig sabihin walang nahanap na match sa store),
-            // ang UI ay magpapakita ng index 0 pero hindi mag-a-autosave.
-            val i = if (state.index == -1) 0 else norm(state.index)
-
-            tvSelected.text = if (state.index == -1) "NOT_FOUND" else state.options[i]
+            val i = norm(state.index)
+            tvSelected.text = state.options[i]
             tvLeft.text = state.options[norm(i - 1)]
             tvRight.text = state.options[norm(i + 1)]
         }
+
+        render() // Initial render
 
         val detector = GestureDetector(swipeTarget.context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, vx: Float, vy: Float): Boolean {
                 if (e1 == null) return false
                 val dx = e2.x - e1.x
                 if (abs(dx) > 60 && abs(vx) > 60) {
-                    // Start from 0 if it was -1
-                    val currentIdx = if (state.index == -1) 0 else state.index
-                    state.index = if (dx < 0) norm(currentIdx + 1) else norm(currentIdx - 1)
+                    state.index = if (dx < 0) norm(state.index + 1) else norm(state.index - 1)
                     render()
-                    onChanged(state.options[state.index])
+                    onChanged(state.options[norm(state.index)])
                     return true
                 }
                 return false
@@ -102,13 +124,10 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
 
         swipeTarget.setOnTouchListener { v, event ->
             val handled = detector.onTouchEvent(event)
-
-            // Kapag natapos ang touch action (UP), tawagin ang performClick
             if (event.action == MotionEvent.ACTION_UP && !handled) {
                 v.performClick()
             }
-
-            true // Ibalik ang true para ma-consume ang touch events
+            true
         }
     }
 
@@ -116,9 +135,12 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
         val lifestyle = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE)
         val level = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LEVEL)
 
+        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 3 ---")
+        Log.d("FLEXIFIT_DEBUG", "Final Data: Lifestyle='$lifestyle', Level='$level'")
+
         return when {
-            lifestyle.isBlank() -> "DEBUG: Lifestyle is empty!"
-            level.isBlank() -> "DEBUG: Fitness level is empty!"
+            lifestyle.isBlank() -> "Please select your activity level."
+            level.isBlank() -> "Please select your fitness level."
             else -> null
         }
     }

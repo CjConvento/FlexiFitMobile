@@ -1,6 +1,7 @@
 package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
@@ -99,11 +100,28 @@ class Pg2HealthFragment : BaseOnboardingFragment(
 
     private fun saveSelections() {
         val ctx = requireContext()
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY, cbUpperBodyInjury?.isChecked == true)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY, cbLowerBodyInjury?.isChecked == true)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS, cbJointProblems?.isChecked == true)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.SHORT_BREATH, cbShortBreath?.isChecked == true)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.HEALTH_NONE, cbNone?.isChecked == true)
+
+        val upper = cbUpperBodyInjury?.isChecked == true
+        val lower = cbLowerBodyInjury?.isChecked == true
+        val joint = cbJointProblems?.isChecked == true
+        val breath = cbShortBreath?.isChecked == true
+        val none = cbNone?.isChecked == true
+
+        // Logging bago i-save
+        Log.d("FLEXIFIT_DEBUG", "--- Saving Health Page ---")
+        Log.d("FLEXIFIT_DEBUG", "Injuries: Upper=$upper, Lower=$lower, Joint=$joint, Breath=$breath")
+
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY, upper)
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY, lower)
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS, joint)
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.SHORT_BREATH, breath)
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.HEALTH_NONE, none)
+
+        // Ang napaka-importanteng Rehab Flag
+        val isRehab = upper || lower || joint
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.IS_REHAB_USER, isRehab)
+
+        Log.d("FLEXIFIT_DEBUG", "Final Decision -> IS_REHAB_USER: $isRehab")
     }
 
     private fun updateWarnings() {

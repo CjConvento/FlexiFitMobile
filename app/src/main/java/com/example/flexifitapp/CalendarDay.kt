@@ -1,13 +1,13 @@
 package com.example.flexifitapp
 
-data class  CalendarDay(
-    val dayNumber: Int?,     // null = blank cell
-    val isClickable: Boolean, // false for blanks
-    val isCompleted: Boolean = false // Idagdag ito para mawala ang error sa line 44
+data class CalendarDay(
+    val dayNumber: Int?,
+    val isClickable: Boolean,
+    val status: String = "NOT_STARTED" // Ito yung default natin babe
 )
 
 data class CalendarHistoryDto(
     val day: Int,
-    val isCompleted: Boolean,
+    val status: String, // String na ito babe ha, hindi na boolean
     val summary: String? // Halimbawa: "Chest Day" o "1,500 kcal"
 )

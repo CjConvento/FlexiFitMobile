@@ -17,5 +17,5 @@ data class RegisterRequest(
 
     // ETO ANG KULANG MO BABE:
     @SerializedName("authProvider")
-    val authProvider: String = "EMAIL" // Default natin sa EMAIL para safe
+    val authProvider: String// Default natin sa EMAIL para safe
 )

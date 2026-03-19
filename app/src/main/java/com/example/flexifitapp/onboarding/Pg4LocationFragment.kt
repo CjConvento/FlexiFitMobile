@@ -1,6 +1,7 @@
 package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,41 +17,47 @@ class Pg4LocationFragment : BaseOnboardingFragment(
 
         val rv = view.findViewById<RecyclerView>(R.id.rvEnvironment)
 
-        // Siguraduhin na ang IDs (home, gym, outdoor) ay match sa inaasahan ng backend
+        // 1. OPTIONS: Match sa folder/category logic natin sa backend
         val tiles = listOf(
-            OptionTile("home", "Home", R.drawable.ic_home),
-            OptionTile("gym", "Gym", R.drawable.ic_workout), // updated drawable name
-            OptionTile("outdoor", "Outdoor", R.drawable.ic_sun) // updated drawable name
+            OptionTile("HOME", "Home", R.drawable.ic_home),
+            OptionTile("GYM", "Gym", R.drawable.ic_workout),
+            OptionTile("OUTDOOR", "Outdoor", R.drawable.ic_sun)
         )
 
-        // --- HYDRATION: No fallback, direct from store ---
-        val preselected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
+        // 2. HYDRATION: Restore from Store with Logs
+        val savedEnvironments = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
 
+        Log.d("FLEXIFIT_DEBUG", "--- Page 4 Hydration ---")
+        Log.d("FLEXIFIT_DEBUG", "Restored Environments: $savedEnvironments")
+
+        // 3. LAYOUT LOGIC: Centering the last item if odd
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val count = tiles.size
-                // Logic para mag-center ang huling item kung odd number
-                return if (count % 2 == 1 && position == count - 1) 2 else 1
+                return if (tiles.size % 2 == 1 && position == tiles.size - 1) 2 else 1
             }
         }
-
         rv.layoutManager = glm
 
-        // Gamit ang MultiSelectTileAdapter na nire-restore ang state ng checkboxes/cards
+        // 4. ADAPTER: Multi-select logic
         rv.adapter = MultiSelectTileAdapter(
             items = tiles,
-            preselected = preselected
+            preselected = savedEnvironments
         ) { selectedIds ->
-            // Auto-save every click
+            Log.d("FLEXIFIT_DEBUG", "Environment Selection Updated: $selectedIds")
+            // Auto-save using the optimized OnboardingStore
             OnboardingStore.putStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT, selectedIds)
         }
     }
 
     override fun validateBeforeNext(): String? {
         val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
+
+        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 4 ---")
+        Log.d("FLEXIFIT_DEBUG", "Final Environments: $selected")
+
         return if (selected.isEmpty()) {
-            "DEBUG: No environment selected. Please choose at least one."
+            "Please choose at least one environment where you can workout."
         } else {
             null
         }

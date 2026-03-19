@@ -1,159 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bg_screen_white"
     android:padding="18dp">
 
     <include
         android:id="@+id/header"
         layout="@layout/view_onboarding_header"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
-        android:layout_width="371dp"
-        android:layout_height="531dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="14dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
         app:cardCornerRadius="25dp"
-        app:contentPadding="18dp"
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:strokeWidth="0dp">
 
-        <!-- ONE MAIN WRAPPER (required because MaterialCardView is FrameLayout-like) -->
-        <LinearLayout
-            android:id="@+id/pg4cardMainWrap"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:padding="20dp">
 
-            <!-- TITLE + SUBTITLE WRAPPER (outside content container but inside card) -->
-            <LinearLayout
-                android:id="@+id/LoctitleWrap"
+            <TextView
+                android:id="@+id/tvLocTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Location"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvLocSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Where do you usually train?"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLocTitle" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEnvironment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:orientation="vertical"
-                android:gravity="center_horizontal">
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLocSubtitle"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_option_tile" />
 
-                <TextView
-                    android:id="@+id/LoctvTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Workout Location"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/LoctvSubtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center"
-                    android:text="Where do you train?"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-            <!-- CONTENT AREA (fills the remaining space) -->
-            <FrameLayout
-                android:id="@+id/contentArea"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:foregroundGravity="center">
-
-                <!-- OPTIONAL: center the content vertically inside remaining space -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/Loccard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:padding="20dp">
-
-                    <!-- TITLE WRAP -->
-                    <LinearLayout
-                        android:id="@+id/LocttitleWrap"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="DuplicateIds">
-
-                        <TextView
-                            android:id="@+id/SloctvTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Where do you usually workout?"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            tools:ignore="DuplicateIds" />
-
-                        <TextView
-                            android:id="@+id/SloctvSubtitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Select one option"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="14sp" />
-
-                    </LinearLayout>
-
-                    <!-- RECYCLER VIEW GRID -->
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvEnvironment"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
-                        android:clipToPadding="false"
-                        android:nestedScrollingEnabled="false"
-                        android:overScrollMode="never"
-                        app:layout_constraintTop_toBottomOf="@id/titleWrap"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        app:spanCount="2"
-                        tools:listitem="@layout/item_option_tile"
-                        tools:itemCount="3"/>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </FrameLayout>
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
     <TextView
         android:id="@+id/btnConfirm"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/flexifit_border"
         android:gravity="center"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
+        android:minWidth="200dp"
+        android:paddingHorizontal="40dp"
         android:text="Confirm"
         android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardContainer" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

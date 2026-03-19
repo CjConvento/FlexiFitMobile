@@ -1,5 +1,6 @@
 package com.example.flexifitapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -22,34 +23,32 @@ class OnboardingActivity : AppCompatActivity() {
     private fun initOnboardingFlow() {
         lifecycleScope.launch {
             try {
-                // 1. Tawagin ang Bootstrap API
                 val response = ApiClient.api(this@OnboardingActivity).bootstrap()
 
                 if (response.isSuccessful) {
                     val data = response.body()
 
                     if (data != null) {
-                        // 2. HYDRATION: Kung may existing data na sa backend, i-save sa local storage
-                        data.existingProfile?.let { profile ->
-                            Log.d("OnboardingActivity", "Existing profile found. Hydrating store...")
-                            OnboardingStore.hydrateFromProfile(this@OnboardingActivity, profile)
-                        }
-
-                        // 3. CHECK STATUS: Kung tapos na talaga ang onboarding, diretso sa Main
+                        // 1. UPDATE LOCAL PREFS PARA HINDI NA BUMALIK
                         if (data.profileComplete) {
+                            UserPrefs.setOnboardingDone(this@OnboardingActivity, true)
+                            Log.d("FLEXIFIT_DEBUG", "Server says Profile is Complete. Going to Main.")
                             goToMain()
                         } else {
-                            // Dito papasok ang NavHostFragment mo para sa Page 1
-                            Log.d("OnboardingActivity", "Profile incomplete. Starting onboarding pages...")
+                            // 2. Kung incomplete, stay sa onboarding
+                            UserPrefs.setOnboardingDone(this@OnboardingActivity, false)
+                            Log.d("FLEXIFIT_DEBUG", "Profile Incomplete. Stay in Onboarding.")
                         }
                     }
                 } else {
-                    Log.e("OnboardingActivity", "Bootstrap failed with code: ${response.code()}")
-                    // Fallback: Hayaan silang mag-onboarding kahit offline/error ang sync
+                    Log.e("FLEXIFIT_DEBUG", "Bootstrap Failed: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("OnboardingActivity", "Network error during bootstrap", e)
-                Toast.makeText(this@OnboardingActivity, "Offline mode: Progress might not sync", Toast.LENGTH_SHORT).show()
+                Log.e("FLEXIFIT_DEBUG", "Network Error in Bootstrap", e)
+                // Kung offline, i-check ang local prefs as fallback
+                if (UserPrefs.isOnboardingDone(this@OnboardingActivity)) {
+                    goToMain()
+                }
             }
         }
     }
