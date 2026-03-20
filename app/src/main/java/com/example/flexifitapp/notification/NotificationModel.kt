@@ -1,11 +1,9 @@
-package com.example.flexifitapp
+package com.example.flexifitapp.notification
 
-// Para sa Unresolved reference 'NotificationType'
 enum class NotificationType {
-    WATER, MEAL, WORKOUT, ACHIEVEMENT
+    WORKOUT, MEAL, WATER, ACHIEVEMENT
 }
 
-// Para sa Unresolved reference 'NotificationItem'
 data class NotificationItem(
     val id: Int,
     val title: String,

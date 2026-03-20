@@ -4,15 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.databinding.ItemNotificationBinding
+import com.example.flexifitapp.notification.NotificationItem
+import com.example.flexifitapp.notification.NotificationType
 
-// 1. Palitan ang List ng MutableList babe!
 class NotificationAdapter(private val items: MutableList<NotificationItem>) :
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(val binding: ItemNotificationBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    // Ngayon, gagana na ang removeAt dahil Mutable na ang list natin
     fun removeItem(position: Int) {
         if (position in items.indices) {
             items.removeAt(position)
@@ -20,7 +20,6 @@ class NotificationAdapter(private val items: MutableList<NotificationItem>) :
         }
     }
 
-    // Gagana na rin ang clear() dito!
     fun clearAll() {
         items.clear()
         notifyDataSetChanged()
@@ -40,11 +39,13 @@ class NotificationAdapter(private val items: MutableList<NotificationItem>) :
             txtNotifBody.text = item.message
             txtNotifTime.text = item.time
 
+            // ✅ Fixed: Added else branch to make when exhaustive
             val iconRes = when (item.type) {
-                NotificationType.WATER -> R.drawable.ic_water_drop
-                NotificationType.MEAL -> R.drawable.ic_nutri
                 NotificationType.WORKOUT -> R.drawable.ic_workout
+                NotificationType.MEAL -> R.drawable.ic_nutri
+                NotificationType.WATER -> R.drawable.ic_water_drop
                 NotificationType.ACHIEVEMENT -> R.drawable.ic_level_award
+                else -> R.drawable.ic_workout  // ✅ Added else branch
             }
             imgNotifType.setImageResource(iconRes)
         }

@@ -7,98 +7,213 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.ImageView  // ✅ ADD THIS IMPORT
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels // Siguraduhing gamit ang activityViewModels
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.example.flexifitapp.ApiClient
 import com.example.flexifitapp.R
+import kotlinx.coroutines.launch
 
 class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
 
-    private lateinit var etServingWeight: EditText
-    private lateinit var tvQty: TextView
-    private lateinit var tvFoodName: TextView
-    private lateinit var tvDescription: TextView // BAGONG WEAPON!
+    // UI Components
+    private lateinit var btnBack: ImageButton
+    private lateinit var imgHero: ImageView
+    private lateinit var tvFoodTitle: TextView
     private lateinit var tvServingLabel: TextView
+    private lateinit var etServingWeight: EditText
+    private lateinit var btnMinus: ImageButton
+    private lateinit var btnPlus: ImageButton
+    private lateinit var tvQty: TextView
+    private lateinit var tvDescription: TextView
     private lateinit var chipCalories: TextView
     private lateinit var chipProtein: TextView
     private lateinit var chipCarbs: TextView
     private lateinit var chipFats: TextView
 
-
-    // Gamitin ang shared ViewModel para makuha ang data
-    private val viewModel: NutritionViewModel by activityViewModels()
-
-    private var foodId: Int = 0
+    // Data
     private var mealItemId: Int = 0
+    private var foodId: Int = 0
+    private var currentQty: Int = 1
+    private var currentWeight: Double = 0.0
+    private var baseWeight: Double = 100.0  // Default serving weight in grams
+    private var baseCalories: Double = 0.0
+    private var baseProtein: Double = 0.0
+    private var baseCarbs: Double = 0.0
+    private var baseFats: Double = 0.0
+    private var unit: String = "g"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindViews(view)
-        displayInitialData()
-        setupListeners()
+
+        initViews(view)
+        loadArguments()
+        setupClickListeners()
+        setupWeightListener()
+        loadFoodImage()
     }
 
-    // para makita sila sa screen
-    private fun bindViews(view: View) {
+    private fun initViews(view: View) {
+        // ✅ Fixed: Use findViewById (not findViewByIdById)
+        btnBack = view.findViewById(R.id.btnBackFood)
+        imgHero = view.findViewById(R.id.imgHero)
+        tvFoodTitle = view.findViewById(R.id.tvFoodTitle)
+        tvServingLabel = view.findViewById(R.id.tvServingLabel)
         etServingWeight = view.findViewById(R.id.etServingWeight)
+        btnMinus = view.findViewById(R.id.btnMinus)
+        btnPlus = view.findViewById(R.id.btnPlus)
         tvQty = view.findViewById(R.id.tvQty)
-        tvFoodName = view.findViewById(R.id.tvFoodTitle)    // Match sa XML: tvFoodTitle
-        tvDescription = view.findViewById(R.id.tvDescription) // Match sa XML: tvDescription
-        tvServingLabel = view.findViewById(R.id.tvServingLabel) // Para ma-update din yung label
-
+        tvDescription = view.findViewById(R.id.tvDescription)
         chipCalories = view.findViewById(R.id.chipCalories)
         chipProtein = view.findViewById(R.id.chipProtein)
         chipCarbs = view.findViewById(R.id.chipCarbs)
         chipFats = view.findViewById(R.id.chipFats)
-
-        // Kunin ang IDs mula sa bundle
-        foodId = arguments?.getInt("foodId") ?: 0
-        mealItemId = arguments?.getInt("mealItemId") ?: 0
     }
 
-    private fun displayInitialData() {
-        // Kunin ang data na ipinasa mula sa NutritionTabRootFragment
-        foodId = arguments?.getInt("foodId") ?: 0
-        mealItemId = arguments?.getInt("mealItemId") ?: 0
+    private fun loadArguments() {
+        arguments?.let {
+            mealItemId = it.getInt("mealItemId", 0)
+            foodId = it.getInt("foodId", 0)
+            currentQty = it.getInt("qty", 1)
+            tvFoodTitle.text = it.getString("name") ?: "Food"
+            tvDescription.text = it.getString("description") ?: "No description available"
 
-        tvFoodName.text = arguments?.getString("name")
-        tvDescription.text = arguments?.getString("description") ?: "No description available"
-        tvQty.text = arguments?.getInt("qty")?.toString() ?: "1"
+            // Base values for 1 serving
+            baseCalories = it.getDouble("calories", 0.0)
+            baseProtein = it.getDouble("protein", 0.0)
+            baseCarbs = it.getDouble("carbs", 0.0)
+            baseFats = it.getDouble("fats", 0.0)
 
-        // Initial display ng macros
-        chipCalories.text = "${arguments?.getInt("calories")} kcal"
-        chipProtein.text = "${arguments?.getInt("protein")}g Prot"
-        chipCarbs.text = "${arguments?.getString("carbs")}g Carbs"
-        chipFats.text = "${arguments?.getString("fats")}g Fats"
+            // Get serving label
+            val servingLabel = it.getString("servingLabel") ?: "1 serving"
+            tvServingLabel.text = servingLabel
+
+            // Parse weight if available (e.g., "150g" from serving label)
+            parseWeightFromServingLabel(servingLabel)
+
+            // Set current values
+            tvQty.text = currentQty.toString()
+            updateMacros()
+        }
     }
 
-    private fun setupListeners() {
-        etServingWeight.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val weight = s.toString()
-                if (weight.isNotEmpty()) {
-                    // TATAWAG SA ENGINE: Ang ViewModel na ang bahala sa API
-                    viewModel.updateMacrosFromServer(mealItemId, foodId, weight)
-                }
+    private fun parseWeightFromServingLabel(servingLabel: String) {
+        // Try to extract weight like "150g" or "100 g"
+        val weightRegex = "(\\d+)\\s*g".toRegex()
+        weightRegex.find(servingLabel)?.let {
+            baseWeight = it.groupValues[1].toDouble()
+            etServingWeight.setText(baseWeight.toInt().toString())
+        }
+    }
+
+    private fun setupClickListeners() {
+        btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
+        btnMinus.setOnClickListener {
+            if (currentQty > 1) {
+                currentQty--
+                tvQty.text = currentQty.toString()
+                updateMacros()
             }
+        }
+
+        btnPlus.setOnClickListener {
+            if (currentQty < 10) {
+                currentQty++
+                tvQty.text = currentQty.toString()
+                updateMacros()
+            }
+        }
+    }
+
+    private fun setupWeightListener() {
+        etServingWeight.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val weightStr = s.toString()
+                if (weightStr.isNotEmpty()) {
+                    currentWeight = weightStr.toDouble()
+                    updateMacrosFromWeight()
+                }
+            }
         })
+    }
 
-        // Observe the ViewModel for recalculated macros
-        viewModel.sections.observe(viewLifecycleOwner) { sections ->
-            // Kapag nag-update ang data sa server, hanapin ang item at i-update ang chips
-            val currentFood = sections.flatMap { it.foods }.find { it.mealItemId == mealItemId }
-            currentFood?.let {
-                chipCalories.text = "${it.calories} kcal"
-                chipProtein.text = "${it.protein}g"
-                chipCarbs.text = "${it.carbs}g"
-                chipFats.text = "${it.fats}g"
+    private fun updateMacros() {
+        // Update macros based on quantity
+        val multiplier = currentQty
+        updateChips(
+            calories = baseCalories * multiplier,
+            protein = baseProtein * multiplier,
+            carbs = baseCarbs * multiplier,
+            fats = baseFats * multiplier
+        )
+    }
+
+    private fun updateMacrosFromWeight() {
+        if (baseWeight <= 0) return
+
+        val weightRatio = currentWeight / baseWeight
+        updateChips(
+            calories = baseCalories * weightRatio,
+            protein = baseProtein * weightRatio,
+            carbs = baseCarbs * weightRatio,
+            fats = baseFats * weightRatio
+        )
+    }
+
+    private fun updateChips(calories: Double, protein: Double, carbs: Double, fats: Double) {
+        chipCalories.text = "${calories.toInt()} kcal"
+        chipProtein.text = "${protein.toInt()}g protein"
+        chipCarbs.text = "${carbs.toInt()}g carbs"
+        chipFats.text = "${fats.toInt()}g fats"
+    }
+
+    private fun loadFoodImage() {
+        arguments?.getString("imageUrl")?.let { imageUrl ->
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_food_placeholder)
+                .error(R.drawable.ic_food_placeholder)
+                .into(imgHero)
+        }
+    }
+
+    private fun updateQuantityInDatabase() {
+        lifecycleScope.launch {
+            try {
+                val api = ApiClient.api(requireContext())
+                val repository = NutritionRepository(api)
+
+                // Calculate new quantity based on weight or servings
+                val newQty = if (currentWeight > 0 && baseWeight > 0) {
+                    (currentQty * currentWeight / baseWeight).toDouble()
+                } else {
+                    currentQty.toDouble()
+                }
+
+                val success = repository.updateMealItem(mealItemId, newQty)
+
+                if (success) {
+                    Toast.makeText(requireContext(), "Quantity updated", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to update", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
-        view?.findViewById<ImageButton>(R.id.btnBackFood)?.setOnClickListener {
-            findNavController().popBackStack()
-        }
+    override fun onDestroyView() {
+        // Save changes when fragment is destroyed
+        updateQuantityInDatabase()
+        super.onDestroyView()
     }
 }

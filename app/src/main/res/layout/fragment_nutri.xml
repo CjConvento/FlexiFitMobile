@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true"
     android:padding="16dp"
-
     android:clipToPadding="false"
     android:overScrollMode="never">
 
@@ -15,13 +14,69 @@
         android:layout_height="wrap_content">
 
         <!-- ========================= -->
+        <!-- HEADER SECTION -->
+        <!-- ========================= -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnBackNutrition"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Back"
+                android:src="@drawable/baseline_arrow_left_ios_new_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tvMacrosTag"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Month 1 - Week 1 - Day 1"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:background="@drawable/bg_chip_soft"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintStart_toEndOf="@id/btnBackNutrition"
+                app:layout_constraintEnd_toStartOf="@id/btnOpenCalendar"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp" />
+
+            <ImageButton
+                android:id="@+id/btnOpenCalendar"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Open Calendar"
+                android:src="@drawable/iconly_calendar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ========================= -->
         <!-- MACROS CARD -->
         <!-- ========================= -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardMacrosMain"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutHeader"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:cardCornerRadius="20dp"
@@ -35,59 +90,10 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageButton
-                        android:id="@+id/btnNutri"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="Back"
-                        android:src="@drawable/baseline_arrow_left_ios_new_24"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvMacrosTag"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="Month 1 - Week 1 - Day 1"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="8dp"
-                        android:background="@drawable/bg_chip_soft"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        app:layout_constraintStart_toEndOf="@id/btnNutri"
-                        app:layout_constraintEnd_toStartOf="@id/btnOpenCalendar"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp" />
-
-                    <ImageButton
-                        android:id="@+id/btnOpenCalendar"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="Open Calendar"
-                        android:src="@drawable/iconly_calendar"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
                 <!-- Chart + summary row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
@@ -115,7 +121,6 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/tvTotalsTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Calories Burned"
@@ -136,139 +141,137 @@
                                 android:layout_height="32dp"
                                 android:src="@drawable/fire_alt"
                                 app:tint="@color/gradientStart" />
+
                             <TextView
-                            android:id="@+id/tvCaloriesBurned"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="500 kcal"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/gradientStart" />
+                                android:id="@+id/tvCaloriesBurned"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="0 kcal"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/gradientStart" />
                         </LinearLayout>
 
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Intake vs Target -->
+                <!-- Protein Progress -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingVertical="8dp">
+                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:layout_weight="1"
+                            android:text="Protein"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Protein"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvProteinValue"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0g / 120g"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbProtein"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="5dp"
-                            android:layout_marginTop="8dp"
-                            android:max="100"
-                            android:progress="80"
-                            android:progressDrawable="@drawable/rounded_progress_bar" />
+                        <TextView
+                            android:id="@+id/tvProteinValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0g / 0g"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
-                    <LinearLayout
+                    <ProgressBar
+                        android:id="@+id/pbProtein"
+                        style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingVertical="8dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Carbs"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvCarbsValue"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0g / 220g"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbCarbs"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="5dp"
-                            android:layout_marginTop="8dp"
-                            android:max="100"
-                            android:progress="30"
-                            android:progressDrawable="@drawable/rounded_progress_bar" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingVertical="8dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Fats"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvFatsValue"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0g / 80g"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbFats"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="5dp"
-                            android:layout_marginTop="8dp"
-                            android:max="100"
-                            android:progress="30"
-                            android:progressDrawable="@drawable/rounded_progress_bar" />
-                    </LinearLayout>
+                        android:layout_height="5dp"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/rounded_progress_bar" />
                 </LinearLayout>
 
+                <!-- Carbs Progress -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Carbs"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvCarbsValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0g / 0g"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/pbCarbs"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/rounded_progress_bar" />
+                </LinearLayout>
+
+                <!-- Fats Progress -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Fats"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvFatsValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0g / 0g"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/pbFats"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/rounded_progress_bar" />
+                </LinearLayout>
+
+                <!-- Calories Progress -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -289,19 +292,10 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="- (From Calories Burned)"
-                            android:textStyle="normal"
-                            android:textSize="12dp"
-                            android:textColor="@color/gradientStart"/>
-
-                        <TextView
                             android:id="@+id/tvCaloriesValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0 / 2200 kcal"
+                            android:text="0 / 0 kcal"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -312,8 +306,8 @@
                         android:layout_height="5dp"
                         android:layout_marginTop="8dp"
                         android:max="100"
-                        android:progress="30"
-                        android:progressDrawable="@drawable/rounded_progress_bar"  />
+                        android:progress="0"
+                        android:progressDrawable="@drawable/rounded_progress_bar" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -361,11 +355,41 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:includeFontPadding="false"
-                    android:text="Lose Weight Vegan Meal Plan"
+                    android:text="Loading..."
                     android:textStyle="bold"
                     android:textSize="13sp"
                     android:maxLines="1"
                     android:ellipsize="end" />
+
+                <!-- Loading/Error Views -->
+                <ProgressBar
+                    android:id="@+id/progressNutritionLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvNutritionError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Error loading data"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRetryNutrition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:text="Retry"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:cornerRadius="20dp" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardMealInner"
@@ -396,34 +420,39 @@
                     android:gravity="center_vertical">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSkipMealPlan"
+                        android:id="@+id/btnSkipNutritionDay"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:text="Skip"
+                        android:textAllCaps="false"
                         app:backgroundTint="@null"
                         android:background="@drawable/btn_gradient"
-                        app:cornerRadius="16dp" />
+                        app:cornerRadius="24dp" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnDoneMealPlan"
+                        android:id="@+id/btnCompleteNutritionDay"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:layout_marginStart="10dp"
-                        android:text="Done"
+                        android:text="Complete"
+                        android:textAllCaps="false"
                         app:backgroundTint="@null"
                         android:background="@drawable/btn_gradient"
-                        app:cornerRadius="16dp" />
+                        app:cornerRadius="24dp" />
 
                 </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- ========================= -->
+        <!-- WATER CARD -->
+        <!-- ========================= -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardWater"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="40dp"

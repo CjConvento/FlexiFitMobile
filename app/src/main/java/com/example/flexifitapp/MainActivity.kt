@@ -1,7 +1,6 @@
 package com.example.flexifitapp
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
@@ -14,7 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import com.example.flexifitapp.TokenStore
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -61,11 +59,15 @@ class MainActivity : AppCompatActivity() {
 
         navController = navHostFragment.navController
 
+        // ✅ UPDATE: Include all destinations including notification
         appBarConfiguration = AppBarConfiguration.Builder(
             R.id.nav_home,
             R.id.workoutTabRootFragment,
             R.id.nutritionTabRootFragment,
+            R.id.nav_progtr,           // Progress Tracker
+            R.id.notificationFragment,  // ✅ ADD NOTIFICATIONS
             R.id.nav_profile,
+            R.id.nav_settings,
             R.id.nav_about
         )
             .setOpenableLayout(drawerLayout)
@@ -77,32 +79,29 @@ class MainActivity : AppCompatActivity() {
         // Connect drawer menu clicks
         NavigationUI.setupWithNavController(navView, navController)
 
-        // 🔥 DITO MO ILALAGAY YUNG SAFE HEADER ACCESS BABE:
+        // Drawer Header Setup
         if (navView.headerCount > 0) {
             val headerView: View = navView.getHeaderView(0)
 
-            // 1. Settings Button (Safe Call)
+            // Settings Button
             val btnHeaderSettings = headerView.findViewById<ImageButton>(R.id.btnHeaderSettings)
             btnHeaderSettings?.setOnClickListener {
-                drawerLayout.closeDrawers() // Gamitin natin closeDrawers() para sure
+                drawerLayout.closeDrawers()
                 navController.navigate(R.id.nav_settings)
             }
 
-            // 2. User Info Update (Para lumabas pangalan mo babe!)
+            // User Info
             val txtName = headerView.findViewById<TextView>(R.id.txtHeaderName)
             val txtEmail = headerView.findViewById<TextView>(R.id.txtHeaderEmail)
 
-            // Kunin natin sa Prefs yung sinave natin sa Onboarding
             txtName?.text = getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
                 .getString("user_name", "FlexiFit User")
             txtEmail?.text = getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
                 .getString("user_handle", "@user")
         }
 
-
         // Logout
         navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
-
             FirebaseAuth.getInstance().signOut()
             TokenStore.clear(this)
 
@@ -119,13 +118,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Idagdag mo ito sa loob ng MainActivity class, babe
     fun navigateToNutritionTab() {
-        // Dahil gumagamit ka ng Jetpack Navigation,
-        // tatawagin lang natin yung ID ng nutrition fragment mo
         navController.navigate(R.id.nutritionTabRootFragment)
+        drawerLayout.closeDrawers()
+    }
 
-        // Kung gusto mo ring isara yung drawer (kung sakaling nakabukas)
+    fun navigateToNotifications() {
+        navController.navigate(R.id.notificationFragment)
         drawerLayout.closeDrawers()
     }
 

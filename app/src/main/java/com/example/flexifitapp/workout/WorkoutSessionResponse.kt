@@ -1,17 +1,21 @@
 package com.example.flexifitapp.workout
+
 import com.google.gson.annotations.SerializedName
 
 data class WorkoutSessionResponse(
     val dayNo: Int,
     val dayType: String,
-    val focusArea: String?,      // Upper Body, etc.
-    val totalDuration: Int,      // 45 mins
-
-    @SerializedName("totalCalories") // Eto yung bridge natin sa C# babe!
-    val estimatedCalories: Int,
-
-    val level: String?,          // Intermediate
     val message: String,
+    val status: String,
+    val totalDuration: Int,
+    @SerializedName("totalCalories")
+    val totalCalories: Int,
+    val focusArea: String?,
+    val level: String?,
+    val canSkip: Boolean,           // ✅ ADD THIS
+    val skipMessage: String?,       // ✅ ADD THIS
+    @SerializedName("sessionId")
+    val sessionId: Int,             // ✅ ADD THIS
     val program: WorkoutProgram,
     val warmups: List<WorkoutItem>,
     val workouts: List<WorkoutItem>
