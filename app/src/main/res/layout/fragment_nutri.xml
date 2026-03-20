@@ -395,27 +395,6 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSkipMealPlan"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Skip"
-                        app:backgroundTint="@null"
-                        android:background="@drawable/btn_gradient"
-                        app:cornerRadius="16dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnDoneMealPlan"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="10dp"
-                        android:text="Done"
-                        app:backgroundTint="@null"
-                        android:background="@drawable/btn_gradient"
-                        app:cornerRadius="16dp" />
-
                 </LinearLayout>
 
             </LinearLayout>

@@ -37,13 +37,15 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardWorkoutDetailContent"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="7dp"
         android:layout_marginEnd="7dp"
+        android:layout_marginBottom="12dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="28dp"
         app:cardElevation="8dp"
         app:cardUseCompatPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutWorkoutHero">
@@ -51,7 +53,8 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:scrollbars="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -158,7 +161,6 @@
                             android:paddingVertical="8dp"
                             android:text="8s Rest"
                             android:textColor="@color/gradientStart"
-
                             android:textStyle="bold"
                             android:textSize="12sp" />
 
@@ -171,7 +173,6 @@
                             android:paddingVertical="8dp"
                             android:text="15 mins"
                             android:textColor="@color/gradientStart"
-
                             android:textStyle="bold"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -216,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
-                    android:text="this workout is a workout and a workout because its a workout."
+                    android:text="Detailed description of the workout goes here."
                     android:textColor="#4B5563"
                     android:textSize="14sp" />
 
@@ -230,6 +231,31 @@
                     android:textColor="@color/white"
                     app:backgroundTint="@null"
                     android:background="@drawable/btn_gradient"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMarkExerciseDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="Mark as Done"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:backgroundTint="#10B981"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSkipExercise"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="Skip this Exercise"
+                    android:textAllCaps="false"
+                    android:textColor="#EF4444"
+                    app:strokeColor="#EF4444"
                     app:cornerRadius="18dp" />
 
             </LinearLayout>
