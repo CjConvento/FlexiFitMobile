@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.flexifitapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.flexifitapp"
@@ -82,9 +82,9 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
 
     // Credential Manager
-    implementation("androidx.credentials:credentials:1.5.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("androidx.credentials:credentials:1.2.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
 
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
