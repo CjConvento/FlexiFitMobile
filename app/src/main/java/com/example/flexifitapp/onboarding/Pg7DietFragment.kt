@@ -6,18 +6,17 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.UserPrefs
 
 class Pg7DietFragment : BaseOnboardingFragment(
-    layoutId = R.layout.obd_fragment_pg7_diet,
-    nextActionId = R.id.a8
+    layoutId = R.layout.obd_fragment_pg7_diet
 ) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rv = view.findViewById<RecyclerView>(R.id.rvdietgoal)
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
 
-        // 1. OPTIONS: Siguraduhing match ang keys sa C# DTO / Database mo babe
         val diets = listOf(
             OptionTile("balanced", "Balanced", R.drawable.ic_diet_balanced),
             OptionTile("high_protein", "High Protein", R.drawable.ic_diet_protein),
@@ -27,13 +26,13 @@ class Pg7DietFragment : BaseOnboardingFragment(
             OptionTile("vegan", "Vegan", R.drawable.ic_diet_vegan)
         )
 
-        // 2. HYDRATION: Restore from Store
-        val savedDiet = OnboardingStore.getString(requireContext(), FlexiFitKeys.DIETARY_TYPE)
+        val savedDiet = if (isUpdate) {
+            UserPrefs.getString(requireContext(), "dietary_type", "balanced")
+        } else {
+            OnboardingStore.getString(requireContext(), FlexiFitKeys.DIETARY_TYPE)
+        }
 
-        Log.d("FLEXIFIT_DEBUG", "--- Page 7 Hydration ---")
-        Log.d("FLEXIFIT_DEBUG", "Restored Diet Type: '$savedDiet'")
-
-        // 3. LAYOUT LOGIC: Grid with 2 columns
+        val rv = view.findViewById<RecyclerView>(R.id.rvdietgoal)
         val glm = GridLayoutManager(requireContext(), 2)
         glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
@@ -42,22 +41,25 @@ class Pg7DietFragment : BaseOnboardingFragment(
         }
         rv.layoutManager = glm
 
-        // 4. ADAPTER: Single-select with Auto-save
         rv.adapter = OptionTileAdapter(
             items = diets,
             initiallySelectedId = savedDiet
         ) { selected ->
-            Log.d("FLEXIFIT_DEBUG", "Diet Selected: ${selected.id}")
-            OnboardingStore.putString(requireContext(), FlexiFitKeys.DIETARY_TYPE, selected.id)
+            if (isUpdate) {
+                UserPrefs.putString(requireContext(), "dietary_type", selected.id)
+            } else {
+                OnboardingStore.putString(requireContext(), FlexiFitKeys.DIETARY_TYPE, selected.id)
+            }
         }
     }
 
     override fun validateBeforeNext(): String? {
-        val diet = OnboardingStore.getString(requireContext(), FlexiFitKeys.DIETARY_TYPE)
-
-        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 7 ---")
-        Log.d("FLEXIFIT_DEBUG", "Final Diet Type: '$diet'")
-
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
+        val diet = if (isUpdate) {
+            UserPrefs.getString(requireContext(), "dietary_type", "")
+        } else {
+            OnboardingStore.getString(requireContext(), FlexiFitKeys.DIETARY_TYPE)
+        }
         return if (diet.isBlank()) {
             "Please select a dietary preference to help us customize your meals."
         } else {

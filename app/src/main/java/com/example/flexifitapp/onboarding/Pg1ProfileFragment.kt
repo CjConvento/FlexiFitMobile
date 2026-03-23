@@ -1,61 +1,71 @@
 package com.example.flexifitapp.onboarding
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.UserPrefs
 
 class Pg1ProfileFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg1_profile,
-    nextActionId = R.id.a1,
     isFirst = true
 ) {
 
+    private lateinit var rvAge: RecyclerView
+    private lateinit var tvAgeSelected: TextView
     private var selectedGender: String = ""
     private var selectedAge: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ===== AGE WHEEL =====
-        val rvAge = view.findViewById<RecyclerView>(R.id.rvAge)
-        val tvAgeSelected = view.findViewById<TextView>(R.id.tvAgeSelected)
-        setupAgeWheel(rvAge, tvAgeSelected)
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
 
-        // ===== GENDER (cards) =====
+        // Get saved values
+        val savedAge = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), UserPrefs.KEY_AGE, 25)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.AGE, 25)
+        }
+
+        val savedGender = if (isUpdate) {
+            UserPrefs.getString(requireContext(), UserPrefs.KEY_GENDER, "")
+        } else {
+            OnboardingStore.getString(requireContext(), FlexiFitKeys.GENDER)
+        }
+
+        rvAge = view.findViewById(R.id.rvAge)
+        tvAgeSelected = view.findViewById(R.id.tvAgeSelected)
         val cardMale = view.findViewById<View>(R.id.cardMale)
         val cardFemale = view.findViewById<View>(R.id.cardFemale)
 
-        fun applyGenderSelection(g: String) {
-            val maleSelected = g.equals("Male", ignoreCase = true)
-            val femaleSelected = g.equals("Female", ignoreCase = true)
+        // Setup age wheel with saved value
+        setupAgeWheel(savedAge)
 
-            cardMale.isSelected = maleSelected
-            cardFemale.isSelected = femaleSelected
-        }
-
+        // Setup gender selection
         fun selectGender(g: String) {
-            if (g.isBlank()) return // Huwag mag-save kung empty
             selectedGender = g
-            OnboardingStore.putString(requireContext(), FlexiFitKeys.GENDER, g)
-            applyGenderSelection(g)
+            if (isUpdate) {
+                UserPrefs.putString(requireContext(), UserPrefs.KEY_GENDER, g)
+            } else {
+                OnboardingStore.putString(requireContext(), FlexiFitKeys.GENDER, g)
+            }
+            applyGenderSelection(g, cardMale, cardFemale)
         }
 
-        // Restore saved selection gamit ang FlexiFitKeys
-        val savedGender = OnboardingStore.getString(requireContext(), FlexiFitKeys.GENDER)
         if (savedGender.isNotBlank()) {
             selectGender(savedGender)
         }
 
-        // Click listeners
         cardMale.setOnClickListener { selectGender("Male") }
         cardFemale.setOnClickListener { selectGender("Female") }
     }
 
-    private fun setupAgeWheel(rvAge: RecyclerView, tvAgeSelected: TextView) {
+    private fun setupAgeWheel(initialAge: Int) {
         val minAge = 10
         val maxAge = 100
         val ageList = (minAge..maxAge).toList()
@@ -68,7 +78,7 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
         adapter.onBindNumber = { tv, _, isSelected ->
             tv.alpha = if (isSelected) 1f else 0.45f
             tv.textSize = if (isSelected) 22f else 16f
-            tv.gravity = android.view.Gravity.CENTER
+            tv.gravity = Gravity.CENTER
         }
 
         rvAge.adapter = adapter
@@ -76,17 +86,19 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rvAge)
 
-        // Restore age gamit ang FlexiFitKeys
-        val savedAge = OnboardingStore.getInt(requireContext(), FlexiFitKeys.AGE, 25).coerceIn(minAge, maxAge)
-        val startPos = adapter.getVirtualPosForNumber(savedAge)
-
+        val startPos = adapter.getVirtualPosForNumber(initialAge.coerceIn(minAge, maxAge))
         rvAge.post {
             lm.scrollToPositionWithOffset(startPos, 0)
             adapter.setSelectedVirtualPos(startPos)
-            selectedAge = savedAge
-            tvAgeSelected.text = savedAge.toString()
-            // I-save ang initial/restored value
-            OnboardingStore.putInt(requireContext(), FlexiFitKeys.AGE, savedAge)
+            selectedAge = initialAge
+            tvAgeSelected.text = initialAge.toString()
+            // Save initial age
+            val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
+            if (isUpdate) {
+                UserPrefs.putInt(requireContext(), UserPrefs.KEY_AGE, initialAge)
+            } else {
+                OnboardingStore.putInt(requireContext(), FlexiFitKeys.AGE, initialAge)
+            }
         }
 
         rvAge.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -100,15 +112,36 @@ class Pg1ProfileFragment : BaseOnboardingFragment(
                 adapter.setSelectedVirtualPos(pos)
                 selectedAge = age
                 tvAgeSelected.text = age.toString()
-                OnboardingStore.putInt(requireContext(), FlexiFitKeys.AGE, age)
+
+                val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
+                if (isUpdate) {
+                    UserPrefs.putInt(requireContext(), UserPrefs.KEY_AGE, age)
+                } else {
+                    OnboardingStore.putInt(requireContext(), FlexiFitKeys.AGE, age)
+                }
             }
         })
     }
 
-    override fun validateBeforeNext(): String? {
-        val age = OnboardingStore.getInt(requireContext(), FlexiFitKeys.AGE, 0)
-        val gender = OnboardingStore.getString(requireContext(), FlexiFitKeys.GENDER)
+    private fun applyGenderSelection(gender: String, cardMale: View, cardFemale: View) {
+        val maleSelected = gender.equals("Male", ignoreCase = true)
+        val femaleSelected = gender.equals("Female", ignoreCase = true)
+        cardMale.isSelected = maleSelected
+        cardFemale.isSelected = femaleSelected
+    }
 
+    override fun validateBeforeNext(): String? {
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
+        val age = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), UserPrefs.KEY_AGE, 0)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.AGE, 0)
+        }
+        val gender = if (isUpdate) {
+            UserPrefs.getString(requireContext(), UserPrefs.KEY_GENDER, "")
+        } else {
+            OnboardingStore.getString(requireContext(), FlexiFitKeys.GENDER)
+        }
         return when {
             age < 10 || age > 100 -> "Please select a valid age (10-100)."
             gender.isBlank() -> "Please select your gender."

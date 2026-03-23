@@ -70,8 +70,8 @@
             android:background="@drawable/bg_circle_soft"
             android:src="@drawable/ic_chevron_r_circle"
             app:tint="@color/gradientStart"
-            android:clickable="false"
-            android:focusable="false"/>
+            android:clickable="true"
+            android:focusable="true"/>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

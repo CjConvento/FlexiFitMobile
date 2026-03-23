@@ -39,7 +39,9 @@ data class WorkoutSessionResultDto(
     val wasSkipped: Boolean,
 
     @SerializedName("skipMessage")
-    val skipMessage: String?
+    val skipMessage: String?,
+
+    val totalCalories: Int = 0   // 👈 add this
 )
 
 data class CanSkipResponse(

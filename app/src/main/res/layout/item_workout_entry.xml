@@ -60,12 +60,16 @@
                 tools:text="Workout 1" />
         </LinearLayout>
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStartExercise"
-            android:layout_width="32dp"
+            android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:background="@drawable/bg_circle_soft"
-            android:src="@drawable/baseline_arrow_right_ios_new_24"
-            android:padding="8dp" />
+            android:text="View"
+            android:textSize="12sp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:gravity="center"
+            app:cornerRadius="16dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

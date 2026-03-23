@@ -1,26 +1,17 @@
 package com.example.flexifitapp
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.example.flexifitapp.profile.AchievementEngine
-import com.example.flexifitapp.profile.AchievementsDialogFragment
-import com.example.flexifitapp.profile.PersonalDataDialogFragment
-import com.example.flexifitapp.profile.WeightQuickEditDialogFragment
-import com.example.flexifitapp.profile.NutritionalDataDialogFragment
-import com.example.flexifitapp.profile.UpdateOnboardingRequest
-import com.example.flexifitapp.profile.WorkoutDataDialogFragment
-import com.example.flexifitapp.profile.UserManagementResponse
-import com.google.android.material.button.MaterialButton
+import com.example.flexifitapp.databinding.FragmentProfileffBinding
+import com.example.flexifitapp.profile.*
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -30,239 +21,169 @@ import java.io.FileOutputStream
 
 class ProfileFragment : Fragment(R.layout.fragment_profileff) {
 
-    private var imgAvatar: ImageView? = null
-    private var tvName: TextView? = null
-    private var tvGoalSubtitle: TextView? = null
-    private var tvAgeValue: TextView? = null
-    private var tvHeightValue: TextView? = null
-    private var tvWeightValue: TextView? = null
+    private var _binding: FragmentProfileffBinding? = null
+    private val binding get() = _binding!!
 
-    private var btnEdit: MaterialButton? = null
-    private var btnUpdateProfile: MaterialButton? = null
-
-    private var rowPersonalData: LinearLayout? = null
-    private var rowWorkoutData: LinearLayout? = null
-    private var rowNutritionData: LinearLayout? = null
-    private var rowAchievements: LinearLayout? = null
-    private var rowTrackProgress: LinearLayout? = null
-
-    private val pickAvatar =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri ?: return@registerForActivityResult
-            imgAvatar?.let { imageView ->
-                Glide.with(this).load(uri).circleCrop().into(imageView)
-            }
-            uploadAvatar(uri)
-        }
+    private val pickAvatar = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { uploadAvatar(it) }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindViews(view)
-        setupResultListeners()
+        _binding = FragmentProfileffBinding.bind(view)
+
         setupClicks()
-
-        // Initial load from local storage (Fast)
-        loadLocalProfileData()
-        loadLocalAvatar()
-
-        // Sync from Server (Fresh)
+        setupResultListeners()
         syncProfileFromServer()
-
-        btnUpdateProfile?.setOnClickListener {
-            performFullProfileUpdate()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        syncProfileFromServer()
-    }
-
-    private fun bindViews(view: View) {
-        imgAvatar = view.findViewById(R.id.imgAvatar)
-        tvName = view.findViewById(R.id.tvName)
-        tvGoalSubtitle = view.findViewById(R.id.tvGoalSubtitle)
-        tvAgeValue = view.findViewById(R.id.tvAgeValue)
-        tvHeightValue = view.findViewById(R.id.tvHeightValue)
-        tvWeightValue = view.findViewById(R.id.tvWeightValue)
-        btnEdit = view.findViewById(R.id.btnEdit)
-        btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile)
-        rowPersonalData = view.findViewById(R.id.rowPersonalData)
-        rowWorkoutData = view.findViewById(R.id.rowWorkoutData)
-        rowNutritionData = view.findViewById(R.id.rowNutritionData)
-        rowAchievements = view.findViewById(R.id.rowAchievements)
-        rowTrackProgress = view.findViewById(R.id.rowTrackProgress)
+        loadLocalProfileData() // Show cached data immediately
     }
 
     private fun setupClicks() {
-        imgAvatar?.setOnClickListener { pickAvatar.launch("image/*") }
-
-        btnEdit?.setOnClickListener {
-            WeightQuickEditDialogFragment().show(parentFragmentManager, "WeightQuickEditDialog")
-        }
-
-        rowPersonalData?.setOnClickListener {
+        binding.rowPersonalData.setOnClickListener {
             PersonalDataDialogFragment().show(parentFragmentManager, "PersonalDataDialog")
         }
-
-        rowWorkoutData?.setOnClickListener {
+        binding.rowWorkoutData.setOnClickListener {
             WorkoutDataDialogFragment().show(parentFragmentManager, "WorkoutDataDialog")
         }
-
-        rowNutritionData?.setOnClickListener {
+        binding.rowNutritionData.setOnClickListener {
             NutritionalDataDialogFragment().show(parentFragmentManager, "NutritionDataDialog")
         }
-
-        rowAchievements?.setOnClickListener {
-            AchievementsDialogFragment().show(parentFragmentManager, "AchievementsDialog")
+        binding.rowTrackProgress.setOnClickListener {
+            findNavController().navigate(R.id.nav_progresstracker)
         }
+        binding.btnEdit.setOnClickListener {
+            WeightQuickEditDialogFragment().show(parentFragmentManager, "WeightQuickEditDialog")
+        }
+        binding.btnUpdateProfile.setOnClickListener {
+            val intent = Intent(requireContext(), OnboardingActivity::class.java)
+            intent.putExtra("isUpdate", true)
+            startActivity(intent)
+        }
+        binding.imgAvatar.setOnClickListener {
+            pickAvatar.launch("image/*")
+        }
+    }
 
-        rowTrackProgress?.setOnClickListener {
-            try { findNavController().navigate(R.id.nav_progtr) }
-            catch (e: Exception) { toast("Progress screen coming soon!") }
+    private fun setupResultListeners() {
+        parentFragmentManager.setFragmentResultListener(WeightQuickEditDialogFragment.REQUEST_KEY, viewLifecycleOwner) { _, _ ->
+            syncProfileFromServer()
+        }
+        parentFragmentManager.setFragmentResultListener(PersonalDataDialogFragment.REQUEST_KEY, viewLifecycleOwner) { _, _ ->
+            syncProfileFromServer()
         }
     }
 
     private fun syncProfileFromServer() {
-        val ctx = context ?: return
-
-        // Launch sa coroutine para hindi mag-lag ang UI
         lifecycleScope.launch {
             try {
-                // Siguraduhin na ang ApiService mo ay may getFullProfile()
-                val api = ApiClient.get(ctx).create(ApiService::class.java)
+                val api = ApiClient.api()
                 val response = api.getFullProfile()
-
                 if (response.isSuccessful && response.body() != null) {
-                    val data = response.body()!!
-
-                    // 1. DITO NAGAGAMIT YUNG SYNCWITHSERVER!
-                    // Ang 'data.unlockedBadges' ay dapat List<String> galing sa C#
-                    AchievementEngine.syncWithServer(ctx, data.unlockedBadges)
-
-                    // 2. I-update ang Local Prefs (UserPrefs)
-                    UserPrefs.putString(ctx, UserPrefs.KEY_NAME, data.name)
-                    UserPrefs.putString(ctx, UserPrefs.KEY_USER_NAME, data.username)
-                    UserPrefs.putInt(ctx, UserPrefs.KEY_AGE, data.age)
-                    UserPrefs.putInt(ctx, UserPrefs.KEY_HEIGHT_CM, data.heightCm.toInt())
-                    UserPrefs.putInt(ctx, UserPrefs.KEY_WEIGHT_KG, data.weightKg.toInt())
-                    UserPrefs.putString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, data.goalSubtitle)
-
-                    // Dagdag natin 'tong dalawa para sa dialogs mo
-                    UserPrefs.putInt(ctx, "total_sessions", data.totalSessions)
-                    UserPrefs.putString(ctx, "bmi_category", data.bmiCategory)
-
-                    // 3. I-refresh ang UI kapag tapos na ang sync
-                    if (isAdded) loadLocalProfileData()
+                    storeProfileData(response.body()!!)
+                    loadLocalProfileData()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                // ignore, just log
             }
         }
+    }
+
+    private fun storeProfileData(data: UserManagementResponse) {
+        val ctx = requireContext()
+        UserPrefs.putString(ctx, UserPrefs.KEY_NAME, data.name)
+        UserPrefs.putString(ctx, UserPrefs.KEY_USERNAME, data.username)
+        UserPrefs.putString(ctx, UserPrefs.KEY_GENDER, data.gender)
+        UserPrefs.putInt(ctx, UserPrefs.KEY_AGE, data.age)
+        UserPrefs.putFloat(ctx, UserPrefs.KEY_HEIGHT_CM, data.heightCm.toFloat())
+        UserPrefs.putFloat(ctx, UserPrefs.KEY_WEIGHT_KG, data.weightKg.toFloat())
+        UserPrefs.putString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, data.goalSubtitle)
+        UserPrefs.putInt(ctx, "total_sessions", data.totalSessions)
+        UserPrefs.putString(ctx, "bmi_category", data.bmiCategory)
+        // also store avatar_url if needed
     }
 
     private fun loadLocalProfileData() {
-        val ctx = context ?: return
+        val ctx = requireContext()
         val name = UserPrefs.getString(ctx, UserPrefs.KEY_NAME, "User Name")
-        val age = UserPrefs.getInt(ctx, UserPrefs.KEY_AGE, 0)
-        val height = UserPrefs.getInt(ctx, UserPrefs.KEY_HEIGHT_CM, 0)
-        val weight = UserPrefs.getInt(ctx, UserPrefs.KEY_WEIGHT_KG, 0)
         val goal = UserPrefs.getString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, "User Goal")
+        val age = UserPrefs.getInt(ctx, UserPrefs.KEY_AGE, 0)
+        val height = UserPrefs.getFloat(ctx, UserPrefs.KEY_HEIGHT_CM, 0f).toInt()
+        val weight = UserPrefs.getFloat(ctx, UserPrefs.KEY_WEIGHT_KG, 0f).toInt()
 
-        tvName?.text = name
-        tvGoalSubtitle?.text = if (goal.isNotBlank()) prettifyValue(goal) else "User Goal"
-        tvAgeValue?.text = "$age yo"
-        tvHeightValue?.text = "$height cm"
-        tvWeightValue?.text = "$weight kg"
-    }
+        binding.tvName.text = name
+        binding.tvGoalSubtitle.text = prettifyValue(goal)
+        binding.tvAgeValue.text = if (age > 0) "$age yo" else "-"
+        binding.tvHeightValue.text = if (height > 0) "$height cm" else "-"
+        binding.tvWeightValue.text = if (weight > 0) "$weight kg" else "-"
 
-    private fun performFullProfileUpdate() {
-        val ctx = context ?: return
-
-        lifecycleScope.launch {
-            try {
-                // 1. I-construct ang DTO gamit ang current data sa UserPrefs
-                val request = UpdateOnboardingRequest(
-                    age = UserPrefs.getInt(ctx, UserPrefs.KEY_AGE, 0),
-                    gender = UserPrefs.getString(ctx, UserPrefs.KEY_GENDER, "MALE"),
-                    heightCm = UserPrefs.getInt(ctx, UserPrefs.KEY_HEIGHT_CM, 0).toDouble(),
-                    weightKg = UserPrefs.getInt(ctx, UserPrefs.KEY_WEIGHT_KG, 0).toDouble(),
-                    targetWeightKg = UserPrefs.getInt(ctx, "target_weight", 0).toDouble(),
-
-                    // Health Flags (Pwede mong i-default or i-save din sa prefs)
-                    upperBodyInjury = false,
-                    lowerBodyInjury = false,
-                    jointProblems = false,
-                    shortBreath = false,
-
-                    // Lifestyle & Goals
-                    fitnessLifestyle = "ACTIVE",
-                    fitnessLevel = "BEGINNER",
-                    environment = "GYM",
-                    bodyCompGoal = UserPrefs.getString(
-                        ctx,
-                        UserPrefs.KEY_BODYCOMP_GOAL,
-                        "MAINTAIN_WEIGHT"
-                    ),
-                    dietaryType = "STANDARD",
-
-                    fitnessGoals = emptyList(),
-                    selectedPrograms = emptyList(),
-                    isRehabUser = false
-                )
-
-                // 2. API Call
-                val api = ApiClient.get(ctx).create(ApiService::class.java)
-                val response = api.updateFullProfile(request) // Siguraduhin na nasa ApiService ito
-
-                if (response.isSuccessful) {
-                    toast("Profile & Macros updated!")
-                    syncProfileFromServer() // Re-sync para makuha yung bagong calculated calories
-                } else {
-                    toast("Server error: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                toast("Update failed: ${e.message}")
-            }
+        val avatarUrl = UserPrefs.getString(ctx, "avatar_url", "")
+        if (avatarUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(if (avatarUrl.startsWith("http")) avatarUrl else ApiConfig.BASE_URL + avatarUrl)
+                .placeholder(R.drawable.profile)
+                .circleCrop()
+                .into(binding.imgAvatar)
         }
     }
 
-    private fun loadLocalAvatar() {
-        val ctx = context ?: return
-        val localAvatar = UserPrefs.getString(ctx, "avatar_url", "")
-        imgAvatar?.let {
-            Glide.with(this)
-                .load(if (localAvatar.startsWith("http")) localAvatar else ApiConfig.BASE_URL + localAvatar)
-                .placeholder(R.drawable.profile)
-                .circleCrop()
-                .into(it)
+    private fun performFullProfileUpdate() {
+        val ctx = requireContext()
+        val request = UpdateOnboardingRequest(
+            age = UserPrefs.getInt(ctx, UserPrefs.KEY_AGE, 0),
+            gender = UserPrefs.getString(ctx, UserPrefs.KEY_GENDER, "MALE"),
+            heightCm = UserPrefs.getFloat(ctx, UserPrefs.KEY_HEIGHT_CM, 0f).toDouble(),
+            weightKg = UserPrefs.getFloat(ctx, UserPrefs.KEY_WEIGHT_KG, 0f).toDouble(),
+            targetWeightKg = UserPrefs.getInt(ctx, "target_weight_kg", 0).toDouble(),
+            upperBodyInjury = UserPrefs.getBool(ctx, "upper_body_injury", false),
+            lowerBodyInjury = UserPrefs.getBool(ctx, "lower_body_injury", false),
+            jointProblems = UserPrefs.getBool(ctx, "joint_problems", false),
+            shortBreath = UserPrefs.getBool(ctx, "short_breath", false),
+            fitnessLifestyle = UserPrefs.getString(ctx, "fitness_lifestyle", "ACTIVE"),
+            fitnessLevel = UserPrefs.getString(ctx, "fitness_level", "BEGINNER"),
+            environment = UserPrefs.getString(ctx, "environment", "GYM"),
+            bodyCompGoal = UserPrefs.getString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, "MAINTAIN_WEIGHT"),
+            dietaryType = UserPrefs.getString(ctx, "dietary_type", "STANDARD"),
+            fitnessGoals = UserPrefs.getStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET).toList(),
+            selectedPrograms = UserPrefs.getStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS).toList(),
+            isRehabUser = UserPrefs.getBool(ctx, "is_rehab_user", false),
+            name = UserPrefs.getString(ctx, UserPrefs.KEY_NAME, ""),
+            username = UserPrefs.getString(ctx, UserPrefs.KEY_USERNAME, "")
+        )
+
+        lifecycleScope.launch {
+            try {
+                val api = ApiClient.api()
+                val response = api.updateFullProfile(request)
+                if (response.isSuccessful) {
+                    Toast.makeText(ctx, "Profile updated", Toast.LENGTH_SHORT).show()
+                    syncProfileFromServer()
+                } else {
+                    Toast.makeText(ctx, "Update failed: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(ctx, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun uploadAvatar(uri: Uri) {
-        val context = context ?: return
+        val context = requireContext()
         lifecycleScope.launch {
             try {
                 val file = uriToFile(uri)
                 val body = MultipartBody.Part.createFormData("file", file.name, file.asRequestBody("image/*".toMediaTypeOrNull()))
-                val api = ApiClient.get(context).create(ApiService::class.java)
+                val api = ApiClient.api()
                 val response = api.uploadAvatar(body)
                 if (response.isSuccessful) {
                     val newUrl = response.body()?.url
                     UserPrefs.putString(context, "avatar_url", newUrl ?: "")
-                    loadLocalAvatar()
-                    toast("Avatar updated!")
+                    loadLocalProfileData()
+                    Toast.makeText(context, "Avatar updated!", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) { toast("Upload error") }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Upload error", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
-
-    // Helper functions (onDestroyView, uriToFile, prettifyValue, etc.) remain same as your original
-    override fun onDestroyView() {
-        super.onDestroyView()
-        imgAvatar = null; tvName = null; tvGoalSubtitle = null; tvAgeValue = null
-        tvHeightValue = null; tvWeightValue = null; rowPersonalData = null
-        rowWorkoutData = null; rowNutritionData = null; rowAchievements = null
     }
 
     private fun uriToFile(uri: Uri): File {
@@ -276,15 +197,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         return value.replace("_", " ").split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
     }
 
-    private fun toast(message: String) {
-        if (isAdded) Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setupResultListeners() {
-        parentFragmentManager.setFragmentResultListener(WeightQuickEditDialogFragment.REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
-            val newWeight = bundle.getInt(WeightQuickEditDialogFragment.BUNDLE_NEW_WEIGHT, 0)
-            if (newWeight > 0) tvWeightValue?.text = "$newWeight kg"
-            syncProfileFromServer()
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -408,42 +408,5 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ACHIEVEMENTS CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardAchievements"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            app:cardCornerRadius="18dp"
-            app:cardUseCompatPadding="true"
-            app:strokeWidth="0dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="@color/surface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recent Achievements"
-                    android:textStyle="bold"
-                    android:textColor="@color/textPrimary"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="10dp"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvAchievements"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:overScrollMode="never"/>
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -98,7 +98,7 @@ class CreateUsernameActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val api = ApiClient.get(this@CreateUsernameActivity)
+                val api = ApiClient.get()
                     .create(ApiService::class.java)
 
                 val registerReq = RegisterRequest(

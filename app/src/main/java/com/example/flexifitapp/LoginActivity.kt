@@ -35,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginBtn: MaterialButton
     private lateinit var btnGoogleLogin: MaterialButton // Added for Google Login
     private lateinit var signupRedirect: TextView
+    private lateinit var loadingOverlay: View   // ✅ Added declaration
     private lateinit var mAuth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var credentialManager: CredentialManager // For Google Popup
@@ -45,6 +46,15 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
         applyThemeFromPrefs()
+
+        // ✅ Auto-login if we have a saved token
+        if (UserPrefs.isLoggedIn(this)) {
+            Log.d("LoginActivity", "Auto-login with existing token")
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         // 1. Initialize Components
@@ -56,9 +66,13 @@ class LoginActivity : AppCompatActivity() {
         loginBtn = findViewById(R.id.login_button)
         btnGoogleLogin = findViewById(R.id.btnGoogleSignIn) // Make sure this ID is in your XML
         signupRedirect = findViewById(R.id.signupRedirectText)
+        loadingOverlay = findViewById(R.id.loadingOverlay) // Ensure this exists in layout
 
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
+
+        // Check if already logged in
+        checkExistingLogin()
 
         // 2. Email/Password Login Listener
         loginBtn.setOnClickListener {
@@ -100,6 +114,88 @@ class LoginActivity : AppCompatActivity() {
 
         signupRedirect.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
+        }
+    }
+
+    private fun checkExistingLogin() {
+        val currentUser = mAuth.currentUser
+        var token = UserPrefs.getToken(this)
+
+        Log.d("AUTO_LOGIN", "currentUser=${currentUser?.uid}, token=${token.take(20)}...")
+
+        if (currentUser != null && token.isNotEmpty()) {
+            Log.d("LoginFlow", "Case 1: user & token exist → validating via bootstrap")
+            // Already have a token – validate via bootstrap
+            loadingOverlay.visibility = View.VISIBLE
+            setAuthLoading(true)
+
+            lifecycleScope.launch {
+                try {
+                    val api = ApiClient.get().create(ApiService::class.java)
+                    val bootRes = api.bootstrap()
+                    if (bootRes.isSuccessful && bootRes.body() != null) {
+                        val body = bootRes.body()!!
+                        Log.d("LoginFlow", "bootstrap success: profileComplete=${body.profileComplete}, userId=${body.userId}")
+                        // Sync user ID if not already set
+                        if (UserPrefs.getUserId(this@LoginActivity) == 0 && body.userId != null) {
+                            UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
+                        }
+                        // Redirect based on profile completeness
+                        if (body.profileComplete) {
+                            Log.d("LoginFlow", "profileComplete=true → goToMain()")
+                            goToMain()
+                        } else {
+                            Log.d("LoginFlow", "profileComplete=false → goToOnboard()")
+                            goToOnboard()
+                        }
+                    } else {
+                        // Bootstrap failed – token may be invalid
+                        Log.e("AUTO_LOGIN", "bootstrap failed: ${bootRes.code()}")
+                        UserPrefs.clearAuth(this@LoginActivity)
+                        loadingOverlay.visibility = View.GONE
+                        setAuthLoading(false)
+                        // Also sign out Firebase to clean up
+                        mAuth.signOut()
+                    }
+                } catch (e: Exception) {
+                    Log.e("AUTO_LOGIN", "bootstrap exception", e)
+                    UserPrefs.clearAuth(this@LoginActivity)
+                    loadingOverlay.visibility = View.GONE
+                    setAuthLoading(false)
+                    mAuth.signOut()
+                }
+            }
+        } else if (currentUser != null && token.isEmpty()) {
+            // Firebase user exists but no local token – try to get a fresh token
+            Log.d("LoginFlow", "Case 2: user exists but token empty → fetch fresh token")
+            loadingOverlay.visibility = View.VISIBLE
+            setAuthLoading(true)
+            currentUser.getIdToken(true).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val newToken = task.result?.token
+                    if (newToken != null) {
+                        Log.d("LoginFlow", "Got fresh token, saving and retrying")
+                        UserPrefs.putString(this, UserPrefs.KEY_JWT_TOKEN, newToken)
+                        // Retry the auto-login
+                        checkExistingLogin()
+                    } else {
+                        Log.w("LoginFlow", "Fresh token null")
+                        loadingOverlay.visibility = View.GONE
+                        setAuthLoading(false)
+                        Toast.makeText(this, "Unable to restore session", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Log.e("LoginFlow", "getIdToken failed", task.exception)
+                    loadingOverlay.visibility = View.GONE
+                    setAuthLoading(false)
+                    Toast.makeText(this, "Unable to restore session", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Log.d("LoginFlow", "Case 3: no session → show login UI")
+            // No session – show login UI
+            loadingOverlay.visibility = View.GONE
+            setAuthLoading(false)
         }
     }
 
@@ -162,7 +258,7 @@ class LoginActivity : AppCompatActivity() {
     private fun loginToBackendAndBootstrap(firebaseToken: String, fcmToken: String?) {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.get(this@LoginActivity).create(ApiService::class.java)
+                val api = ApiClient.get().create(ApiService::class.java)
                 val req = LoginRequest(firebaseIdToken = firebaseToken, fcmToken = fcmToken)
 
                 val res = api.login(req)
@@ -223,6 +319,7 @@ class LoginActivity : AppCompatActivity() {
             name = auth.name ?: "",      // Idagdag mo ito babe
             photoUrl = auth.photoUrl ?: "" // At ito rin
         )
+        Log.d("AUTH", "Saved token: ${UserPrefs.getToken(this@LoginActivity)}")
 
         // Optional: I-save na rin natin yung Name at Photo para sa ProfileFragment
         UserPrefs.putString(this@LoginActivity, UserPrefs.KEY_NAME, auth.name ?: "")
@@ -231,6 +328,7 @@ class LoginActivity : AppCompatActivity() {
         val bootRes = api.bootstrap()
         if (bootRes.isSuccessful && bootRes.body() != null) {
             val body = bootRes.body()!!
+            Log.d("AUTO_LOGIN", "bootstrap body: profileComplete=${body.profileComplete}, userId=${body.userId}")
 
             // Sync the user ID to local prefs
             if (auth.userId != 0) {
@@ -238,9 +336,12 @@ class LoginActivity : AppCompatActivity() {
             }
 
             // Determine where to go
-            if (body.profileComplete) goToMain() else goToOnboard()
+            if (body.profileComplete)
+                Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=true → goToMain()")
+                goToMain()
         } else {
             // Default to onboarding if bootstrap fails but login succeeded
+            Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
             goToOnboard()
         }
     }
@@ -252,6 +353,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToMain() {
+        Log.d("LoginFlow", "goToMain() called")
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -259,6 +361,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToOnboard() {
+        Log.d("LoginFlow", "goToOnboard() called")
         val intent = Intent(this, OnboardingActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

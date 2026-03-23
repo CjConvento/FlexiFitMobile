@@ -7,23 +7,48 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import com.example.flexifitapp.onboarding.OnboardingStore
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : AppCompatActivity() {
+
+    private var isUpdateMode = false
+    private lateinit var viewPager: ViewPager2
+    private lateinit var adapter: OnboardingPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
 
         // Simulan ang pag-check ng user status pagkabukas ng app
+
+        isUpdateMode = intent.getBooleanExtra("isUpdate", false)
+
+        // Initialize ViewPager
+        viewPager = findViewById(R.id.viewPager)
+        adapter = OnboardingPagerAdapter(this, isUpdateMode)
+        viewPager.adapter = adapter
+
+        // If you want to disable swiping (only use next/prev buttons inside fragments)
+        viewPager.isUserInputEnabled = false
+
+        // If you have a TabLayout for dots:
+        // val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
+        // TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+        //     // optional: set tab text if needed
+        // }.attach()
+
+
         initOnboardingFlow()
     }
+
+
 
     private fun initOnboardingFlow() {
         lifecycleScope.launch {
             try {
-                val response = ApiClient.api(this@OnboardingActivity).bootstrap()
+                val response = ApiClient.api().bootstrap()
 
                 if (response.isSuccessful) {
                     val data = response.body()
@@ -50,6 +75,19 @@ class OnboardingActivity : AppCompatActivity() {
                     goToMain()
                 }
             }
+        }
+    }
+
+    // Add method to navigate between pages
+    fun nextPage() {
+        if (viewPager.currentItem < adapter.itemCount - 1) {
+            viewPager.currentItem += 1
+        }
+    }
+
+    fun previousPage() {
+        if (viewPager.currentItem > 0) {
+            viewPager.currentItem -= 1
         }
     }
 

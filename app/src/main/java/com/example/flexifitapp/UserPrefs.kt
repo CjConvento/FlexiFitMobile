@@ -1,6 +1,7 @@
 package com.example.flexifitapp
 
 import android.content.Context
+import android.util.Log
 import com.example.flexifitapp.onboarding.FlexiFitKeys
 import com.example.flexifitapp.OnboardingProfileRequest
 
@@ -17,6 +18,7 @@ object UserPrefs {
     // =========================================================
     const val KEY_NAME = "name"
     const val KEY_USER_NAME = "username"
+    const val KEY_USERNAME = "username"
     const val KEY_USER_EMAIL = "email"
     const val KEY_USER_ID = "userId"
     const val KEY_JWT_TOKEN = "jwt_token"
@@ -178,7 +180,7 @@ object UserPrefs {
         prefs(ctx).edit()
             .putBoolean(KEY_ONBOARDING_DONE, true)
             .putBoolean(KEY_IS_REHAB_USER, isRehab)
-            .apply()
+            .commit()
     }
 
     fun saveAuth(
@@ -197,11 +199,17 @@ object UserPrefs {
             .putString(KEY_ROLE, role ?: "")
             .putString(KEY_STATUS, status ?: "")
             .putBoolean(KEY_IS_VERIFIED, isVerified)
-            .putString("KEY_NAME", name ?: "")          // I-save ang Name
+            .putString(KEY_NAME, name ?: "")          // I-save ang Name
             .putString("KEY_AVATAR_URL", photoUrl ?: "") // I-save ang Avatar URL
-            .apply()
+            .commit()
+        Log.d("UserPrefs", "Token saved: $token")
     }
-    fun getToken(ctx: Context): String = getString(ctx, KEY_JWT_TOKEN, "")
+
+    fun getToken(ctx: Context): String {
+        val token = getString(ctx, KEY_JWT_TOKEN, "")
+        Log.d("UserPrefs", "Token retrieved: ${token.take(20)}...")
+        return token
+    }
     fun getUserId(ctx: Context): Int = getInt(ctx, KEY_USER_ID, 0)
     fun getRole(ctx: Context): String = getString(ctx, KEY_ROLE, "")
     fun getStatus(ctx: Context): String = getString(ctx, KEY_STATUS, "")
@@ -220,5 +228,6 @@ object UserPrefs {
             .remove(KEY_USER_EMAIL)
             .remove(KEY_AVATAR_URL)
             .apply()
+        Log.d("UserPrefs", "Clearing auth")
     }
 }

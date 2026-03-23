@@ -40,7 +40,7 @@ class NumberPickerAdapter(
 
         init {
             itemView.setOnClickListener {
-                val pos = bindingAdapterPosition
+                val pos = adapterPosition
                 if (pos == RecyclerView.NO_POSITION || items.isEmpty()) return@setOnClickListener
                 val number = getNumberAtVirtualPos(pos)
                 onNumberClick?.invoke(pos, number)

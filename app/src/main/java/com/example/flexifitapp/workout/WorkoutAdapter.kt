@@ -38,15 +38,15 @@ class WorkoutAdapter(
                 binding.tvWorkoutName.paintFlags = binding.tvWorkoutName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 binding.root.alpha = 1.0f
 
-                binding.btnStartExercise.text = "Start"
+                binding.btnStartExercise.text = "View"
                 binding.btnStartExercise.isEnabled = true
             }
 
             // 3. Image Loading (Direct load dahil full URL na)
             Glide.with(context)
                 .load(item.imageFileName)
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .error(R.drawable.ic_launcher_foreground)
+                .placeholder(R.drawable.ic_workout)
+                .error(R.drawable.ic_workout)
                 .into(binding.ivWorkoutIcon)
 
             // 4. Click Listeners

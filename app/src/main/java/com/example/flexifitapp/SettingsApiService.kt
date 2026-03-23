@@ -32,7 +32,7 @@ interface SettingsApiService {
     companion object {
         fun create(context: android.content.Context): SettingsApiService {
             // Gamitin ang .get(context) dahil yun ang nasa ApiClient.kt mo babe
-            return ApiClient.get(context).create(SettingsApiService::class.java)
+            return ApiClient.get().create(SettingsApiService::class.java)
         }
     } // Isara ang companion object
 } // Isara ang interface

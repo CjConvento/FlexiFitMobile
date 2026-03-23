@@ -537,8 +537,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
 
-                        app:endIconDrawable="@drawable/baseline_keyboard_arrow_down_24"
-                        app:endIconTint="@color/colorPrimary" app:endIconMode="custom" app:boxCornerRadiusBottomEnd="12dp"
+                        app:endIconTint="@color/colorPrimary"
+                        app:endIconMode="dropdown_menu"
+                        app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusTopStart="12dp"
@@ -550,12 +551,13 @@
                         <AutoCompleteTextView
                             android:id="@+id/autoCompleteMealType"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
+                            android:layout_height="wrap_content"
                             android:paddingTop="0dp"
                             android:paddingBottom="0dp"
                             android:inputType="none"
                             android:text="Breakfast"
-                            android:textSize="13sp"
+                            android:textSize="11.5sp"
+                            android:layout_marginEnd="20dp"
                             android:textColor="@color/textPrimary"
                             android:background="@null" />
 

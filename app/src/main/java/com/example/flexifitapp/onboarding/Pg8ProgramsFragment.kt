@@ -8,10 +8,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.UserPrefs
 
 class Pg8ProgramsFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg8_program,
-    nextActionId = R.id.a9
 ) {
 
     private lateinit var rv: RecyclerView
@@ -23,16 +23,22 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
 
         Log.d("FLEXIFIT_DEBUG", "--- Page 8: Recommendations ---")
 
-        // 1. INITIALIZE UI
-        rv = view.findViewById(R.id.rvprogramgoal)
-        val tvWarning = view.findViewById<TextView>(R.id.tvProgramWarning) //
-
-        // 2. LOAD DATA & SAFETY
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
         val ctx = requireContext()
-        val goals = loadGoals()
-        val locations = loadLocations()
-        val safety = loadSafety() //
-        val rawLevel = OnboardingStore.getString(ctx, FlexiFitKeys.FITNESS_LEVEL)
+
+        // 1. INITIALIZE UI
+        val tvWarning = view.findViewById<TextView>(R.id.tvProgramWarning)
+        rv = view.findViewById(R.id.rvprogramgoal)
+
+        // Load data from appropriate source
+        val goals = loadGoals(isUpdate)
+        val locations = loadLocations(isUpdate)
+        val safety = loadSafety(isUpdate)
+        val rawLevel = if (isUpdate) {
+            UserPrefs.getString(ctx, "fitness_level", "Beginner")
+        } else {
+            OnboardingStore.getString(ctx, FlexiFitKeys.FITNESS_LEVEL)
+        }
 
         // 3. WARNING LOGIC: Hide if NONE, Show if injured
         if (safety == HealthSafety.NONE) {
@@ -55,11 +61,20 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
         val inputs = ProgramInputs(goals, locations, finalLevelEnum, safety)
         val generatedPrograms = ProgramRuleEngine.generate(inputs)
 
-        // 5. SYNC SELECTIONS (Linisin ang dati kung hindi na match sa bago)
-        val savedSelections = OnboardingStore.getStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS)
+        // 5. SYNC SELECTIONS (Clear old selections that don't match new generated programs)
+        val savedSelections = if (isUpdate) {
+            UserPrefs.getStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS) ?: emptySet()
+        } else {
+            OnboardingStore.getStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS)
+        }
         selectedPrograms.clear()
         selectedPrograms.addAll(savedSelections.filter { it in generatedPrograms })
-        OnboardingStore.putStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS, selectedPrograms)
+
+        if (isUpdate) {
+            UserPrefs.putStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS, selectedPrograms)
+        } else {
+            OnboardingStore.putStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS, selectedPrograms)
+        }
 
         // 6. SETUP RECYCLERVIEW
         rv.layoutManager = GridLayoutManager(ctx, 1)
@@ -73,7 +88,11 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
             isLocked = isLocked,
             onToggle = { programId, isChecked ->
                 if (isChecked) selectedPrograms.add(programId) else selectedPrograms.remove(programId)
-                OnboardingStore.putStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS, selectedPrograms)
+                if (isUpdate) {
+                    UserPrefs.putStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS, selectedPrograms)
+                } else {
+                    OnboardingStore.putStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS, selectedPrograms)
+                }
             },
             onLimitReached = {
                 Toast.makeText(ctx, "You can only select up to 4 programs.", Toast.LENGTH_SHORT).show()
@@ -83,17 +102,57 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
     }
 
     // Helper to map strings to Enums
-    private fun loadGoals(): Set<Goal> = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
-        .mapNotNull { s -> when(s.lowercase()) { "cardio" -> Goal.CARDIO; "muscle_gain" -> Goal.MUSCLE_GAIN; "rehab" -> Goal.REHAB; else -> null } }.toSet()
-
-    private fun loadLocations(): Set<Location> = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
-        .mapNotNull { s -> when(s.lowercase()) { "gym" -> Location.GYM; "home" -> Location.HOME; "outdoor" -> Location.OUTDOOR; else -> null } }.toSet()
-
-    private fun loadSafety(): HealthSafety {
+    private fun loadGoals(isUpdate: Boolean): Set<Goal> {
         val ctx = requireContext()
-        val upper = OnboardingStore.getBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY)
-        val lower = OnboardingStore.getBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY)
-        val joint = OnboardingStore.getBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS)
+        val goalStrings = if (isUpdate) {
+            UserPrefs.getStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET) ?: emptySet()
+        } else {
+            OnboardingStore.getStringSet(ctx, FlexiFitKeys.FITNESS_GOALS)
+        }
+        return goalStrings.mapNotNull { s ->
+            when (s.lowercase()) {
+                "cardio" -> Goal.CARDIO
+                "muscle_gain" -> Goal.MUSCLE_GAIN
+                "rehab" -> Goal.REHAB
+                else -> null
+            }
+        }.toSet()
+    }
+
+    private fun loadLocations(isUpdate: Boolean): Set<Location> {
+        val ctx = requireContext()
+        val envStrings = if (isUpdate) {
+            UserPrefs.getStringSet(ctx, "environment") ?: emptySet()
+        } else {
+            OnboardingStore.getStringSet(ctx, FlexiFitKeys.ENVIRONMENT)
+        }
+        return envStrings.mapNotNull { s ->
+            when (s.lowercase()) {
+                "gym" -> Location.GYM
+                "home" -> Location.HOME
+                "outdoor" -> Location.OUTDOOR
+                else -> null
+            }
+        }.toSet()
+    }
+
+    private fun loadSafety(isUpdate: Boolean): HealthSafety {
+        val ctx = requireContext()
+        val upper = if (isUpdate) {
+            UserPrefs.getBool(ctx, "upper_body_injury", false)
+        } else {
+            OnboardingStore.getBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY)
+        }
+        val lower = if (isUpdate) {
+            UserPrefs.getBool(ctx, "lower_body_injury", false)
+        } else {
+            OnboardingStore.getBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY)
+        }
+        val joint = if (isUpdate) {
+            UserPrefs.getBool(ctx, "joint_problems", false)
+        } else {
+            OnboardingStore.getBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS)
+        }
         return when {
             joint || (upper && lower) -> HealthSafety.JOINT_PROBLEM
             upper -> HealthSafety.UPPER_INJURY
@@ -102,12 +161,12 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
         }
     }
 
-    private fun parseToLevelEnum(lvl: String) = when(lvl.uppercase()){ "INTERMEDIATE"->Level.INTERMEDIATE; "ADVANCED"->Level.ADVANCED; else->Level.BEGINNER }
+    private fun parseToLevelEnum(lvl: String) = when (lvl.uppercase()) {
+        "INTERMEDIATE" -> Level.INTERMEDIATE
+        "ADVANCED" -> Level.ADVANCED
+        else -> Level.BEGINNER
+    }
 
     override fun validateBeforeNext(): String? =
         if (selectedPrograms.isEmpty()) "Please select at least one program." else null
-
-    private fun showBannerIfExists(view: View, msg: String) {
-        view.findViewById<TextView>(R.id.tvProgramWarning)?.apply { visibility = View.VISIBLE; text = msg }
-    }
 }

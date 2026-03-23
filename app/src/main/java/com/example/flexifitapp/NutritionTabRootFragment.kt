@@ -104,7 +104,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         tvWaterValue = view.findViewById(R.id.tvWaterValue)
         // waterGlass = view.findViewById(R.id.waterGlass)
 
-        btnCalendar.isVisible = !fromHost
+            btnCalendar.isVisible = !fromHost
+        Log.d("NUTRITION_TAB", "Calendar button visibility set to: ${btnCalendar.isVisible}, fromHost=$fromHost")
     }
 
     private fun setupButtons() {
@@ -113,11 +114,15 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         }
 
         btnCalendar.setOnClickListener {
-            val bundle = bundleOf(
-                NavKeys.ARG_SOURCE_TAB to "NUTRITION",
-                NavKeys.ARG_MONTH to monthArg
-            )
-            findNavController().navigate(R.id.action_nutritionTabRootFragment_to_unifiedCalendarFragment, bundle)
+            if (!fromHost) {
+                val bundle = bundleOf(
+                    NavKeys.ARG_SOURCE_TAB to "NUTRITION",
+                    NavKeys.ARG_MONTH to monthArg
+                )
+                findNavController().navigate(R.id.action_nutritionTabRootFragment_to_unifiedCalendarFragment, bundle)
+            } else {
+                Log.d("NUTRITION_TAB", "Calendar button clicked but fragment is in host mode – ignoring.")
+            }
         }
 
         btnComplete.setOnClickListener {
@@ -159,14 +164,14 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
             "carbs" to food.carbs,
             "fats" to food.fats
         )
-        findNavController().navigate(R.id.foodDetailsFragment, bundle)
+        findNavController().navigate(R.id.action_nutritionTabRootFragment_to_foodDetailsFragment, bundle)
     }
 
     private fun fetchTodayNutrition() {
         lifecycleScope.launch {
             showLoading()
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
                 val response = repository.getTodayNutrition()
 
@@ -188,7 +193,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         lifecycleScope.launch {
             showLoading()
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
                 val response = repository.getNutritionByDate(day, monthArg)
 
@@ -215,7 +220,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun completeNutritionDay() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
 
                 val meals = currentNutritionResponse?.meals?.map { meal ->
@@ -354,7 +359,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun loadWaterIntake() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
                 val water = repository.getWaterToday()
 
@@ -371,7 +376,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun addWater() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
                 val result = repository.addWater(250)
 
@@ -391,7 +396,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun resetWater() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
                 val success = repository.resetWater()
 

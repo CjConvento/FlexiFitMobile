@@ -1,39 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <RelativeLayout
-        android:id="@+id/dayHostToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:paddingHorizontal="8dp"
-        app:layout_constraintTop_toTopOf="parent"> <ImageButton
+    <ImageButton
         android:id="@+id/btnBackFromDayHost"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_centerVertical="true"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/baseline_arrow_left_ios_new_24" />
-
-        <TextView
-            android:id="@+id/tvDayHostTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Day 0"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
+        android:src="@drawable/baseline_arrow_left_ios_new_24"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/dayHostContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/dayHostToolbar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

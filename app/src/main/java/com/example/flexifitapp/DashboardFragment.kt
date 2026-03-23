@@ -156,7 +156,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private fun fetchDashboardData() {
         lifecycleScope.launch {
             try {
-                val response = ApiClient.api(requireContext()).getDashboardData()
+                val response = ApiClient.api().getDashboardData()
                 if (response.isSuccessful) {
                     val data = response.body()
                     if (data != null) {

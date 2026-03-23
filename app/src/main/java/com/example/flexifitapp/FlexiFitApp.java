@@ -8,6 +8,9 @@ public class FlexiFitApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // Initialize ApiClient with application context
+        ApiClient.INSTANCE.init(this);
+
         Thread.setDefaultUncaughtExceptionHandler(
                 new CrashHandler(this)
         );

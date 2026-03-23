@@ -1,8 +1,12 @@
 package com.example.flexifitapp
 
 import android.content.Intent
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -30,17 +34,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        // Theme
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val isDarkMode = prefs.getBoolean(KEY_DARK_MODE, false)
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        // Apply saved night mode
+        val nightMode = AppPrefs.getNightMode(this)
+        AppCompatDelegate.setDefaultNightMode(nightMode)
 
         super.onCreate(savedInstanceState)
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
         setContentView(R.layout.activity_main)
+
+        applyReadMode()
 
         // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_home,
             R.id.workoutTabRootFragment,
             R.id.nutritionTabRootFragment,
-            R.id.nav_progtr,           // Progress Tracker
+            R.id.nav_progresstracker,           // Progress Tracker
             R.id.notificationFragment,  // ✅ ADD NOTIFICATIONS
             R.id.nav_profile,
             R.id.nav_settings,
@@ -88,6 +90,13 @@ class MainActivity : AppCompatActivity() {
             btnHeaderSettings?.setOnClickListener {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.nav_settings)
+            }
+
+            // 🔔 Notification Button – ADD THIS
+            val btnNotifications = headerView.findViewById<ImageButton>(R.id.btnHeaderNotifications)
+            btnNotifications?.setOnClickListener {
+                drawerLayout.closeDrawers()
+                navController.navigate(R.id.notificationFragment)
             }
 
             // User Info
@@ -115,6 +124,20 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
             true
+        }
+    }
+
+    private fun applyReadMode() {
+        val isReadMode = AppPrefs.isReadModeEnabled(this)
+        val root = findViewById<ViewGroup>(android.R.id.content)
+        if (isReadMode) {
+            val matrix = ColorMatrix()
+            matrix.setSaturation(0f)
+            val filter = ColorMatrixColorFilter(matrix)
+            val paint = Paint().apply { colorFilter = filter }
+            root.setLayerType(View.LAYER_TYPE_HARDWARE, paint)
+        } else {
+            root.setLayerType(View.LAYER_TYPE_NONE, null)
         }
     }
 

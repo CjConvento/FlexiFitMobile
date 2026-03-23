@@ -233,31 +233,6 @@
                     android:background="@drawable/btn_gradient"
                     app:cornerRadius="18dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnMarkExerciseDone"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="Mark as Done"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:backgroundTint="#10B981"
-                    app:cornerRadius="18dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSkipExercise"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="54dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="24dp"
-                    android:text="Skip this Exercise"
-                    android:textAllCaps="false"
-                    android:textColor="#EF4444"
-                    app:strokeColor="#EF4444"
-                    app:cornerRadius="18dp" />
-
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </com.google.android.material.card.MaterialCardView>

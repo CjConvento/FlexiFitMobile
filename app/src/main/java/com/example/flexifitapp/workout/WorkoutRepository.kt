@@ -11,13 +11,12 @@ class WorkoutRepository(private val apiService: ApiService) {
     // 1. Get today's workout
     suspend fun getTodayWorkout(): WorkoutSessionResponse? {
         return try {
-            Log.d(TAG, "Fetching Today's Workout...")
             val response = apiService.getTodayWorkout()
             if (response.isSuccessful) {
-                Log.d(TAG, "Today's Workout Success")
+                Log.d(TAG, "Today's Workout Success: ${response.body()}")
                 response.body()
             } else {
-                Log.e(TAG, "Today's Workout Failed: Code ${response.code()}")
+                Log.e(TAG, "Today's Workout Failed: Code ${response.code()}, errorBody: ${response.errorBody()?.string()}")
                 null
             }
         } catch (e: Exception) {
@@ -92,20 +91,11 @@ class WorkoutRepository(private val apiService: ApiService) {
         }
     }
 
-    // 5. Get calendar map
-    suspend fun getCalendarMap(month: Int, year: Int, type: String): List<CalendarHistoryDto>? {
+    suspend fun getCalendarHistory(month: Int): List<CalendarHistoryDto>? {
         return try {
-            Log.d(TAG, "Fetching Calendar Map: Month=$month, Year=$year, Type=$type")
-            val response = apiService.getCalendarHistory(month, year, type)
-            if (response.isSuccessful) {
-                Log.d(TAG, "Calendar Map Success: Found ${response.body()?.size} records")
-                response.body()
-            } else {
-                Log.e(TAG, "Calendar Map Failed: Code ${response.code()}")
-                null
-            }
+            val response = apiService.getCalendarHistoryWithMonth(month)
+            if (response.isSuccessful) response.body() else null
         } catch (e: Exception) {
-            Log.e(TAG, "Calendar Map Exception: ${e.message}")
             null
         }
     }

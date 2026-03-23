@@ -15,6 +15,7 @@ import com.example.flexifitapp.databinding.FragmentSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import com.example.flexifitapp.AppPrefs
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -29,6 +30,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private var currentWaterGoal = 8 // glasses
     private var currentGlassSize = 250 // ml
 
+    // Flags to avoid recursion
+    private var isLoadingNotifications = false
+    private var isSettingSwitchProgrammatically = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSettingsBinding.bind(view)
@@ -40,11 +45,16 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         setupPrivacyListeners()
         setupAboutListeners()
         setupAccountListeners()
-        loadSettings()
+
+        // Load appearance settings immediately (synchronous)
+        loadAppearanceSettings()
+
+        // Load notification settings once (asynchronous)
+        loadNotificationSettings()
     }
 
     private fun setupToolbar() {
-        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+        // (requireActivity() as AppCompatActivity).supportActionBar?.hide()
     }
 
     private fun setupNotificationListeners() {
@@ -169,43 +179,48 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun setupAppearanceListeners() {
-        // Dark mode switch
+        // Dark mode switch – ignore programmatic changes
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            saveSettings()
+            if (isSettingSwitchProgrammatically) return@setOnCheckedChangeListener
+            val mode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.setDefaultNightMode(mode)
+            context?.let { AppPrefs.setNightMode(it, mode) }
+            requireActivity().recreate()
         }
 
-        // Theme mode buttons
+        // Theme mode buttons – wrap switch changes with flag
         binding.btnThemeAuto.setOnClickListener {
+            isSettingSwitchProgrammatically = true
+            binding.switchDarkMode.isChecked = false
+            isSettingSwitchProgrammatically = false
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            Toast.makeText(requireContext(), "Auto theme enabled", Toast.LENGTH_SHORT).show()
-            saveSettings()
+            context?.let { AppPrefs.setNightMode(it, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) }
+            requireActivity().recreate()
         }
 
         binding.btnThemeDark.setOnClickListener {
+            isSettingSwitchProgrammatically = true
+            binding.switchDarkMode.isChecked = true
+            isSettingSwitchProgrammatically = false
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            Toast.makeText(requireContext(), "Dark theme enabled", Toast.LENGTH_SHORT).show()
-            saveSettings()
+            context?.let { AppPrefs.setNightMode(it, AppCompatDelegate.MODE_NIGHT_YES) }
+            requireActivity().recreate()
         }
 
         binding.btnThemeLight.setOnClickListener {
+            isSettingSwitchProgrammatically = true
+            binding.switchDarkMode.isChecked = false
+            isSettingSwitchProgrammatically = false
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            Toast.makeText(requireContext(), "Light theme enabled", Toast.LENGTH_SHORT).show()
-            saveSettings()
+            context?.let { AppPrefs.setNightMode(it, AppCompatDelegate.MODE_NIGHT_NO) }
+            requireActivity().recreate()
         }
 
-        // Read mode switch
+        // Read mode switch – ignore programmatic changes
         binding.switchReadMode.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                Toast.makeText(requireContext(), "Read mode enabled", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Read mode disabled", Toast.LENGTH_SHORT).show()
-            }
-            saveSettings()
+            if (isSettingSwitchProgrammatically) return@setOnCheckedChangeListener
+            context?.let { AppPrefs.setReadMode(it, isChecked) }
+            requireActivity().recreate()
         }
     }
 
@@ -247,10 +262,24 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
     }
 
-    private fun loadSettings() {
-        lifecycleScope.launch {
+    private fun loadAppearanceSettings() {
+        if (isAdded) {
+            val ctx = context ?: return
+            isSettingSwitchProgrammatically = true
+            val nightMode = AppPrefs.getNightMode(ctx)
+            binding.switchDarkMode.isChecked = nightMode == AppCompatDelegate.MODE_NIGHT_YES
+            val readMode = AppPrefs.isReadModeEnabled(ctx)
+            binding.switchReadMode.isChecked = readMode
+            isSettingSwitchProgrammatically = false
+        }
+    }
+
+    private fun loadNotificationSettings() {
+        if (isLoadingNotifications) return
+        isLoadingNotifications = true
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val response = api.getNotificationSettings()
 
                 if (response.isSuccessful) {
@@ -316,13 +345,21 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     }
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error loading settings", Toast.LENGTH_SHORT).show()
+                if (isAdded) {
+                    context?.let {
+                        Toast.makeText(it, "Error loading settings", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } finally {
+                isLoadingNotifications = false
             }
         }
     }
 
     private fun saveSettings() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (!isAdded) return@launch
+            val ctx = context ?: return@launch
             try {
                 val settings = com.example.flexifitapp.NotificationSettingsDto(
                     workoutReminderEnabled = binding.switchWorkoutReminder.isChecked,
@@ -338,33 +375,30 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     calorieDisplayMode = if (binding.toggleCalorieMode.checkedButtonId == R.id.btn_cal_remaining) "Remaining" else "Net Calories"
                 )
 
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val request = com.example.flexifitapp.UpdateNotificationSettingsRequest(settings)
                 val response = api.updateNotificationSettings(request)
 
                 if (response.isSuccessful) {
-                    scheduleReminders(settings)
-                    Toast.makeText(requireContext(), "Settings saved", Toast.LENGTH_SHORT).show()
+                    scheduleReminders(ctx, settings)
+                    Toast.makeText(ctx, "Settings saved", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun scheduleReminders(settings: com.example.flexifitapp.NotificationSettingsDto) {
-        val scheduler = com.example.flexifitapp.NotificationScheduler(requireContext())
-
+    private fun scheduleReminders(ctx: Context, settings: com.example.flexifitapp.NotificationSettingsDto) {
+        val scheduler = com.example.flexifitapp.NotificationScheduler(ctx)
         scheduler.scheduleWorkoutReminder(
             settings.workoutReminderTime ?: "08:00",
             settings.workoutReminderEnabled
         )
-
         scheduler.scheduleMealReminder(
             settings.mealReminderTime ?: "12:00",
             settings.mealReminderEnabled
         )
-
         scheduler.scheduleWaterReminders(
             settings.waterReminderEnabled,
             settings.waterStartTime ?: "08:00",

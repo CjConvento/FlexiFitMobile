@@ -7,11 +7,11 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.UserPrefs
 import com.google.android.material.card.MaterialCardView
 
 class Pg2HealthFragment : BaseOnboardingFragment(
-    layoutId = R.layout.obd_fragment_pg2_health,
-    nextActionId = R.id.a3
+    layoutId = R.layout.obd_fragment_pg2_health
 ) {
 
     private var cbUpperBodyInjury: CheckBox? = null
@@ -19,43 +19,63 @@ class Pg2HealthFragment : BaseOnboardingFragment(
     private var cbJointProblems: CheckBox? = null
     private var cbShortBreath: CheckBox? = null
     private var cbNone: CheckBox? = null
-
     private var cardHealthWarning: MaterialCardView? = null
     private var tvHealthWarning: TextView? = null
-
     private var suppressListener = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
 
         cbUpperBodyInjury = view.findViewById(R.id.cbHBi)
         cbLowerBodyInjury = view.findViewById(R.id.cbLBi)
         cbJointProblems = view.findViewById(R.id.cbJoint)
         cbShortBreath = view.findViewById(R.id.cbSB)
         cbNone = view.findViewById(R.id.cbNone)
-
         cardHealthWarning = view.findViewById(R.id.cardHealthWarning)
         tvHealthWarning = view.findViewById(R.id.tvHealthWarning)
 
-        // 1. Restore state from store (Hydration)
-        preloadSelections()
-        // 2. Bind listeners for auto-save and mutual exclusion
-        bindListeners()
-        // 3. Initial UI update for warnings
+        // Load saved values
+        val upper = if (isUpdate) {
+            UserPrefs.getBool(requireContext(), "upper_body_injury", false)
+        } else {
+            OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.UPPER_BODY_INJURY)
+        }
+        val lower = if (isUpdate) {
+            UserPrefs.getBool(requireContext(), "lower_body_injury", false)
+        } else {
+            OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.LOWER_BODY_INJURY)
+        }
+        val joint = if (isUpdate) {
+            UserPrefs.getBool(requireContext(), "joint_problems", false)
+        } else {
+            OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.JOINT_PROBLEMS)
+        }
+        val breath = if (isUpdate) {
+            UserPrefs.getBool(requireContext(), "short_breath", false)
+        } else {
+            OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.SHORT_BREATH)
+        }
+        val none = if (isUpdate) {
+            !(upper || lower || joint || breath)
+        } else {
+            OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.HEALTH_NONE)
+        }
+
+        suppressListener = true
+        cbUpperBodyInjury?.isChecked = upper
+        cbLowerBodyInjury?.isChecked = lower
+        cbJointProblems?.isChecked = joint
+        cbShortBreath?.isChecked = breath
+        cbNone?.isChecked = none
+        suppressListener = false
+
+        bindListeners(isUpdate)
         updateWarnings()
     }
 
-    override fun validateBeforeNext(): String? {
-        val anyChecked = cbUpperBodyInjury?.isChecked == true ||
-                cbLowerBodyInjury?.isChecked == true ||
-                cbJointProblems?.isChecked == true ||
-                cbShortBreath?.isChecked == true ||
-                cbNone?.isChecked == true
-
-        return if (!anyChecked) "Please select at least one option." else null
-    }
-
-    private fun bindListeners() {
+    private fun bindListeners(isUpdate: Boolean) {
         cbNone?.setOnCheckedChangeListener { _, isChecked ->
             if (suppressListener) return@setOnCheckedChangeListener
             if (isChecked) {
@@ -66,7 +86,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
                 cbShortBreath?.isChecked = false
                 suppressListener = false
             }
-            saveSelections()
+            saveSelections(isUpdate)
             updateWarnings()
         }
 
@@ -77,7 +97,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
                 cbNone?.isChecked = false
                 suppressListener = false
             }
-            saveSelections()
+            saveSelections(isUpdate)
             updateWarnings()
         }
 
@@ -87,41 +107,28 @@ class Pg2HealthFragment : BaseOnboardingFragment(
         cbShortBreath?.setOnCheckedChangeListener(medicalListener)
     }
 
-    private fun preloadSelections() {
+    private fun saveSelections(isUpdate: Boolean) {
         val ctx = requireContext()
-        suppressListener = true
-        cbUpperBodyInjury?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY)
-        cbLowerBodyInjury?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY)
-        cbJointProblems?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS)
-        cbShortBreath?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.SHORT_BREATH)
-        cbNone?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.HEALTH_NONE)
-        suppressListener = false
-    }
-
-    private fun saveSelections() {
-        val ctx = requireContext()
-
         val upper = cbUpperBodyInjury?.isChecked == true
         val lower = cbLowerBodyInjury?.isChecked == true
         val joint = cbJointProblems?.isChecked == true
         val breath = cbShortBreath?.isChecked == true
         val none = cbNone?.isChecked == true
 
-        // Logging bago i-save
-        Log.d("FLEXIFIT_DEBUG", "--- Saving Health Page ---")
-        Log.d("FLEXIFIT_DEBUG", "Injuries: Upper=$upper, Lower=$lower, Joint=$joint, Breath=$breath")
-
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY, upper)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY, lower)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS, joint)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.SHORT_BREATH, breath)
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.HEALTH_NONE, none)
-
-        // Ang napaka-importanteng Rehab Flag
-        val isRehab = upper || lower || joint
-        OnboardingStore.putBoolean(ctx, FlexiFitKeys.IS_REHAB_USER, isRehab)
-
-        Log.d("FLEXIFIT_DEBUG", "Final Decision -> IS_REHAB_USER: $isRehab")
+        if (isUpdate) {
+            UserPrefs.putBool(ctx, "upper_body_injury", upper)
+            UserPrefs.putBool(ctx, "lower_body_injury", lower)
+            UserPrefs.putBool(ctx, "joint_problems", joint)
+            UserPrefs.putBool(ctx, "short_breath", breath)
+            UserPrefs.putBool(ctx, "is_rehab_user", upper || lower || joint)
+        } else {
+            OnboardingStore.putBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY, upper)
+            OnboardingStore.putBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY, lower)
+            OnboardingStore.putBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS, joint)
+            OnboardingStore.putBoolean(ctx, FlexiFitKeys.SHORT_BREATH, breath)
+            OnboardingStore.putBoolean(ctx, FlexiFitKeys.HEALTH_NONE, none)
+            OnboardingStore.putBoolean(ctx, FlexiFitKeys.IS_REHAB_USER, upper || lower || joint)
+        }
     }
 
     private fun updateWarnings() {
@@ -149,5 +156,14 @@ class Pg2HealthFragment : BaseOnboardingFragment(
             cardHealthWarning?.visibility = View.VISIBLE
             tvHealthWarning?.text = messages.joinToString("\n\n")
         }
+    }
+
+    override fun validateBeforeNext(): String? {
+        val anyChecked = cbUpperBodyInjury?.isChecked == true ||
+                cbLowerBodyInjury?.isChecked == true ||
+                cbJointProblems?.isChecked == true ||
+                cbShortBreath?.isChecked == true ||
+                cbNone?.isChecked == true
+        return if (!anyChecked) "Please select at least one option." else null
     }
 }

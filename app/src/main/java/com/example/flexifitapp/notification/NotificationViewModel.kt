@@ -18,7 +18,7 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
         viewModelScope.launch {
             try {
                 val context = getApplication<Application>().applicationContext
-                val response = ApiClient.api(context).getNotifications()
+                val response = ApiClient.api().getNotifications()
 
                 if (response.isSuccessful) {
                     val notifications = response.body()?.map { dto ->

@@ -34,6 +34,11 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 
 class SignupActivity : AppCompatActivity() {
 
@@ -82,7 +87,12 @@ class SignupActivity : AppCompatActivity() {
         tilPassword = findViewById(R.id.tilpass)
         btnSignup = findViewById(R.id.signup_button)
         btnGoogleSignup = findViewById(R.id.btnGoogleSignup)
+
         cbTermsSignup = findViewById(R.id.cbTermsSignup)
+        cbTermsSignup.text = buildClickableTermsText()
+        cbTermsSignup.movementMethod = LinkMovementMethod.getInstance()
+        cbTermsSignup.isChecked = false
+
         tvLoginRedirect = findViewById(R.id.loginRedirectText)
 
         intent.getStringExtra("email")?.let { etEmail.setText(it) }
@@ -299,7 +309,7 @@ class SignupActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val api = ApiClient.get(this@SignupActivity)
+                    val api = ApiClient.get()
                         .create(ApiService::class.java)
 
                     val loginReq = LoginRequest(
@@ -423,6 +433,43 @@ class SignupActivity : AppCompatActivity() {
         val okUser = validateUsername()
         val okPass = validatePassword()
         return okName && okEmail && okUser && okPass
+    }
+
+    private fun buildClickableTermsText(): SpannableString {
+        val text = "By continuing, you accept our Privacy Policy and Terms of Service"
+        val spannable = SpannableString(text)
+
+        // Privacy Policy link
+        val privacyStart = text.indexOf("Privacy Policy")
+        val privacyEnd = privacyStart + "Privacy Policy".length
+        val privacySpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                startActivity(Intent(this@SignupActivity, PrivacyPolicyActivity::class.java))
+            }
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = ContextCompat.getColor(this@SignupActivity, R.color.colorPrimary)
+                ds.isUnderlineText = true
+            }
+        }
+        spannable.setSpan(privacySpan, privacyStart, privacyEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        // Terms of Service link
+        val termsStart = text.indexOf("Terms of Service")
+        val termsEnd = termsStart + "Terms of Service".length
+        val termsSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                startActivity(Intent(this@SignupActivity, TermsOfServiceActivity::class.java))
+            }
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = ContextCompat.getColor(this@SignupActivity, R.color.colorPrimary)
+                ds.isUnderlineText = true
+            }
+        }
+        spannable.setSpan(termsSpan, termsStart, termsEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        return spannable
     }
 
     private fun validateName(): Boolean {

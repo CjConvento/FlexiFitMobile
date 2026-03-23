@@ -2,12 +2,12 @@ package com.example.flexifitapp
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flexifitapp.databinding.FragmentProgressTrackerBinding
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
@@ -25,7 +25,6 @@ class ProgressTrackerFragment : Fragment(R.layout.fragment_progress_tracker) {
         _binding = FragmentProgressTrackerBinding.bind(view)
 
         setupToggle()
-        setupAchievementsList()
         fetchProgressData()
     }
 
@@ -38,19 +37,17 @@ class ProgressTrackerFragment : Fragment(R.layout.fragment_progress_tracker) {
         }
     }
 
-    private fun setupAchievementsList() {
-        binding.rvAchievements.layoutManager = LinearLayoutManager(requireContext())
-        // TODO: Add achievements adapter
-    }
-
     private fun fetchProgressData() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val response = api.getProgressStats(currentRange)
 
                 if (response.isSuccessful) {
                     response.body()?.let { data ->
+
+                        Log.d("PROGRESS", "Data received: compliance=${data.compliancePercentage}, avgCalories=${data.avgCalories}, streak=${data.currentStreak}")
+
                         updateUI(data)
                     }
                 } else {
@@ -74,18 +71,16 @@ class ProgressTrackerFragment : Fragment(R.layout.fragment_progress_tracker) {
             val calorieChange = if (data.calorieHistory.size >= 2) {
                 data.calorieHistory.last().value.toInt() - data.calorieHistory.first().value.toInt()
             } else 0
-            tvAvgCaloriesSub.text = if (calorieChange > 0) "+$calorieChange vs last week"
-            else if (calorieChange < 0) "$calorieChange vs last week"
-            else "No change"
+            tvAvgCaloriesSub.text = when {
+                calorieChange > 0 -> "+$calorieChange vs last week"
+                calorieChange < 0 -> "$calorieChange vs last week"
+                else -> "No change"
+            }
 
             // Water card
             tvWater.text = "${data.avgWaterIntake}L"
-            val waterChange = if (data.weightHistory.size >= 2) {
-                data.weightHistory.last().value - data.weightHistory.first().value
-            } else 0f
-            tvWaterSub.text = if (waterChange > 0) "+${waterChange}L vs last week"
-            else if (waterChange < 0) "${waterChange}L vs last week"
-            else "No change"
+            // Calculate water change (optional)
+            tvWaterSub.text = "Average daily intake"
 
             // Meals card
             val mealPercentage = if (data.totalMeals > 0) {
@@ -96,8 +91,8 @@ class ProgressTrackerFragment : Fragment(R.layout.fragment_progress_tracker) {
 
             // Weight card
             tvWeight.text = "${data.currentWeight} kg"
-            val weightChange = if (data.weightChange > 0) "+${data.weightChange}" else data.weightChange.toString()
-            tvWeightChange.text = "Change: $weightChange kg"
+            val weightChangeText = if (data.weightChange > 0) "+${data.weightChange}" else data.weightChange.toString()
+            tvWeightChange.text = "Change: $weightChangeText kg"
 
             // Streak card
             tvStreak.text = "${data.currentStreak} Days"

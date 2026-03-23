@@ -2,18 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- ✅ Network Permission -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- ✅ Notification Permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-
-    <!-- ✅ Wake lock for background work -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- ✅ Foreground service permission (for Android 10+) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -29,44 +23,33 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- LAUNCHER -->
+        <!-- Activities -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
-
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- AUTH -->
+        <activity android:name=".SignupActivity" android:exported="false" />
         <activity
-            android:name=".SignupActivity"
-            android:exported="false"/>
+            android:name=".TermsOfServiceActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FlexiFitApp" />
 
         <activity
-            android:name=".EmailVerificationActivity"
-            android:exported="false"/>
-
+            android:name=".PrivacyPolicyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FlexiFitApp" />
+        <activity android:name=".EmailVerificationActivity" android:exported="false" />
         <activity android:name=".googleauth.CreateUsernameActivity" />
+        <activity android:name=".OnboardingActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".CrashScreenActivity" android:exported="false" />
 
-        <!-- ONBOARDING -->
-        <activity
-            android:name=".OnboardingActivity"
-            android:exported="false"/>
-
-        <!-- MAIN -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"/>
-
-        <!-- CRASH SCREEN -->
-        <activity
-            android:name=".CrashScreenActivity"
-            android:exported="false"/>
-
-        <!-- ✅ NOTIFICATION WORKERS (Required for WorkManager) -->
+        <!-- WorkManager Initialization -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -78,41 +61,19 @@
                 tools:node="remove" />
         </provider>
 
-        <!-- ✅ WorkManager Services -->
-        <service
-            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
-            android:exported="false" />
-
+        <!-- WorkManager Services (essential) -->
         <service
             android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
             android:exported="false"
-            android:enabled="true" />
+            android:enabled="true"
+            tools:replace="android:enabled" />
 
         <service
             android:name="androidx.work.impl.background.systemjob.SystemJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver
-            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
-            android:exported="false" />
-
-        <receiver
-            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
-            android:exported="false" />
-
-        <receiver
-            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
-            android:exported="false" />
-
-        <receiver
-            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$ChargingProxy"
-            android:exported="false" />
-
-        <receiver
-            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
-            android:exported="false" />
-
+        <!-- Diagnostics receiver (optional, but can stay) -->
         <receiver
             android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
             android:enabled="true"

@@ -106,7 +106,7 @@ data class NutritionCompleteResultDto(
     val isCompleted: Boolean
 )
 
-data class LogFullDayRequest(
+data class  LogFullDayRequest(
     @SerializedName("cycleId")
     val cycleId: Int,
 

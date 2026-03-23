@@ -1,6 +1,8 @@
 package com.example.flexifitapp.profile
 
 data class UpdateOnboardingRequest(
+    val name: String,          // new
+    val username: String,      // new
     val age: Int,
     val gender: String,
     val heightCm: Double,

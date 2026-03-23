@@ -21,7 +21,6 @@ import com.example.flexifitapp.workout.WorkoutRepository
 import com.example.flexifitapp.workout.WorkoutSessionResponse
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 
@@ -62,6 +61,57 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
     private var warmupExpanded = true
     private var workoutExpanded = true
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // LIFECYCLE
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Restore state from saved instance
+        if (savedInstanceState != null) {
+            day = savedInstanceState.getInt("ARG_DAY", -1)
+            monthArg = savedInstanceState.getInt("ARG_MONTH", 1)
+            fromHost = savedInstanceState.getBoolean("ARG_FROM_HOST", false)
+            // Recreate arguments so that readArgs() works
+            arguments = Bundle().apply {
+                putInt("ARG_DAY", day)
+                putInt("ARG_MONTH", monthArg)
+                putBoolean("ARG_FROM_HOST", fromHost)
+            }
+            Log.d("WORKOUT_TAB", "Restored from savedInstanceState: Day=$day, Month=$monthArg, fromHost=$fromHost")
+        } else if (arguments == null) {
+            // Fallback: try to get arguments from parent fragment
+            val parent = parentFragment
+            if (parent is DayHostFragment) {
+                val parentDay = parent.arguments?.getInt("ARG_DAY", -1) ?: -1
+                val parentMonth = parent.arguments?.getInt("ARG_MONTH", 1) ?: 1
+                val parentFromHost = parent.arguments?.getBoolean("ARG_FROM_HOST", false) ?: false
+                arguments = Bundle().apply {
+                    putInt("ARG_DAY", parentDay)
+                    putInt("ARG_MONTH", parentMonth)
+                    putBoolean("ARG_FROM_HOST", parentFromHost)
+                }
+                Log.d("WORKOUT_TAB", "Recovered arguments from parent: Day=$parentDay, Month=$parentMonth")
+            } else {
+                // Default (should only happen when opened from bottom navigation)
+                arguments = Bundle().apply {
+                    putInt("ARG_DAY", -1)
+                    putInt("ARG_MONTH", 1)
+                    putBoolean("ARG_FROM_HOST", false)
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("ARG_DAY", day)
+        outState.putInt("ARG_MONTH", monthArg)
+        outState.putBoolean("ARG_FROM_HOST", fromHost)
+        Log.d("WORKOUT_TAB", "Saving state: Day=$day, Month=$monthArg, fromHost=$fromHost")
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         readArgs()
@@ -74,12 +124,20 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         fetchWorkoutSession()
     }
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // ARGUMENTS
+    // ─────────────────────────────────────────────────────────────────────────────
+
     private fun readArgs() {
-        day = arguments?.getInt(NavKeys.ARG_DAY, -1) ?: -1
-        monthArg = arguments?.getInt(NavKeys.ARG_MONTH, 1) ?: 1
-        fromHost = arguments?.getBoolean(NavKeys.ARG_FROM_HOST, false) ?: false
+        day = arguments?.getInt("ARG_DAY", -1) ?: -1
+        monthArg = arguments?.getInt("ARG_MONTH", 1) ?: 1
+        fromHost = arguments?.getBoolean("ARG_FROM_HOST", false) ?: false
         Log.i("WORKOUT_TAB", "Args: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // UI BINDING
+    // ─────────────────────────────────────────────────────────────────────────────
 
     private fun bindViews(view: View) {
         btnBackWorkoutPlan = view.findViewById(R.id.btnBackWorkoutPlan)
@@ -110,15 +168,25 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         btnRetryWorkout = view.findViewById(R.id.btnRetryWorkout)
     }
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // FETCH WORKOUT
+    // ─────────────────────────────────────────────────────────────────────────────
+
     private fun fetchWorkoutSession() {
         lifecycleScope.launch {
             showLoading()
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = WorkoutRepository(api)
 
-                val response = if (fromHost && day > 0) {
-                    repository.getWorkoutByDate(day, monthArg)
+                val response = if (fromHost) {
+                    if (day > 0) {
+                        repository.getWorkoutByDate(day, monthArg)
+                    } else {
+                        // Guard against invalid day when coming from host
+                        showError("Invalid day number.")
+                        null
+                    }
                 } else {
                     repository.getTodayWorkout()
                 }
@@ -135,7 +203,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                         layoutWorkoutSessionBottomActions?.visibility = View.GONE
                     }
                 } else {
-                    showError("No record found for Day $day.")
+                    showError("No record found for Day ${if (fromHost) day else "today"}.")
                 }
             } catch (e: Exception) {
                 Log.e("WORKOUT_TAB", "Error: ${e.message}")
@@ -144,9 +212,13 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // UI UPDATES
+    // ─────────────────────────────────────────────────────────────────────────────
+
     private fun updateUI(response: WorkoutSessionResponse) {
         tvWorkoutPlanDate?.text = "Month ${response.program.month} - Week ${response.program.week} - Day ${response.dayNo}"
-        tvProgramHeader?.text = "Program ${response.program.programId}"
+        tvProgramHeader?.text = "Program ${response.program.programNumber}"
         tvCurrentProgramName?.text = response.program.programName
         tvProgramProgress?.text = response.program.description
         tvWorkoutDayTitle?.text = "Workout - Day ${response.dayNo}"
@@ -193,6 +265,35 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         findNavController().navigate(R.id.action_workoutTabRootFragment_to_workoutDetailFragment, bundle)
     }
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // UI HELPERS
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    private fun showLoading() {
+        progressWorkoutLoading?.isVisible = true
+        layoutWarmupHeader?.isVisible = false
+        layoutWorkoutHeader?.isVisible = false
+        layoutWorkoutSessionBottomActions?.isVisible = false
+        rvWarmupItems?.isVisible = false
+        rvWorkoutItems?.isVisible = false
+    }
+
+    private fun showContent() {
+        progressWorkoutLoading?.isVisible = false
+        layoutWarmupHeader?.isVisible = true
+        layoutWorkoutHeader?.isVisible = true
+        layoutWorkoutSessionBottomActions?.isVisible = true
+        rvWarmupItems?.isVisible = warmupExpanded
+        rvWorkoutItems?.isVisible = workoutExpanded
+    }
+
+    private fun showError(message: String) {
+        progressWorkoutLoading?.isVisible = false
+        tvWorkoutError?.isVisible = true
+        tvWorkoutError?.text = message
+        btnRetryWorkout?.isVisible = true
+    }
+
     private fun setupRecyclerViews() {
         rvWarmupItems?.layoutManager = LinearLayoutManager(requireContext())
         rvWorkoutItems?.layoutManager = LinearLayoutManager(requireContext())
@@ -213,7 +314,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
     }
 
     private fun setupSessionButtons() {
-        // ✅ COMPLETE BUTTON
+        // COMPLETE BUTTON
         btnDoneWorkoutSession?.setOnClickListener {
             if (currentSessionId == 0) {
                 Toast.makeText(requireContext(), "No active session found", Toast.LENGTH_SHORT).show()
@@ -222,7 +323,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 
             lifecycleScope.launch {
                 try {
-                    val api = ApiClient.api(requireContext())
+                    val api = ApiClient.api()
                     val repository = WorkoutRepository(api)
 
                     val result = repository.completeWorkout(
@@ -235,11 +336,14 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                     if (result != null) {
                         Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show()
 
+                        // If calories were burned, show a short toast with the amount
+                        if (result.totalCalories > 0) {
+                            Toast.makeText(requireContext(), "🔥 You burned ${result.totalCalories} kcal!", Toast.LENGTH_SHORT).show()
+                        }
+
                         if (fromHost) {
-                            // Refresh the view
                             fetchWorkoutSession()
                         } else {
-                            // Navigate back to dashboard or refresh
                             findNavController().popBackStack()
                         }
                     } else {
@@ -251,7 +355,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
             }
         }
 
-        // ✅ SKIP BUTTON
+        // SKIP BUTTON
         btnSkipWorkoutSession?.setOnClickListener {
             if (currentSessionId == 0) {
                 Toast.makeText(requireContext(), "No active session found", Toast.LENGTH_SHORT).show()
@@ -260,10 +364,9 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 
             lifecycleScope.launch {
                 try {
-                    val api = ApiClient.api(requireContext())
+                    val api = ApiClient.api()
                     val repository = WorkoutRepository(api)
 
-                    // First check if can skip
                     val canSkipResponse = repository.canSkipToday()
                     if (canSkipResponse != null && canSkipResponse.canSkip) {
                         val result = repository.completeWorkout(
@@ -298,31 +401,6 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         btnBackWorkoutPlan?.setOnClickListener {
             findNavController().popBackStack()
         }
-    }
-
-    private fun showLoading() {
-        progressWorkoutLoading?.isVisible = true
-        layoutWarmupHeader?.isVisible = false
-        layoutWorkoutHeader?.isVisible = false
-        layoutWorkoutSessionBottomActions?.isVisible = false
-        rvWarmupItems?.isVisible = false
-        rvWorkoutItems?.isVisible = false
-    }
-
-    private fun showContent() {
-        progressWorkoutLoading?.isVisible = false
-        layoutWarmupHeader?.isVisible = true
-        layoutWorkoutHeader?.isVisible = true
-        layoutWorkoutSessionBottomActions?.isVisible = true
-        rvWarmupItems?.isVisible = warmupExpanded
-        rvWorkoutItems?.isVisible = workoutExpanded
-    }
-
-    private fun showError(message: String) {
-        progressWorkoutLoading?.isVisible = false
-        tvWorkoutError?.isVisible = true
-        tvWorkoutError?.text = message
-        btnRetryWorkout?.isVisible = true
     }
 
     private fun setupCalendarButton() {

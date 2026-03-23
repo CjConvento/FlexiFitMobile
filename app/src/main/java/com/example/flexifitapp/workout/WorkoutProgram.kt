@@ -9,5 +9,6 @@ data class WorkoutProgram(
     val status: String,
     val month: Int,
     val week: Int,
-    val day: Int
+    val day: Int,
+    val programNumber: Int = 0  // ← add this with a default
 )

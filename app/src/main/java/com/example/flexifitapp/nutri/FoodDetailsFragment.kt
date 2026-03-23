@@ -187,7 +187,7 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
     private fun updateQuantityInDatabase() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api(requireContext())
+                val api = ApiClient.api()
                 val repository = NutritionRepository(api)
 
                 // Calculate new quantity based on weight or servings

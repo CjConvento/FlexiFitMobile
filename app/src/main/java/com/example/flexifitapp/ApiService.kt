@@ -10,6 +10,8 @@ import com.example.flexifitapp.workout.WorkoutSessionCompleteDto
 import com.example.flexifitapp.workout.WorkoutSessionResultDto
 import com.example.flexifitapp.workout.CanSkipResponse
 import com.example.flexifitapp.workout.WorkoutHistoryDto
+import com.example.flexifitapp.nutri.LogFullDayRequest
+import com.example.flexifitapp.nutri.LogMealEntry
 import com.example.flexifitapp.notification.NotificationItemDto
 import com.example.flexifitapp.nutri.AddWaterRequest
 import com.example.flexifitapp.nutri.FoodDetailsResponse
@@ -17,7 +19,6 @@ import com.example.flexifitapp.nutri.FoodDetailsResponse
 import com.example.flexifitapp.profile.UpdateOnboardingRequest
 import com.example.flexifitapp.profile.UserManagementResponse
 
-import com.example.flexifitapp.nutri.LogFullDayRequest  // ✅ Import from nutri package
 import com.example.flexifitapp.nutri.NutritionCompleteResultDto
 import com.example.flexifitapp.nutri.NutritionResponse
 import com.example.flexifitapp.nutri.SwapFoodRequest
@@ -142,9 +143,7 @@ interface ApiService {
     ): Response<UploadAvatarResponse>
 
     @GET("api/progress/stats")
-    suspend fun getProgressStats(
-        @Query("range") range: String
-    ): Response<ProgressTrackerDto>
+    suspend fun getProgressStats(@Query("range") range: String = "weekly"): Response<ProgressTrackerDto>
 
     // --- NOTIFICATION ENDPOINTS ---
     @GET("api/notifications/settings")

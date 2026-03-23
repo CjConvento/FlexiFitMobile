@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.UserPrefs
 
 class Pg1p5MetricsFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg1p5_metrics,
-    nextActionId = R.id.a2,
     isFirst = false
 ) {
 
@@ -19,6 +19,26 @@ class Pg1p5MetricsFragment : BaseOnboardingFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
+
+        val savedHeight = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), UserPrefs.KEY_HEIGHT_CM, 170)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.HEIGHT_CM, 170)
+        }
+
+        val savedWeight = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), UserPrefs.KEY_WEIGHT_KG, 70)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.WEIGHT_KG, 70)
+        }
+
+        val savedTargetWeight = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), "target_weight_kg", 65)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.TARGET_WEIGHT_KG, 65)
+        }
 
         // 1. Height Picker Setup
         setupPicker(
@@ -99,10 +119,22 @@ class Pg1p5MetricsFragment : BaseOnboardingFragment(
     }
 
     override fun validateBeforeNext(): String? {
-        val ctx = requireContext()
-        val h = OnboardingStore.getInt(ctx, FlexiFitKeys.HEIGHT_CM, 0)
-        val w = OnboardingStore.getInt(ctx, FlexiFitKeys.WEIGHT_KG, 0)
-        val t = OnboardingStore.getInt(ctx, FlexiFitKeys.TARGET_WEIGHT_KG, 0)
+        val isUpdate = arguments?.getBoolean("isUpdate", false) ?: false
+        val h = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), FlexiFitKeys.HEIGHT_CM, 0)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.HEIGHT_CM, 0)
+        }
+        val w = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), FlexiFitKeys.WEIGHT_KG, 0)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.WEIGHT_KG, 0)
+        }
+        val t = if (isUpdate) {
+            UserPrefs.getInt(requireContext(), FlexiFitKeys.TARGET_WEIGHT_KG, 0)
+        } else {
+            OnboardingStore.getInt(requireContext(), FlexiFitKeys.TARGET_WEIGHT_KG, 0)
+        }
 
         return when {
             h == 0 || w == 0 || t == 0 -> "Please select all metrics before proceeding."
