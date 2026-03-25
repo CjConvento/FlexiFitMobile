@@ -64,13 +64,12 @@ class MainActivity : AppCompatActivity() {
         // ✅ UPDATE: Include all destinations including notification
         appBarConfiguration = AppBarConfiguration.Builder(
             R.id.nav_home,
-            R.id.workoutTabRootFragment,
+            R.id.WorkoutTabRootFragment,
             R.id.nutritionTabRootFragment,
             R.id.nav_progresstracker,           // Progress Tracker
             R.id.notificationFragment,  // ✅ ADD NOTIFICATIONS
             R.id.nav_profile,
             R.id.nav_settings,
-            R.id.nav_about
         )
             .setOpenableLayout(drawerLayout)
             .build()
@@ -113,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
             FirebaseAuth.getInstance().signOut()
             TokenStore.clear(this)
+            UserPrefs.clearAuth(this)   // ← ADD THIS LINE
 
             getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
                 .edit()

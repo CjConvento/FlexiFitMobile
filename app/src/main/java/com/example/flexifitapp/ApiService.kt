@@ -29,6 +29,8 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
+data class RefreshTokenRequest(val firebaseIdToken: String)
+
 interface ApiService {
 
     // --- AUTHENTICATION ---
@@ -45,6 +47,9 @@ interface ApiService {
     suspend fun submitProfile(
         @Body body: OnboardingProfileRequest
     ): Response<ResponseBody>
+
+    @POST("api/auth/refresh")
+    suspend fun refreshToken(@Body body: RefreshTokenRequest): Response<AuthResponse>
 
     @GET("api/mobile/dashboard")
     suspend fun getDashboardData(): Response<ProfileStatusResponse>

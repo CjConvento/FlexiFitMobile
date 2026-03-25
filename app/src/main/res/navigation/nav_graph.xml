@@ -23,7 +23,7 @@
 
     <!-- ✅ WORKOUT TAB ROOT -->
     <fragment
-        android:id="@+id/workoutTabRootFragment"
+        android:id="@+id/WorkoutTabRootFragment"
         android:name="com.example.flexifitapp.WorkoutTabRootFragment"
         android:label="Workout">
 

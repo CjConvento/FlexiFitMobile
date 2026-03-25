@@ -197,8 +197,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                     updateUI(response)
                     showContent()
 
-                    arguments?.putInt(NavKeys.ARG_MONTH, response.program.month)
-
+                    monthArg = response.program.month
                     if (fromHost) {
                         layoutWorkoutSessionBottomActions?.visibility = View.GONE
                     }

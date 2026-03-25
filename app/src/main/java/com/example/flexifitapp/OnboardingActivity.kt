@@ -21,24 +21,18 @@ class OnboardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
 
-        // Simulan ang pag-check ng user status pagkabukas ng app
-
         isUpdateMode = intent.getBooleanExtra("isUpdate", false)
 
-        // Initialize ViewPager
+        // 1. Initialize ViewPager
         viewPager = findViewById(R.id.viewPager)
+
+        // 2. Create adapter (pass the update flag)
         adapter = OnboardingPagerAdapter(this, isUpdateMode)
+
+        // 3. Attach adapter to ViewPager
         viewPager.adapter = adapter
 
-        // If you want to disable swiping (only use next/prev buttons inside fragments)
         viewPager.isUserInputEnabled = false
-
-        // If you have a TabLayout for dots:
-        // val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
-        // TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-        //     // optional: set tab text if needed
-        // }.attach()
-
 
         initOnboardingFlow()
     }
@@ -54,6 +48,9 @@ class OnboardingActivity : AppCompatActivity() {
                     val data = response.body()
 
                     if (data != null) {
+                        Log.d("BOOTSTRAP_DEBUG", "OnboardingActivity bootstrap: profileComplete=${data.profileComplete}, " +
+                                "status=${data.status}, userId=${data.userId}, " +
+                                "name=${data.name}, username=${data.username}")
                         // 1. UPDATE LOCAL PREFS PARA HINDI NA BUMALIK
                         if (data.profileComplete) {
                             UserPrefs.setOnboardingDone(this@OnboardingActivity, true)
@@ -71,9 +68,7 @@ class OnboardingActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("FLEXIFIT_DEBUG", "Network Error in Bootstrap", e)
                 // Kung offline, i-check ang local prefs as fallback
-                if (UserPrefs.isOnboardingDone(this@OnboardingActivity)) {
-                    goToMain()
-                }
+
             }
         }
     }

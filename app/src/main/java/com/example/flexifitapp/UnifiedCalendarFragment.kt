@@ -67,7 +67,7 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
                         Log.d(TAG, "Clicked Day: $selectedDay")
                         val bundle = bundleOf(
                             NavKeys.ARG_SOURCE_TAB to sourceTab,
-                            NavKeys.ARG_DAY to selectedDay
+  // ✅ idagdag ito
                         )
                         findNavController().navigate(R.id.action_unifiedCalendarFragment_to_dayHostFragment, bundle)
                     }

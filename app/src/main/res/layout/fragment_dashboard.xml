@@ -523,7 +523,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="Current Day Meals"
+                        android:text="Today Meals"
                         android:layout_marginStart="5dp"
                         android:textColor="@color/textPrimary"
                         android:textSize="18sp"

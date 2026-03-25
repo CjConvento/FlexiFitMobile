@@ -3,6 +3,7 @@ package com.example.flexifitapp
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -18,6 +19,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.flexifitapp.auth.AuthResponse
 import com.example.flexifitapp.auth.LoginRequest
 import com.example.flexifitapp.auth.RegisterRequest
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.material.appbar.MaterialToolbar
@@ -27,54 +31,55 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginEmail: EditText
     private lateinit var loginPass: EditText
     private lateinit var loginBtn: MaterialButton
-    private lateinit var btnGoogleLogin: MaterialButton // Added for Google Login
+    private lateinit var btnGoogleLogin: MaterialButton
     private lateinit var signupRedirect: TextView
-    private lateinit var loadingOverlay: View   // ✅ Added declaration
+    private lateinit var loadingOverlay: View
     private lateinit var mAuth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var credentialManager: CredentialManager // For Google Popup
+    private lateinit var credentialManager: CredentialManager
 
     private val KEY_DARK_MODE = "dark_mode"
+    private val RC_GOOGLE_SIGN_IN = 1001  // for old API
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
         applyThemeFromPrefs()
 
-        // ✅ Auto-login if we have a saved token
-        if (UserPrefs.isLoggedIn(this)) {
-            Log.d("LoginActivity", "Auto-login with existing token")
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
-        }
+//        // Auto-login if we have a saved token
+//        if (UserPrefs.isLoggedIn(this)) {
+//            Log.d("LoginActivity", "Auto-login with existing token")
+//            startActivity(Intent(this, MainActivity::class.java))
+//            finish()
+//            return
+//        }
 
         setContentView(R.layout.activity_login)
 
-        // 1. Initialize Components
+        // Initialize components
         mAuth = FirebaseAuth.getInstance()
         credentialManager = CredentialManager.create(this)
 
         loginEmail = findViewById(R.id.login_email)
         loginPass = findViewById(R.id.login_password)
         loginBtn = findViewById(R.id.login_button)
-        btnGoogleLogin = findViewById(R.id.btnGoogleSignIn) // Make sure this ID is in your XML
+        btnGoogleLogin = findViewById(R.id.btnGoogleSignIn)
         signupRedirect = findViewById(R.id.signupRedirectText)
-        loadingOverlay = findViewById(R.id.loadingOverlay) // Ensure this exists in layout
+        loadingOverlay = findViewById(R.id.loadingOverlay)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
 
-        // Check if already logged in
         checkExistingLogin()
 
-        // 2. Email/Password Login Listener
+        // Email/Password Login
         loginBtn.setOnClickListener {
             val email = loginEmail.text.toString().trim()
             val pass = loginPass.text.toString().trim()
@@ -107,13 +112,66 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
 
-        // 3. Google Login Listener
+        // Google Login Listener – temporarily use the old API for testing
         btnGoogleLogin.setOnClickListener {
             startGoogleSignIn()
         }
 
         signupRedirect.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
+        }
+    }
+
+    private fun testGoogleSignInOld() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        val googleSignInClient = GoogleSignIn.getClient(this, gso)
+        startActivityForResult(googleSignInClient.signInIntent, RC_GOOGLE_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                val idToken = account.idToken
+                Log.d("GOOGLE_DEBUG", "Old API succeeded, ID token: ${idToken?.take(20)}")
+                // Sign in to Firebase with the token
+                val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener { authTask ->
+                    if (authTask.isSuccessful) {
+                        val user = mAuth.currentUser
+                        if (user != null) fetchFcmAndConnectToBackend(user)
+                    } else {
+                        setAuthLoading(false)
+                        Toast.makeText(this, "Firebase Auth failed", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: ApiException) {
+                Log.e("GOOGLE_DEBUG", "Old API failed", e)
+                setAuthLoading(false)
+                Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun logAppSha1() {
+        try {
+            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+            for (signature in info.signatures!!) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                val sha1 = android.util.Base64.encodeToString(md.digest(), android.util.Base64.NO_WRAP)
+                Log.d("SHA1", "SHA-1 (Base64): $sha1")
+                val hex = StringBuilder()
+                for (b in md.digest()) hex.append(String.format("%02X", b))
+                Log.d("SHA1", "SHA-1 (Hex): $hex")
+            }
+        } catch (e: Exception) {
+            Log.e("SHA1", "Failed to get SHA-1", e)
         }
     }
 
@@ -135,7 +193,12 @@ class LoginActivity : AppCompatActivity() {
                     val bootRes = api.bootstrap()
                     if (bootRes.isSuccessful && bootRes.body() != null) {
                         val body = bootRes.body()!!
-                        Log.d("LoginFlow", "bootstrap success: profileComplete=${body.profileComplete}, userId=${body.userId}")
+
+                        // 🔥 ADD THIS LOGGING 🔥
+                        Log.d("BOOTSTRAP_DEBUG", "LoginActivity bootstrap: profileComplete=${body.profileComplete}, " +
+                                "status=${body.status}, userId=${body.userId}, " +
+                                "name=${body.name}, username=${body.username}")
+
                         // Sync user ID if not already set
                         if (UserPrefs.getUserId(this@LoginActivity) == 0 && body.userId != null) {
                             UserPrefs.putInt(this@LoginActivity, UserPrefs.KEY_USER_ID, body.userId)
@@ -200,6 +263,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun startGoogleSignIn() {
+        val webClientId = getString(R.string.default_web_client_id)
+        Log.d("GOOGLE_DEBUG", "Web client ID: $webClientId")
+        Log.d("GOOGLE_DEBUG", "Package name: $packageName")
+        logAppSha1()
+
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(getString(R.string.default_web_client_id))
@@ -217,8 +285,6 @@ class LoginActivity : AppCompatActivity() {
                 val result = credentialManager.getCredential(this@LoginActivity, request)
                 val credential = result.credential
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-
-                // Sign in to Firebase with the Google Token
                 val firebaseCredential = GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
                 mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -233,7 +299,8 @@ class LoginActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 setAuthLoading(false)
-                Log.e("GOOGLE_ERROR", e.message ?: "User cancelled or error")
+                Log.e("GOOGLE_ERROR", "Exception: ${e.message}", e)
+                Toast.makeText(this@LoginActivity, "Google Auth Failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -328,7 +395,7 @@ class LoginActivity : AppCompatActivity() {
         val bootRes = api.bootstrap()
         if (bootRes.isSuccessful && bootRes.body() != null) {
             val body = bootRes.body()!!
-            Log.d("AUTO_LOGIN", "bootstrap body: profileComplete=${body.profileComplete}, userId=${body.userId}")
+            Log.d("BOOTSTRAP_DEBUG", "handleSuccessfulAuth bootstrap: profileComplete=${body.profileComplete}, status=${body.status}, userId=${body.userId}, name=${body.name}, username=${body.username}")
 
             // Sync the user ID to local prefs
             if (auth.userId != 0) {
@@ -338,7 +405,7 @@ class LoginActivity : AppCompatActivity() {
             // Determine where to go
             if (body.profileComplete)
                 Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=true → goToMain()")
-                goToMain()
+            goToMain()
         } else {
             // Default to onboarding if bootstrap fails but login succeeded
             Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
