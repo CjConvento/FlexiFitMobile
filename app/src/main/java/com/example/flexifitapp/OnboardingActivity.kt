@@ -5,7 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.example.flexifitapp.onboarding.OnboardingStore
@@ -32,12 +35,60 @@ class OnboardingActivity : AppCompatActivity() {
         // 3. Attach adapter to ViewPager
         viewPager.adapter = adapter
 
-        viewPager.isUserInputEnabled = false
+        viewPager.isUserInputEnabled = true
+
+        // Setup page indicator
+        setupPageIndicator()
 
         initOnboardingFlow()
     }
 
+    private fun setupPageIndicator() {
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                updateDots(position)
+            }
+        })
+        viewPager.post { updateDots(viewPager.currentItem) }
+    }
 
+    private fun updateDots(position: Int) {
+        // Find the current fragment's view using the default tag format "f<position>"
+        val fragmentTag = "f$position"
+        val fragment = supportFragmentManager.findFragmentByTag(fragmentTag)
+        val fragmentView = fragment?.view ?: return
+
+        val dotsContainer = fragmentView.findViewById<LinearLayout>(R.id.dotsContainer) ?: return
+
+        // Create dots if not already created
+        if (dotsContainer.childCount == 0) {
+            val totalPages = adapter.itemCount
+            for (i in 0 until totalPages) {
+                val dot = View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(dpToPx(8), dpToPx(8)).apply {
+                        marginEnd = dpToPx(8)
+                        marginStart = dpToPx(8)
+                    }
+                    background = ContextCompat.getDrawable(this@OnboardingActivity, R.drawable.dot_inactive)
+                }
+                dotsContainer.addView(dot)
+            }
+        }
+
+        // Update each dot's background based on current position
+        for (i in 0 until dotsContainer.childCount) {
+            val dot = dotsContainer.getChildAt(i)
+            val drawable = if (i == position) {
+                ContextCompat.getDrawable(this, R.drawable.dot_active)
+            } else {
+                ContextCompat.getDrawable(this, R.drawable.dot_inactive)
+            }
+            dot.background = drawable
+        }
+    }
+
+
+    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 
     private fun initOnboardingFlow() {
         lifecycleScope.launch {

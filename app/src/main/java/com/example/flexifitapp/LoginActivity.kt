@@ -6,9 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.util.Patterns
 import android.view.View
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +29,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
+import android.util.Patterns
 import java.security.MessageDigest
 
 class LoginActivity : AppCompatActivity() {
@@ -120,6 +121,43 @@ class LoginActivity : AppCompatActivity() {
         signupRedirect.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
         }
+
+        val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
+        tvForgotPassword.setOnClickListener {
+            showForgotPasswordDialog()
+        }
+    }
+
+    private fun showForgotPasswordDialog() {
+        val emailEditText = EditText(this)
+        emailEditText.hint = "Enter your email"
+        emailEditText.inputType = android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+
+        AlertDialog.Builder(this)
+            .setTitle("Reset Password")
+            .setMessage("We'll send a password reset link to your email.")
+            .setView(emailEditText)
+            .setPositiveButton("Send") { _, _ ->
+                val email = emailEditText.text.toString().trim()
+                if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    sendPasswordResetEmail(email)
+                } else {
+                    Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun sendPasswordResetEmail(email: String) {
+        mAuth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Password reset email sent. Check your inbox.", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun testGoogleSignInOld() {
@@ -214,18 +252,18 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         // Bootstrap failed – token may be invalid
                         Log.e("AUTO_LOGIN", "bootstrap failed: ${bootRes.code()}")
-                        UserPrefs.clearAuth(this@LoginActivity)
                         loadingOverlay.visibility = View.GONE
                         setAuthLoading(false)
                         // Also sign out Firebase to clean up
-                        mAuth.signOut()
+                        // Otherwise (e.g., 500), keep Firebase user – maybe the token is still valid.
+                        if (bootRes.code() == 401) {
+                            mAuth.signOut()
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("AUTO_LOGIN", "bootstrap exception", e)
-                    UserPrefs.clearAuth(this@LoginActivity)
                     loadingOverlay.visibility = View.GONE
                     setAuthLoading(false)
-                    mAuth.signOut()
                 }
             }
         } else if (currentUser != null && token.isEmpty()) {
@@ -331,7 +369,7 @@ class LoginActivity : AppCompatActivity() {
                 val res = api.login(req)
 
                 if (res.isSuccessful && res.body() != null) {
-                    handleSuccessfulAuth(res.body()!!, api)
+                    handleSuccessfulAuth(res.body()!!, api, firebaseToken)
                 } else if (res.code() == 401) {
                     autoRegisterUser(firebaseToken, fcmToken, api)
                 } else {
@@ -364,7 +402,7 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val res = api.register(regReq)
                 if (res.isSuccessful && res.body() != null) {
-                    handleSuccessfulAuth(res.body()!!, api)
+                    handleSuccessfulAuth(res.body()!!, api, firebaseToken)
                 } else {
                     setAuthLoading(false)
                     Toast.makeText(this@LoginActivity, "Registration failed: ${res.code()}", Toast.LENGTH_LONG).show()
@@ -375,7 +413,14 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-    private suspend fun handleSuccessfulAuth(auth: AuthResponse, api: ApiService) {
+    private suspend fun handleSuccessfulAuth(
+        auth: AuthResponse,
+        api: ApiService,
+        firebaseToken: String?
+    ) {
+
+        Log.d("LoginActivity", "handleSuccessfulAuth: firebaseToken = ${firebaseToken?.take(20)}")
+
         UserPrefs.saveAuth(
             ctx = this@LoginActivity,
             token = auth.token,
@@ -384,7 +429,8 @@ class LoginActivity : AppCompatActivity() {
             status = auth.status,
             isVerified = auth.isVerified,
             name = auth.name ?: "",      // Idagdag mo ito babe
-            photoUrl = auth.photoUrl ?: "" // At ito rin
+            photoUrl = auth.photoUrl ?: "", // At ito rin
+            firebaseToken = firebaseToken
         )
         Log.d("AUTH", "Saved token: ${UserPrefs.getToken(this@LoginActivity)}")
 
@@ -395,7 +441,10 @@ class LoginActivity : AppCompatActivity() {
         val bootRes = api.bootstrap()
         if (bootRes.isSuccessful && bootRes.body() != null) {
             val body = bootRes.body()!!
-            Log.d("BOOTSTRAP_DEBUG", "handleSuccessfulAuth bootstrap: profileComplete=${body.profileComplete}, status=${body.status}, userId=${body.userId}, name=${body.name}, username=${body.username}")
+            Log.d(
+                "BOOTSTRAP_DEBUG",
+                "handleSuccessfulAuth bootstrap: profileComplete=${body.profileComplete}, status=${body.status}, userId=${body.userId}, name=${body.name}, username=${body.username}"
+            )
 
             // Sync the user ID to local prefs
             if (auth.userId != 0) {
@@ -403,9 +452,13 @@ class LoginActivity : AppCompatActivity() {
             }
 
             // Determine where to go
-            if (body.profileComplete)
+            if (body.profileComplete) {
                 Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=true → goToMain()")
-            goToMain()
+                goToMain()
+            } else {
+                Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
+                goToOnboard()
+            }
         } else {
             // Default to onboarding if bootstrap fails but login succeeded
             Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")

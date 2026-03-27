@@ -1,6 +1,7 @@
 package com.example.flexifitapp
 
 import android.content.Context
+import android.util.Log
 import androidx.work.*
 import java.time.LocalTime
 import java.util.Calendar
@@ -32,7 +33,7 @@ class NotificationScheduler(private val context: Context) {
                 )
             }
         } catch (e: Exception) {
-            // Handle error
+            Log.e("NotificationScheduler", "Workout reminder scheduling failed", e)
         }
     }
 
@@ -60,7 +61,7 @@ class NotificationScheduler(private val context: Context) {
                 )
             }
         } catch (e: Exception) {
-            // Handle error
+            Log.e("NotificationScheduler", "Meal reminder scheduling failed", e)
         }
     }
 
@@ -84,7 +85,6 @@ class NotificationScheduler(private val context: Context) {
             val end = LocalTime.of(endHour, endMinute)
 
             if (now.isAfter(end)) {
-                // Schedule for tomorrow
                 val delay = calculateDelay(startHour, startMinute)
                 scheduleNextWaterReminder(startHour, startMinute, intervalMinutes, delay)
             } else if (now.isBefore(start)) {
@@ -102,35 +102,38 @@ class NotificationScheduler(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
-            // Handle error
+            Log.e("NotificationScheduler", "Water reminder scheduling failed", e)
         }
     }
 
     private fun scheduleNextWaterReminder(hour: Int, minute: Int, intervalMinutes: Int, delay: Long) {
-        val workRequest = OneTimeWorkRequestBuilder<WaterReminderWorker>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .build()
+        try {
+            val workRequest = OneTimeWorkRequestBuilder<WaterReminderWorker>()
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .build()
 
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            "water_reminder_${hour}_$minute",
-            ExistingWorkPolicy.REPLACE,
-            workRequest
-        )
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                "water_reminder_${hour}_$minute",
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
 
-        // Schedule next reminder after interval
-        val nextHour = (hour + (intervalMinutes / 60)) % 24
-        val nextMinute = minute + (intervalMinutes % 60)
-        val nextDelay = intervalMinutes * 60 * 1000L
+            val nextHour = (hour + (intervalMinutes / 60)) % 24
+            val nextMinute = minute + (intervalMinutes % 60)
+            val nextDelay = intervalMinutes * 60 * 1000L
 
-        val nextWorkRequest = OneTimeWorkRequestBuilder<WaterReminderWorker>()
-            .setInitialDelay(nextDelay, TimeUnit.MILLISECONDS)
-            .build()
+            val nextWorkRequest = OneTimeWorkRequestBuilder<WaterReminderWorker>()
+                .setInitialDelay(nextDelay, TimeUnit.MILLISECONDS)
+                .build()
 
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            "water_reminder_${nextHour}_$nextMinute",
-            ExistingWorkPolicy.REPLACE,
-            nextWorkRequest
-        )
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                "water_reminder_${nextHour}_$nextMinute",
+                ExistingWorkPolicy.REPLACE,
+                nextWorkRequest
+            )
+        } catch (e: Exception) {
+            Log.e("NotificationScheduler", "scheduleNextWaterReminder failed", e)
+        }
     }
 
     private fun calculateDelay(hour: Int, minute: Int): Long {

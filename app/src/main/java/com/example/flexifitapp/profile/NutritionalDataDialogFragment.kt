@@ -2,6 +2,7 @@ package com.example.flexifitapp.profile
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -116,6 +117,7 @@ class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional
     }
 
     private fun bindData() {
+
         val ctx = requireContext()
 
         val nutritionalGoal = readNutritionGoal()
@@ -123,6 +125,9 @@ class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional
         val heightCm = readHeightCm()
         val currentWeightKg = readCurrentWeightKg()
         val targetWeightKg = readTargetWeightKg()
+
+        // ✅ Add logs here
+        Log.d("NutritionalDialog", "heightCm=$heightCm, weightKg=$currentWeightKg, targetKg=$targetWeightKg")
 
         // BMI Logic
         val bmi = computeBmi(currentWeightKg, heightCm)
@@ -207,27 +212,15 @@ class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional
     }
 
     private fun readHeightCm(): Float {
-        val floatVal = UserPrefs.getFloat(requireContext(), "height_cm", 0f)
-        if (floatVal > 0f) return floatVal
-
-        val intVal = UserPrefs.getInt(requireContext(), "height_cm", 0)
-        return intVal.toFloat()
+        return UserPrefs.getFloat(requireContext(), "height_cm", 0f)
     }
 
     private fun readCurrentWeightKg(): Float {
-        val floatVal = UserPrefs.getFloat(requireContext(), UserPrefs.KEY_WEIGHT_KG, 0f)
-        if (floatVal > 0f) return floatVal
-
-        val intVal = UserPrefs.getInt(requireContext(), UserPrefs.KEY_WEIGHT_KG, 0)
-        return intVal.toFloat()
+        return UserPrefs.getFloat(requireContext(), UserPrefs.KEY_WEIGHT_KG, 0f)
     }
 
     private fun readTargetWeightKg(): Float {
-        val floatVal = UserPrefs.getFloat(requireContext(), "target_weight_kg", 0f)
-        if (floatVal > 0f) return floatVal
-
-        val intVal = UserPrefs.getInt(requireContext(), "target_weight_kg", 0)
-        return intVal.toFloat()
+        return UserPrefs.getFloat(requireContext(), "target_weight_kg", 0f)
     }
 
     private fun computeBmi(weightKg: Float, heightCm: Float): Float {

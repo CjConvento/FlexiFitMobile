@@ -34,7 +34,7 @@
             android:id="@+id/ivCheck"
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:src="@android:drawable/checkbox_on_background"
+            android:src="@drawable/chkbx_chkd"
             android:contentDescription="Selected"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"

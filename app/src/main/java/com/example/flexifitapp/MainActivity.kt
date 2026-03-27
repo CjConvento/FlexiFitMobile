@@ -74,11 +74,60 @@ class MainActivity : AppCompatActivity() {
             .setOpenableLayout(drawerLayout)
             .build()
 
-        // Connect toolbar + drawer + nav controller
+        // Connect toolbar + drawer + nav controller (this handles the hamburger icon)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
 
-        // Connect drawer menu clicks
-        NavigationUI.setupWithNavController(navView, navController)
+        // =========================================================
+        // MANUAL DRAWER NAVIGATION (instead of automatic setup)
+        // =========================================================
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    // Always pop back to Home and clear the back stack
+                    navController.popBackStack(R.id.nav_home, inclusive = false)
+                }
+                // IMPORTANT: Use the correct fragment ID (uppercase W) even though the menu item ID may be lowercase
+                R.id.WorkoutTabRootFragment -> navController.navigate(R.id.WorkoutTabRootFragment)
+                R.id.nutritionTabRootFragment -> navController.navigate(R.id.nutritionTabRootFragment)
+                R.id.nav_progresstracker -> navController.navigate(R.id.nav_progresstracker)
+                R.id.nav_profile -> navController.navigate(R.id.nav_profile)
+                R.id.nav_settings -> navController.navigate(R.id.nav_settings)
+                R.id.nav_logout -> {
+                    // Handle logout
+                    FirebaseAuth.getInstance().signOut()
+                    TokenStore.clear(this)
+                    UserPrefs.clearAuth(this)
+
+                    getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
+                        .edit()
+                        .clear()
+                        .apply()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                else -> false
+            }
+            // Close the drawer after navigation
+            drawerLayout.closeDrawers()
+            true
+        }
+
+        // Update the checked item in the drawer when the destination changes
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.nav_home -> navView.setCheckedItem(R.id.nav_home)
+                R.id.WorkoutTabRootFragment -> navView.setCheckedItem(R.id.WorkoutTabRootFragment)
+                R.id.nutritionTabRootFragment -> navView.setCheckedItem(R.id.nutritionTabRootFragment)
+                R.id.nav_progresstracker -> navView.setCheckedItem(R.id.nav_progresstracker)
+                R.id.nav_profile -> navView.setCheckedItem(R.id.nav_profile)
+                R.id.nav_settings -> navView.setCheckedItem(R.id.nav_settings)
+                // For other destinations (like notificationFragment), we leave the previous selection
+            }
+        }
 
         // Drawer Header Setup
         if (navView.headerCount > 0) {
@@ -108,23 +157,14 @@ class MainActivity : AppCompatActivity() {
                 .getString("user_handle", "@user")
         }
 
-        // Logout
+        // (The logout item is already handled in the navigation listener, so we can remove the separate listener)
+        // Remove the previous logout listener to avoid duplication.
+        // We'll comment it out instead of deleting.
+        /*
         navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener {
-            FirebaseAuth.getInstance().signOut()
-            TokenStore.clear(this)
-            UserPrefs.clearAuth(this)   // ← ADD THIS LINE
-
-            getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
-                .edit()
-                .clear()
-                .apply()
-
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
-            true
+            // ... handled above
         }
+        */
     }
 
     private fun applyReadMode() {

@@ -24,12 +24,11 @@ import com.example.flexifitapp.nutri.NutritionResponse
 import com.example.flexifitapp.nutri.SwapFoodRequest
 import com.example.flexifitapp.nutri.UpdateMealItemRequest
 import com.example.flexifitapp.nutri.WaterResponse
+import com.example.flexifitapp.profile.UpdateWeightRequest
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
-
-data class RefreshTokenRequest(val firebaseIdToken: String)
 
 interface ApiService {
 
@@ -135,8 +134,11 @@ interface ApiService {
     @GET("api/profile/status")
     suspend fun getProfileStatus(): Response<ProfileStatusResponse>
 
-    @GET("api/mobile/profile-full")
-    suspend fun getFullProfile(): Response<UserManagementResponse>
+    @GET("api/profile/details")
+    suspend fun getFullProfile(): Response<com.example.flexifitapp.profile.UserProfileResponse>
+
+    @PATCH("api/profile/weight")
+    suspend fun updateWeight(@Body request: UpdateWeightRequest): Response<ResponseBody>
 
     @PUT("api/profile/update-full")
     suspend fun updateFullProfile(@Body request: UpdateOnboardingRequest): Response<ResponseBody>

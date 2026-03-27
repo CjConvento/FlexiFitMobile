@@ -27,8 +27,11 @@ class DayHostFragment : Fragment(R.layout.fragment_day_host) {
 
         fun showWorkout() {
             val frag = WorkoutTabRootFragment()
-            val bundle = bundleOf("ARG_DAY" to day, "ARG_MONTH" to month, "ARG_FROM_HOST" to true)
-            frag.arguments = bundle
+            frag.arguments = bundleOf(
+                NavKeys.ARG_DAY to day,
+                NavKeys.ARG_MONTH to month,
+                NavKeys.ARG_FROM_HOST to true
+            )
             childFragmentManager.beginTransaction()
                 .replace(R.id.dayHostContainer, frag)
                 .commit()
@@ -37,9 +40,9 @@ class DayHostFragment : Fragment(R.layout.fragment_day_host) {
         fun showNutrition() {
             val frag = NutritionTabRootFragment()
             frag.arguments = bundleOf(
-                "ARG_DAY" to day,
-                "ARG_MONTH" to month,
-                "ARG_FROM_HOST" to true
+                NavKeys.ARG_DAY to day,
+                NavKeys.ARG_MONTH to month,
+                NavKeys.ARG_FROM_HOST to true
             )
             childFragmentManager.beginTransaction()
                 .replace(R.id.dayHostContainer, frag)

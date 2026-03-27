@@ -3,6 +3,7 @@ package com.example.flexifitapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -73,12 +74,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         }
     }
 
-    private fun syncProfileFromServer() {
+    internal fun syncProfileFromServer() {
         lifecycleScope.launch {
             try {
                 val api = ApiClient.api()
                 val response = api.getFullProfile()
                 if (response.isSuccessful && response.body() != null) {
+                    Log.d("ProfileFragment", "Full profile: ${response.body()!!}")
                     storeProfileData(response.body()!!)
                     loadLocalProfileData()
                 }
@@ -88,18 +90,51 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         }
     }
 
-    private fun storeProfileData(data: UserManagementResponse) {
+    private fun storeProfileData(data: UserProfileResponse) {
         val ctx = requireContext()
+        // Basic info
         UserPrefs.putString(ctx, UserPrefs.KEY_NAME, data.name)
         UserPrefs.putString(ctx, UserPrefs.KEY_USERNAME, data.username)
         UserPrefs.putString(ctx, UserPrefs.KEY_GENDER, data.gender)
         UserPrefs.putInt(ctx, UserPrefs.KEY_AGE, data.age)
         UserPrefs.putFloat(ctx, UserPrefs.KEY_HEIGHT_CM, data.heightCm.toFloat())
         UserPrefs.putFloat(ctx, UserPrefs.KEY_WEIGHT_KG, data.weightKg.toFloat())
+        data.targetWeightKg?.let { UserPrefs.putFloat(ctx, UserPrefs.KEY_TARGET_WEIGHT_KG, it.toFloat()) }
+
+        // Log basic info
+        Log.d("ProfileFragment", "Stored basic: name=${data.name}, username=${data.username}, age=${data.age}, height=${data.heightCm}, weight=${data.weightKg}")
+
+        // Goals & achievements
         UserPrefs.putString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, data.goalSubtitle)
+        UserPrefs.putString(ctx, "nutritional_goal", data.nutritionGoal ?: "")
         UserPrefs.putInt(ctx, "total_sessions", data.totalSessions)
+        UserPrefs.putInt(ctx, "total_workouts", data.totalWorkouts)
+        UserPrefs.putInt(ctx, "completed_sessions", data.completedSessions)
+        UserPrefs.putInt(ctx, "total_program_sessions", data.totalProgramSessions)
+
+        Log.d("ProfileFragment", "Stored goals: bodyComp=${data.goalSubtitle}, nutritionGoal=${data.nutritionGoal}, sessions=$data.totalSessions, workouts=$data.totalWorkouts")
+
+        // Programs & goals (for WorkoutData dialog)
+        UserPrefs.putStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS, data.selectedPrograms.toSet())
+        UserPrefs.putStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET, data.fitnessGoals.toSet())
+
+        Log.d("ProfileFragment", "Stored programs: ${data.selectedPrograms}, fitnessGoals: ${data.fitnessGoals}")
+
+        // Nutrition targets
+        UserPrefs.putInt(ctx, "daily_calorie_target", data.dailyCalorieTarget)
+        UserPrefs.putFloat(ctx, "protein_g", data.proteinG.toFloat())
+        UserPrefs.putFloat(ctx, "carbs_g", data.carbsG.toFloat())
+        UserPrefs.putFloat(ctx, "fats_g", data.fatsG.toFloat())
+
+        // Achievements & BMI
+        UserPrefs.putInt(ctx, "achievement_count", data.achievementCount)
+        UserPrefs.putStringSet(ctx, "unlocked_badges", data.unlockedBadges.toSet())
+        UserPrefs.putStringSet(ctx, "unlocked_badge_keys", data.unlockedBadgeKeys.toSet())
+        UserPrefs.putFloat(ctx, "bmi_value", data.bmi.toFloat())
         UserPrefs.putString(ctx, "bmi_category", data.bmiCategory)
-        // also store avatar_url if needed
+
+        Log.d("ProfileFragment", "Stored nutrition: calorieTarget=${data.dailyCalorieTarget}, protein=${data.proteinG}, carbs=${data.carbsG}, fats=${data.fatsG}")
+        Log.d("ProfileFragment", "Stored BMI: ${data.bmi}, category=${data.bmiCategory}")
     }
 
     private fun loadLocalProfileData() {

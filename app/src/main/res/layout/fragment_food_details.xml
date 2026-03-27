@@ -222,29 +222,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogMeal"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="24dp"
-                android:text="Log this Meal"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                app:backgroundTint="#10B981"
-                app:cornerRadius="18dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSkipMeal"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="12dp"
-                android:text="Skip this Meal"
-                android:textAllCaps="false"
-                android:textColor="#EF4444"
-                app:strokeColor="#EF4444"
-                app:cornerRadius="18dp" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

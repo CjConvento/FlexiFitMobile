@@ -9,6 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -46,6 +50,9 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private lateinit var pbCarbs: ProgressBar
     private lateinit var pbFats: ProgressBar
     private lateinit var tvMacrosTag: TextView
+
+    // CHART
+    private lateinit var nutritionPieChart: PieChart
 
     // ✅ ADD WATER UI COMPONENTS
     private lateinit var btnAddWater: MaterialButton
@@ -86,6 +93,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         tvError = view.findViewById(R.id.tvNutritionError)
         rvMeals = view.findViewById(R.id.rvMealSections)
         tvMacrosTag = view.findViewById(R.id.tvMacrosTag)
+
+        nutritionPieChart = view.findViewById(R.id.nutritionPieChart)
 
         tvCalories = view.findViewById(R.id.tvCaloriesValue)
         tvCaloriesBurned = view.findViewById(R.id.tvCaloriesBurned)
@@ -150,6 +159,43 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         rvMeals.adapter = mealAdapter
     }
 
+    private fun updateMacroPieChart(proteinG: Double, carbsG: Double, fatsG: Double) {
+        val entries = ArrayList<PieEntry>()
+
+        if (proteinG > 0) entries.add(PieEntry(proteinG.toFloat(), "Protein"))
+        if (carbsG > 0) entries.add(PieEntry(carbsG.toFloat(), "Carbs"))
+        if (fatsG > 0) entries.add(PieEntry(fatsG.toFloat(), "Fats"))
+
+        // If all zero, show a placeholder "No Data" slice
+        if (entries.isEmpty()) {
+            entries.add(PieEntry(1f, "No Data"))
+        }
+
+        val dataSet = PieDataSet(entries, "Macros")
+        dataSet.colors = listOf(
+            resources.getColor(R.color.gradientEnd, null),
+            resources.getColor(R.color.gradientStart, null),
+            resources.getColor(R.color.gradientStart_alt, null),
+            resources.getColor(R.color.gradientEnd_alt, null)
+        )
+        dataSet.valueTextColor = resources.getColor(R.color.white, null)
+        dataSet.valueTextSize = 12f
+        dataSet.valueLinePart1Length = 0.5f
+        dataSet.valueLinePart2Length = 0.5f
+        dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+
+        val data = PieData(dataSet)
+        nutritionPieChart.data = data
+        nutritionPieChart.description.isEnabled = false
+        nutritionPieChart.isDrawHoleEnabled = true
+        nutritionPieChart.holeRadius = 40f
+        nutritionPieChart.transparentCircleRadius = 45f
+        nutritionPieChart.setUsePercentValues(true)
+        nutritionPieChart.legend.isEnabled = true
+        nutritionPieChart.legend.textColor = resources.getColor(R.color.textPrimary, null)
+        nutritionPieChart.invalidate()
+    }
+
     private fun openFoodDetail(food: MealFood) {
         val bundle = bundleOf(
             "mealItemId" to food.mealItemId,
@@ -159,10 +205,10 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
             "imageUrl" to food.imageUrl,
             "servingLabel" to food.servingLabel,
             "qty" to food.qty,
-            "calories" to food.calories,
-            "protein" to food.protein,
-            "carbs" to food.carbs,
-            "fats" to food.fats
+            "calories" to food.calories.toDouble(),
+            "protein" to food.protein.toDouble(),
+            "carbs" to food.carbs.toDouble(),
+            "fats" to food.fats.toDouble()
         )
         findNavController().navigate(R.id.action_nutritionTabRootFragment_to_foodDetailsFragment, bundle)
     }
@@ -262,6 +308,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         tvProtein.text = "${response.consumedProtein.toInt()}g / ${response.targetProtein.toInt()}g"
         tvCarbs.text = "${response.consumedCarbs.toInt()}g / ${response.targetCarbs.toInt()}g"
         tvFats.text = "${response.consumedFats.toInt()}g / ${response.targetFats.toInt()}g"
+
+        updateMacroPieChart(response.consumedProtein, response.consumedCarbs, response.consumedFats)
 
         pbCalories.progress = percent(response.consumedCalories.toInt(), response.targetCalories.toInt())
         pbProtein.progress = percent(response.consumedProtein.toInt(), response.targetProtein.toInt())

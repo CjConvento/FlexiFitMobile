@@ -7,12 +7,21 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.flexifitapp.R
 import com.example.flexifitapp.UserPrefs
 import com.example.flexifitapp.profile.AchievementEngine
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.example.flexifitapp.ApiClient
+import com.example.flexifitapp.ProfileFragment
+import com.example.flexifitapp.profile.UpdateWeightRequest
+import okhttp3.ResponseBody
+import retrofit2.Response
+
 
 class WeightQuickEditDialogFragment :
     DialogFragment(R.layout.dialog_weight_quick_edit) {
@@ -70,8 +79,9 @@ class WeightQuickEditDialogFragment :
     private fun loadWeightData() {
         val ctx = requireContext()
 
-        val currentWeight = UserPrefs.getInt(ctx, UserPrefs.KEY_WEIGHT_KG, 0)
-        val targetWeight = UserPrefs.getInt(ctx, UserPrefs.KEY_TARGET_WEIGHT_KG, 0)
+        // Use getFloat and convert to Int
+        val currentWeight = UserPrefs.getFloat(ctx, UserPrefs.KEY_WEIGHT_KG, 0f).toInt()
+        val targetWeight = UserPrefs.getFloat(ctx, UserPrefs.KEY_TARGET_WEIGHT_KG, 0f).toInt()
 
         tvCurrentWeight?.text = if (currentWeight > 0) "$currentWeight kg" else "0 kg"
         tvTargetWeight?.text = if (targetWeight > 0) "$targetWeight kg" else "0 kg"
@@ -83,42 +93,70 @@ class WeightQuickEditDialogFragment :
     }
 
     private fun setupClicks() {
-        btnClose?.setOnClickListener {
-            dismiss()
-        }
+        btnClose?.setOnClickListener { dismiss() }
 
         btnSave?.setOnClickListener {
             val input = etNewWeight?.text?.toString()?.trim().orEmpty()
-            // ... (keep your existing error checks)
+            if (input.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter a weight", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val newWeight = input.toIntOrNull()
+            if (newWeight == null || newWeight <= 0) {
+                Toast.makeText(requireContext(), "Invalid weight value", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            val newWeight = input.toIntOrNull() ?: return@setOnClickListener
             val ctx = requireContext()
 
-            // 1. Save new weight
+            // 1. Update local preferences
             UserPrefs.putInt(ctx, UserPrefs.KEY_WEIGHT_KG, newWeight)
             UserPrefs.putInt(ctx, UserPrefs.KEY_LATEST_WEIGHT_KG, newWeight)
             UserPrefs.putBool(ctx, UserPrefs.KEY_HAS_WEIGHT_LOG, true)
 
-            // 2. AUTOMATIC BMI UPDATE (Eto yung bago babe)
+            // 2. Update BMI locally
             val heightCm = UserPrefs.getFloat(ctx, UserPrefs.KEY_HEIGHT_CM, 0f)
             if (heightCm > 0f) {
                 val heightM = heightCm / 100f
                 val newBmi = newWeight / (heightM * heightM)
                 UserPrefs.putFloat(ctx, UserPrefs.KEY_BMI, newBmi)
-
-                // I-clear din natin yung server category para magcompute ulit
-                // yung local display sa Nutritional Data dialog
-                UserPrefs.putString(ctx, "bmi_category", "")
+                UserPrefs.putString(ctx, "bmi_category", "") // reset category, will be updated by server
             }
 
-            // 3. Update achievements
-            AchievementEngine.updateAchievementsLocally(ctx) // Siguraduhin na match ang function name sa Engine mo
+            // 3. Update achievements locally
+            AchievementEngine.updateAchievementsLocally(ctx)
 
-            parentFragmentManager.setFragmentResult(
-                REQUEST_KEY,
-                Bundle().apply { putInt(BUNDLE_NEW_WEIGHT, newWeight) }
-            )
-            dismiss()
+            // 4. Disable button to prevent double‑click
+            btnSave?.isEnabled = false
+            btnSave?.text = "Saving..."
+
+            // 5. Sync with server in background
+            lifecycleScope.launch {
+                try {
+                    val api = ApiClient.api()
+                    val request = UpdateWeightRequest(newWeight.toDouble())
+                    val response = api.updateWeight(request)
+
+                    if (response.isSuccessful) {
+                        // Notify parent fragment to refresh profile data
+                        parentFragmentManager.setFragmentResult(
+                            REQUEST_KEY,
+                            Bundle().apply { putInt(BUNDLE_NEW_WEIGHT, newWeight) }
+                        )
+                        // Also refresh the profile data if needed
+                        (parentFragment as? ProfileFragment)?.syncProfileFromServer()
+                        dismiss()
+                    } else {
+                        Toast.makeText(ctx, "Failed to sync weight with server", Toast.LENGTH_SHORT).show()
+                        btnSave?.isEnabled = true
+                        btnSave?.text = "Save"
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(ctx, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    btnSave?.isEnabled = true
+                    btnSave?.text = "Save"
+                }
+            }
         }
     }
 

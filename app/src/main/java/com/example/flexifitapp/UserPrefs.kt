@@ -22,6 +22,8 @@ object UserPrefs {
     const val KEY_USER_EMAIL = "email"
     const val KEY_USER_ID = "userId"
     const val KEY_JWT_TOKEN = "jwt_token"
+
+    const val KEY_FIREBASE_TOKEN = "firebase_token"
     const val KEY_ROLE = "role"
     const val KEY_STATUS = "status"
     const val KEY_IS_VERIFIED = "is_verified"
@@ -191,7 +193,8 @@ object UserPrefs {
         status: String?,
         isVerified: Boolean,
         name: String?,      // Idagdag ito babe
-        photoUrl: String?   // Idagdag din ito
+        photoUrl: String?,   // Idagdag din ito
+        firebaseToken: String? = null
     ) {
         prefs(ctx).edit()
             .putString(KEY_JWT_TOKEN, token)
@@ -200,14 +203,16 @@ object UserPrefs {
             .putString(KEY_STATUS, status ?: "")
             .putBoolean(KEY_IS_VERIFIED, isVerified)
             .putString(KEY_NAME, name ?: "")          // I-save ang Name
-            .putString("KEY_AVATAR_URL", photoUrl ?: "") // I-save ang Avatar URL
+            .putString(KEY_AVATAR_URL, photoUrl ?: "") // I-save ang Avatar URL
+            .putString(KEY_FIREBASE_TOKEN, firebaseToken ?:"")
             .commit()
-        Log.d("UserPrefs", "Token saved: $token")
+        Log.d("UserPrefs", "Token saved: ${token.take(20)}... (userId=$userId, name=$name)")
+        Log.d("UserPrefs", "Firebase token saved: ${firebaseToken?.take(20) ?: "NULL"}")
     }
 
     fun getToken(ctx: Context): String {
         val token = getString(ctx, KEY_JWT_TOKEN, "")
-        Log.d("UserPrefs", "Token retrieved: ${token.take(20)}...")
+        Log.d("UserPrefs", "Token retrieved from prefs: ${if (token.isNotBlank()) "${token.take(20)}..." else "EMPTY"}")
         return token
     }
     fun getUserId(ctx: Context): Int = getInt(ctx, KEY_USER_ID, 0)
@@ -217,6 +222,7 @@ object UserPrefs {
     fun isLoggedIn(ctx: Context): Boolean = getToken(ctx).isNotBlank() && getUserId(ctx) > 0
 
     fun clearAuth(ctx: Context) {
+        Log.e("UserPrefs", "clearAuth called! Stack trace:", Exception("Stack trace"))
         prefs(ctx).edit()
             .remove(KEY_JWT_TOKEN)
             .remove(KEY_USER_ID)
@@ -227,6 +233,7 @@ object UserPrefs {
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_EMAIL)
             .remove(KEY_AVATAR_URL)
+            .remove(KEY_FIREBASE_TOKEN)
             .apply()
         Log.d("UserPrefs", "Clearing auth")
     }

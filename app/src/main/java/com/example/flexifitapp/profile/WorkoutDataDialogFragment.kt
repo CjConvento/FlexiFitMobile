@@ -2,6 +2,7 @@ package com.example.flexifitapp.profile
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -141,6 +142,10 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
         val selectedPrograms = UserPrefs.getStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS)
         val fitnessGoals = UserPrefs.getStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET)
 
+// 🔽 Add these two lines here
+        Log.d("WorkoutDialog", "selectedPrograms = $selectedPrograms")
+        Log.d("WorkoutDialog", "fitnessGoals = $fitnessGoals")
+
         tvProgramsValue?.text = if (selectedPrograms.isNotEmpty()) {
             selectedPrograms.joinToString("\n") { prettifyValue(it) }
         } else {
@@ -155,19 +160,10 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
     }
 
     private fun loadWorkoutStats() {
-        val ctx = context ?: return // Safe way para sa context
-
-        // 1. Kuhanin ang total sessions na galing sa SQL Server sync
+        val ctx = context ?: return
         val sessions = UserPrefs.getInt(ctx, "total_sessions", 0)
-
-        // 2. Kuhanin ang locally tracked workouts (yung "Finish" counts)
-        val workouts = UserPrefs.getInt(ctx, UserPrefs.KEY_COMPLETED_WORKOUTS_COUNT, 0)
-
-        // 3. I-pass sa render function para lumabas sa UI
-        renderWorkoutStats(
-            totalWorkouts = workouts,
-            totalSessions = sessions
-        )
+        val workouts = UserPrefs.getInt(ctx, "total_workouts", 0)
+        renderWorkoutStats(totalWorkouts = workouts, totalSessions = sessions)
     }
 
     private fun renderWorkoutStats(totalWorkouts: Int, totalSessions: Int) {

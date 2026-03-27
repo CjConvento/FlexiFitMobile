@@ -154,6 +154,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     }
 
     private fun fetchDashboardData() {
+        Log.d("Dashboard", "Token before API call: ${UserPrefs.getToken(requireContext()).take(20)}...")
         lifecycleScope.launch {
             try {
                 val response = ApiClient.api().getDashboardData()

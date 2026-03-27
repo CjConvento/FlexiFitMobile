@@ -8,7 +8,7 @@
             android:title="Home" />
 
         <item
-            android:id="@+id/workoutTabRootFragment"
+            android:id="@+id/WorkoutTabRootFragment"
             android:icon="@drawable/ic_workout"
             android:title="Workout Plan" />
 

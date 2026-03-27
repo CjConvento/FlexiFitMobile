@@ -17,7 +17,7 @@
         android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
         app:title="Complete Google Sign Up"
         app:titleTextColor="@color/white"
-        app:navigationIcon="@drawable/ic_chevron_r_circle" />
+        app:navigationIcon="@drawable/baseline_arrow_left_ios_new_24_w" />
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -68,8 +68,7 @@ class SignupActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-        applyThemeFromPrefs()
-
+3
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
@@ -604,17 +603,4 @@ class SignupActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_toggle_theme) {
-            val current = prefs.getBoolean(KEY_DARK_MODE, false)
-            val newMode = !current
-            prefs.edit().putBoolean(KEY_DARK_MODE, newMode).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (newMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-            )
-            recreate()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
 }

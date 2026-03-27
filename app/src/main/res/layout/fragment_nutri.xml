@@ -355,7 +355,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:includeFontPadding="false"
-                    android:text="Loading..."
+                    android:text="Current Meal Plan"
                     android:textStyle="bold"
                     android:textSize="13sp"
                     android:maxLines="1"

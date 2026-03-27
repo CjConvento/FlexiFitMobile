@@ -3,6 +3,7 @@ package com.example.flexifitapp.googleauth
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -123,6 +124,8 @@ class CreateUsernameActivity : AppCompatActivity() {
 
                 val authBody = registerRes.body()!!
 
+                Log.d("CreateUsername", "firebaseToken = ${firebaseToken.take(20)}")
+
                 // Heto ang tamang paraan babe, kailangan nating gamitin ang 'authBody.'
                 // para makuha ang data mula sa server response.
                 UserPrefs.saveAuth(
@@ -133,7 +136,8 @@ class CreateUsernameActivity : AppCompatActivity() {
                     status = authBody.status,
                     isVerified = authBody.isVerified,
                     name = authBody.name ?: "",
-                    photoUrl = authBody.photoUrl ?: ""
+                    photoUrl = authBody.photoUrl ?: "",
+                    firebaseToken = firebaseToken
                 )
 
                 UserPrefs.putString(this@CreateUsernameActivity, UserPrefs.KEY_USER_EMAIL, googleEmail)

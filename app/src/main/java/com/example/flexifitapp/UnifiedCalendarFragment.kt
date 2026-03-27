@@ -40,7 +40,7 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
             if (sourceTab == "NUTRITION") {
                 findNavController().navigate(R.id.nutritionTabRootFragment)
             } else {
-                findNavController().navigate(R.id.workoutTabRootFragment)
+                findNavController().navigate(R.id.WorkoutTabRootFragment)
             }
         }
 
@@ -63,14 +63,17 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
                     Log.d(TAG, "API Success: Found ${historyList.size} records")
 
                     val calendarItems = generateCalendarDays(historyList)
+
                     rv.adapter = CalendarAdapter(calendarItems) { selectedDay ->
-                        Log.d(TAG, "Clicked Day: $selectedDay")
+                        val month = arguments?.getInt(NavKeys.ARG_MONTH, 1) ?: 1
                         val bundle = bundleOf(
                             NavKeys.ARG_SOURCE_TAB to sourceTab,
-  // ✅ idagdag ito
+                            NavKeys.ARG_DAY to selectedDay,
+                            NavKeys.ARG_MONTH to month
                         )
                         findNavController().navigate(R.id.action_unifiedCalendarFragment_to_dayHostFragment, bundle)
                     }
+
                 } else {
                     Log.e(TAG, "API Error: ${response.code()}")
                     Toast.makeText(requireContext(), "Failed to load calendar", Toast.LENGTH_SHORT).show()
