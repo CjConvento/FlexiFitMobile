@@ -128,9 +128,14 @@ class NutritionRepository(private val apiService: ApiService) {
         return try {
             Log.d(TAG, "Updating meal item $mealItemId to quantity $newQty")
             val response = apiService.updateMealItem(mealItemId, UpdateMealItemRequest(newQty))
-            response.isSuccessful
+            if (response.isSuccessful) {
+                true
+            } else {
+                Log.e(TAG, "Update failed: ${response.code()} - ${response.errorBody()?.string()}")
+                false
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Update meal item exception: ${e.message}")
+            Log.e(TAG, "Update exception: ${e.message}")
             false
         }
     }

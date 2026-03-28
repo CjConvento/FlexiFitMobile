@@ -120,6 +120,7 @@ interface ApiService {
         @Body request: SwapFoodRequest
     ): Response<ResponseBody>
 
+
     // ✅ ADD WATER ENDPOINTS
     @POST("api/nutrition/water/add")
     suspend fun addWater(@Body request: AddWaterRequest): Response<WaterResponse>
@@ -161,7 +162,7 @@ interface ApiService {
         @Body request: UpdateNotificationSettingsRequest
     ): Response<ResponseBody>
 
-    @GET("api/notifications")
+    @GET("api/notifications/history")
     suspend fun getNotifications(): Response<List<NotificationItemDto>>
 
     @DELETE("api/notifications/{notificationId}")
@@ -175,4 +176,7 @@ interface ApiService {
     // --- TEST/ME ---
     @GET("api/test/me")
     suspend fun getAccountInfo(): Response<UserAccountDto>
+
+    @PUT("api/settings/account/email")
+    suspend fun updateEmail(@Body request: UpdateEmailDto): Response<ResponseBody>
 }

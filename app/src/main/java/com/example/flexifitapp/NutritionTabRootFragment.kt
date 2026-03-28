@@ -39,6 +39,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private lateinit var btnRetry: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var tvError: TextView
+    private lateinit var tvMealPlanChip: TextView
     private lateinit var rvMeals: RecyclerView
     private lateinit var tvCalories: TextView
     private lateinit var tvCaloriesBurned: TextView
@@ -91,6 +92,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         btnRetry = view.findViewById(R.id.btnRetryNutrition)
         progressBar = view.findViewById(R.id.progressNutritionLoading)
         tvError = view.findViewById(R.id.tvNutritionError)
+        tvMealPlanChip = view.findViewById(R.id.tvMealPlanChip)
         rvMeals = view.findViewById(R.id.rvMealSections)
         tvMacrosTag = view.findViewById(R.id.tvMacrosTag)
 
@@ -308,6 +310,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         tvProtein.text = "${response.consumedProtein.toInt()}g / ${response.targetProtein.toInt()}g"
         tvCarbs.text = "${response.consumedCarbs.toInt()}g / ${response.targetCarbs.toInt()}g"
         tvFats.text = "${response.consumedFats.toInt()}g / ${response.targetFats.toInt()}g"
+
+        tvMealPlanChip.text = response.templateName ?: "Meal Plan"
 
         updateMacroPieChart(response.consumedProtein, response.consumedCarbs, response.consumedFats)
 

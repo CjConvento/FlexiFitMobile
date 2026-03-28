@@ -3,11 +3,11 @@ package com.example.flexifitapp.nutri
 import com.google.gson.annotations.SerializedName
 
 data class UpdateMealItemRequest(
-    @SerializedName("newQty")
+    @SerializedName("NewQty")   // ✅ Capital N to match C# DTO
     val newQty: Double
 )
 
 data class SwapFoodRequest(
-    @SerializedName("newFoodId")
+    @SerializedName("NewFoodId")   // ✅ Capital N, F to match server
     val newFoodId: Int
 )

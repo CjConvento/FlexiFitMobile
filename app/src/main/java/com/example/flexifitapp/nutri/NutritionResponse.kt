@@ -45,6 +45,10 @@ data class NutritionResponse(
     @SerializedName("dailyLogId")
     val dailyLogId: Int,
 
+    // ✅ NEW FIELD: templateName (nullable for backward compatibility)
+    @SerializedName("templateName")
+    val templateName: String? = null,
+
     @SerializedName("meals")
     val meals: List<MealGroupDto>
 )

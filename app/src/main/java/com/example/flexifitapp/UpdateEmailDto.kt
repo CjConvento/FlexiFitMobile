@@ -1,12 +1,16 @@
 package com.example.flexifitapp
 
-// Para sa manual email update
+import com.google.gson.annotations.SerializedName
+
 data class UpdateEmailDto(
+    @SerializedName("newEmail")
     val newEmail: String
 )
 
-// Para sa Google Account re-linking
+// ✅ Add this below
 data class UpdateGoogleEmailDto(
+    @SerializedName("newEmail")
     val newEmail: String,
+    @SerializedName("newFirebaseUid")
     val newFirebaseUid: String
 )

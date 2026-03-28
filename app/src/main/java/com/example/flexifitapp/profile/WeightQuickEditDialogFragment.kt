@@ -79,7 +79,7 @@ class WeightQuickEditDialogFragment :
     private fun loadWeightData() {
         val ctx = requireContext()
 
-        // Use getFloat and convert to Int
+        // Read as Float, convert to Int for display
         val currentWeight = UserPrefs.getFloat(ctx, UserPrefs.KEY_WEIGHT_KG, 0f).toInt()
         val targetWeight = UserPrefs.getFloat(ctx, UserPrefs.KEY_TARGET_WEIGHT_KG, 0f).toInt()
 
@@ -108,29 +108,30 @@ class WeightQuickEditDialogFragment :
             }
 
             val ctx = requireContext()
+            val newWeightFloat = newWeight.toFloat()
 
-            // 1. Update local preferences
-            UserPrefs.putInt(ctx, UserPrefs.KEY_WEIGHT_KG, newWeight)
-            UserPrefs.putInt(ctx, UserPrefs.KEY_LATEST_WEIGHT_KG, newWeight)
+            // 1. Update local preferences (store as Float)
+            UserPrefs.putFloat(ctx, UserPrefs.KEY_WEIGHT_KG, newWeightFloat)
+            UserPrefs.putFloat(ctx, UserPrefs.KEY_LATEST_WEIGHT_KG, newWeightFloat)
             UserPrefs.putBool(ctx, UserPrefs.KEY_HAS_WEIGHT_LOG, true)
 
-            // 2. Update BMI locally
+            // 2. Update BMI locally (use Float)
             val heightCm = UserPrefs.getFloat(ctx, UserPrefs.KEY_HEIGHT_CM, 0f)
             if (heightCm > 0f) {
                 val heightM = heightCm / 100f
-                val newBmi = newWeight / (heightM * heightM)
+                val newBmi = newWeightFloat / (heightM * heightM)
                 UserPrefs.putFloat(ctx, UserPrefs.KEY_BMI, newBmi)
-                UserPrefs.putString(ctx, "bmi_category", "") // reset category, will be updated by server
+                UserPrefs.putString(ctx, "bmi_category", "") // will be refreshed by server
             }
 
             // 3. Update achievements locally
             AchievementEngine.updateAchievementsLocally(ctx)
 
-            // 4. Disable button to prevent double‑click
+            // 4. Disable button to prevent double-click
             btnSave?.isEnabled = false
             btnSave?.text = "Saving..."
 
-            // 5. Sync with server in background
+            // 5. Sync with server
             lifecycleScope.launch {
                 try {
                     val api = ApiClient.api()
@@ -143,7 +144,6 @@ class WeightQuickEditDialogFragment :
                             REQUEST_KEY,
                             Bundle().apply { putInt(BUNDLE_NEW_WEIGHT, newWeight) }
                         )
-                        // Also refresh the profile data if needed
                         (parentFragment as? ProfileFragment)?.syncProfileFromServer()
                         dismiss()
                     } else {

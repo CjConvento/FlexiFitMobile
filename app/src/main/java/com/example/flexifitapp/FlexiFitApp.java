@@ -32,6 +32,9 @@ public class FlexiFitApp extends Application {
             Log.d("FlexiFitApp", "No Firebase user after app start");
         }
 
+        // Create notification channel (important for Android 8+)
+        NotificationService.Companion.createNotificationChannel(this);
+
         // Set global uncaught exception handler (optional)
         Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(this));
     }

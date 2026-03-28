@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.flexifitapp.ApiClient
 import com.example.flexifitapp.ApiService
+import com.example.flexifitapp.AppPrefs
 import com.example.flexifitapp.MainActivity
 import com.example.flexifitapp.OnboardingActivity
 import com.example.flexifitapp.R
@@ -45,8 +46,9 @@ class CreateUsernameActivity : AppCompatActivity() {
     private var googleEmail: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-        applyThemeFromPrefs()
+        // Apply saved night mode
+        val nightMode = AppPrefs.getNightMode(this)
+        AppCompatDelegate.setDefaultNightMode(nightMode)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_username)
@@ -240,7 +242,7 @@ class CreateUsernameActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_theme_switcher, menu)
         val item = menu.findItem(R.id.action_toggle_theme)
-        val isDark = prefs.getBoolean(KEY_DARK_MODE, false)
+        val isDark = AppPrefs.getNightMode(this) == AppCompatDelegate.MODE_NIGHT_YES
         item.icon = ContextCompat.getDrawable(
             this,
             if (isDark) R.drawable.ic_sun else R.drawable.ic_moon
@@ -250,12 +252,14 @@ class CreateUsernameActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_toggle_theme) {
-            val current = prefs.getBoolean(KEY_DARK_MODE, false)
-            val newMode = !current
-            prefs.edit().putBoolean(KEY_DARK_MODE, newMode).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (newMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-            )
+            val current = AppPrefs.getNightMode(this)
+            val newMode = if (current == AppCompatDelegate.MODE_NIGHT_YES) {
+                AppCompatDelegate.MODE_NIGHT_NO
+            } else {
+                AppCompatDelegate.MODE_NIGHT_YES
+            }
+            AppCompatDelegate.setDefaultNightMode(newMode)
+            AppPrefs.setNightMode(this, newMode)
             recreate()
             return true
         }

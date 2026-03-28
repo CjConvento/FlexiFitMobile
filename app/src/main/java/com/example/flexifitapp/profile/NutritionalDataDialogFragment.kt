@@ -117,23 +117,53 @@ class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional
     }
 
     private fun bindData() {
-
         val ctx = requireContext()
+        val args = arguments
 
-        val nutritionalGoal = readNutritionGoal()
-        val age = readAge()
-        val heightCm = readHeightCm()
-        val currentWeightKg = readCurrentWeightKg()
-        val targetWeightKg = readTargetWeightKg()
+        // Try to read from arguments first (preferred), then fall back to UserPrefs
+        val nutritionalGoal = if (args?.containsKey("nutritionGoal") == true) {
+            args.getString("nutritionGoal") ?: ""
+        } else {
+            readNutritionGoal()
+        }
 
-        // ✅ Add logs here
-        Log.d("NutritionalDialog", "heightCm=$heightCm, weightKg=$currentWeightKg, targetKg=$targetWeightKg")
+        val age = if (args?.containsKey("age") == true) {
+            args.getInt("age", 0)
+        } else {
+            readAge()
+        }
 
-        // BMI Logic
-        val bmi = computeBmi(currentWeightKg, heightCm)
+        val heightCm = if (args?.containsKey("height") == true) {
+            args.getDouble("height", 0.0).toFloat()
+        } else {
+            readHeightCm()
+        }
 
-        // Eto yung galing sa Server Sync natin
-        val serverBmiCategory = UserPrefs.getString(ctx, "bmi_category", "")
+        val currentWeightKg = if (args?.containsKey("weight") == true) {
+            args.getDouble("weight", 0.0).toFloat()
+        } else {
+            readCurrentWeightKg()
+        }
+
+        val targetWeightKg = if (args?.containsKey("targetWeight") == true) {
+            args.getDouble("targetWeight", 0.0).toFloat()
+        } else {
+            readTargetWeightKg()
+        }
+
+        val bmi = if (args?.containsKey("bmi") == true) {
+            args.getDouble("bmi", 0.0).toFloat()
+        } else {
+            computeBmi(currentWeightKg, heightCm)
+        }
+
+        val bmiCategory = if (args?.containsKey("bmiCategory") == true) {
+            args.getString("bmiCategory") ?: ""
+        } else {
+            UserPrefs.getString(ctx, "bmi_category", "")
+        }
+
+        Log.d("NutritionalDialog", "age=$age, height=$heightCm, weight=$currentWeightKg, target=$targetWeightKg, bmi=$bmi")
 
         // UI Mapping
         tvNutritionalGoalValue?.text = nutritionalGoal.ifBlank { "-" }
@@ -141,14 +171,16 @@ class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional
         tvHeightValue?.text = if (heightCm > 0f) "${formatNumber(heightCm)} cm" else "-"
         tvCurrentWeightValue?.text = if (currentWeightKg > 0f) "${formatNumber(currentWeightKg)} kg" else "-"
         tvTargetWeightValue?.text = if (targetWeightKg > 0f) "${formatNumber(targetWeightKg)} kg" else "-"
-
         tvBmiValue?.text = if (bmi > 0f) String.format(Locale.US, "%.1f", bmi) else "-"
 
-        // Eto yung 'ifBlank' logic para sa Category
-        // Kung blank ang galing server, gagamit siya ng local computation
-        tvBmiCategoryValue?.text = serverBmiCategory.ifBlank { getBmiCategory(bmi) }
+        // Category: prefer bundle, then server prefs, then local computation
+        val finalBmiCategory = if (bmiCategory.isNotBlank()) {
+            bmiCategory
+        } else {
+            getBmiCategory(bmi)
+        }
+        tvBmiCategoryValue?.text = finalBmiCategory
     }
-
     private fun setupExpanders() {
         setupToggle(
             rowNutritionalGoalHeader,

@@ -1,6 +1,7 @@
 package com.example.flexifitapp
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
@@ -10,6 +11,7 @@ class WorkoutReminderWorker(
 ) : Worker(context, params) {
 
     override fun doWork(): Result {
+        Log.d("ReminderWorker", "Workout reminder executed")
         try {
             val notificationService = NotificationService(applicationContext)
             notificationService.showNotification(
@@ -19,6 +21,7 @@ class WorkoutReminderWorker(
             )
             return Result.success()
         } catch (e: Exception) {
+            Log.e("ReminderWorker", "Workout reminder failed", e)
             return Result.failure()
         }
     }

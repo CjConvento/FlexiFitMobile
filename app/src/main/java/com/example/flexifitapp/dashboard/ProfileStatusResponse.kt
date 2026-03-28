@@ -3,6 +3,7 @@ package com.example.flexifitapp.dashboard
 import com.google.gson.annotations.SerializedName
 
 data class ProfileStatusResponse(
+    @SerializedName("name") val name: String?,          // ✅ Add this line
     @SerializedName("userName") val username: String?,
     @SerializedName("userEmail") val userEmail: String?,
     @SerializedName("userAvatar") val userAvatar: String?, // Dagdag para sa profile pic

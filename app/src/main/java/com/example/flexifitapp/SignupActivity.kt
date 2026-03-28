@@ -603,4 +603,20 @@ class SignupActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_toggle_theme) {
+            val current = AppPrefs.getNightMode(this)
+            val newMode = if (current == AppCompatDelegate.MODE_NIGHT_YES) {
+                AppCompatDelegate.MODE_NIGHT_NO
+            } else {
+                AppCompatDelegate.MODE_NIGHT_YES
+            }
+            AppCompatDelegate.setDefaultNightMode(newMode)
+            AppPrefs.setNightMode(this, newMode)
+            recreate()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }

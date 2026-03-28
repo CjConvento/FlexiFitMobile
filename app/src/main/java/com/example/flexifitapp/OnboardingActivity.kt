@@ -87,7 +87,6 @@ class OnboardingActivity : AppCompatActivity() {
         }
     }
 
-
     private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 
     private fun initOnboardingFlow() {
@@ -102,15 +101,16 @@ class OnboardingActivity : AppCompatActivity() {
                         Log.d("BOOTSTRAP_DEBUG", "OnboardingActivity bootstrap: profileComplete=${data.profileComplete}, " +
                                 "status=${data.status}, userId=${data.userId}, " +
                                 "name=${data.name}, username=${data.username}")
-                        // 1. UPDATE LOCAL PREFS PARA HINDI NA BUMALIK
-                        if (data.profileComplete) {
+
+                        // ✅ FIX: Do NOT auto‑redirect when in update mode
+                        if (data.profileComplete && !isUpdateMode) {
                             UserPrefs.setOnboardingDone(this@OnboardingActivity, true)
-                            Log.d("FLEXIFIT_DEBUG", "Server says Profile is Complete. Going to Main.")
+                            Log.d("FLEXIFIT_DEBUG", "Server says Profile is Complete and not in update mode. Going to Main.")
                             goToMain()
                         } else {
-                            // 2. Kung incomplete, stay sa onboarding
+                            // Stay in onboarding (either incomplete or update mode)
                             UserPrefs.setOnboardingDone(this@OnboardingActivity, false)
-                            Log.d("FLEXIFIT_DEBUG", "Profile Incomplete. Stay in Onboarding.")
+                            Log.d("FLEXIFIT_DEBUG", "Profile Incomplete or Update Mode. Stay in Onboarding.")
                         }
                     }
                 } else {
@@ -118,8 +118,7 @@ class OnboardingActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("FLEXIFIT_DEBUG", "Network Error in Bootstrap", e)
-                // Kung offline, i-check ang local prefs as fallback
-
+                // Keep user in onboarding (local check could be added)
             }
         }
     }

@@ -1,10 +1,14 @@
 package com.example.flexifitapp
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -12,13 +16,19 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.bumptech.glide.Glide
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -129,33 +139,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Drawer Header Setup
+        // Drawer Header Setup – buttons only, data loaded via updateDrawerHeader()
         if (navView.headerCount > 0) {
             val headerView: View = navView.getHeaderView(0)
 
-            // Settings Button
             val btnHeaderSettings = headerView.findViewById<ImageButton>(R.id.btnHeaderSettings)
             btnHeaderSettings?.setOnClickListener {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.nav_settings)
             }
 
-            // 🔔 Notification Button – ADD THIS
             val btnNotifications = headerView.findViewById<ImageButton>(R.id.btnHeaderNotifications)
             btnNotifications?.setOnClickListener {
                 drawerLayout.closeDrawers()
                 navController.navigate(R.id.notificationFragment)
             }
-
-            // User Info
-            val txtName = headerView.findViewById<TextView>(R.id.txtHeaderName)
-            val txtEmail = headerView.findViewById<TextView>(R.id.txtHeaderEmail)
-
-            txtName?.text = getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
-                .getString("user_name", "FlexiFit User")
-            txtEmail?.text = getSharedPreferences("flexifit_prefs", MODE_PRIVATE)
-                .getString("user_handle", "@user")
         }
+
+        // Load initial header data
+        updateDrawerHeader()
+
+        // Refresh header when drawer opens
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+            override fun onDrawerOpened(drawerView: View) {
+                updateDrawerHeader()
+            }
+            override fun onDrawerClosed(drawerView: View) {}
+            override fun onDrawerStateChanged(newState: Int) {}
+        })
 
         // (The logout item is already handled in the navigation listener, so we can remove the separate listener)
         // Remove the previous logout listener to avoid duplication.
@@ -165,6 +177,75 @@ class MainActivity : AppCompatActivity() {
             // ... handled above
         }
         */
+
+        // Request notification permission on Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh header when returning to activity (e.g., after profile update)
+        updateDrawerHeader()
+    }
+
+    private fun updateDrawerHeader() {
+        if (navView.headerCount == 0) return
+        val headerView = navView.getHeaderView(0)
+
+        val txtName = headerView.findViewById<TextView>(R.id.txtHeaderName)
+        val txtEmail = headerView.findViewById<TextView>(R.id.txtHeaderEmail)
+        val imgAvatar = headerView.findViewById<ShapeableImageView>(R.id.imgAvatar)
+
+        // Get data from UserPrefs
+        val name = UserPrefs.getString(this, UserPrefs.KEY_NAME, "FlexiFit User")
+        val username = UserPrefs.getString(this, UserPrefs.KEY_USERNAME, "")
+        val email = UserPrefs.getString(this, UserPrefs.KEY_USER_EMAIL, "")
+        val avatarUrl = UserPrefs.getString(this, UserPrefs.KEY_AVATAR_URL, "")
+
+        // Set text
+        txtName?.text = name
+        txtEmail?.text = if (email.isNotBlank()) email else username.ifBlank { "FlexiFit User" }
+
+        // Load avatar
+        if (avatarUrl.isNotBlank()) {
+            Glide.with(this)
+                .load(if (avatarUrl.startsWith("http")) avatarUrl else ApiConfig.BASE_URL + avatarUrl)
+                .placeholder(R.drawable.profile)
+                .error(R.drawable.profile)
+                .circleCrop()
+                .into(imgAvatar)
+        } else {
+            // Default avatar
+            Glide.with(this)
+                .load(R.drawable.profile)
+                .circleCrop()
+                .into(imgAvatar)
+        }
+    }
+
+    // Add this method somewhere after onCreate
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("MainActivity", "Notification permission granted")
+            } else {
+                Log.d("MainActivity", "Notification permission denied")
+            }
+        }
     }
 
     private fun applyReadMode() {

@@ -43,6 +43,10 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private var txtHeaderName: TextView? = null
     private var txtHeaderEmail: TextView? = null
 
+    private var btnSeeMoreWorkouts: TextView? = null  // new
+    private var itemWorkout1: View? = null           // new
+    private var itemWorkout2: View? = null
+
     // Workouts Section
     private var txtWorkoutName1: TextView? = null
     private var txtWorkoutl1: TextView? = null
@@ -78,21 +82,32 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             findNavController().navigate(R.id.action_dashboardFragment_to_nutritionTabRoot)
         }
 
+        // 4. Setup Workout Click Listeners
+        itemWorkout1?.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_workoutTabRoot)
+        }
+        itemWorkout2?.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_workoutTabRoot)
+        }
+        btnSeeMoreWorkouts?.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_workoutTabRoot)
+        }
+
         // 4. Fetch initial data from API
         fetchDashboardData()
     }
 
     private fun setupMealDropdown() {
         val mealCategories = arrayOf("Breakfast", "Lunch", "Snacks", "Dinner")
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mealCategories)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mealCategories)
 
         autoCompleteMealType?.apply {
             setAdapter(adapter)
-            // Default text para hindi empty sa start
             setText(mealCategories[0], false)
 
-            // Listener para sa pagpili (Modern way)
+            // Show dropdown when user taps anywhere in the field (text or arrow)
+            setOnClickListener { showDropDown() }
+
             setOnItemClickListener { _, _, position, _ ->
                 val mealType = when (position) {
                     0 -> "B"
@@ -103,6 +118,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 }
                 updateMealList(mealType)
             }
+        }
+
+        // Optional: Also ensure the end icon triggers the dropdown
+        val textInputLayout = view?.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.menuMealType)
+        textInputLayout?.setEndIconOnClickListener {
+            autoCompleteMealType?.showDropDown()
         }
     }
 
@@ -129,6 +150,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         progressRing = view.findViewById(R.id.progressRing)
 
         // 4. Workouts Section
+        btnSeeMoreWorkouts = view.findViewById(R.id.btnSeeMoreWorkouts) // new
+        itemWorkout1 = view.findViewById(R.id.itemWorkout1)             // new
+        itemWorkout2 = view.findViewById(R.id.itemWorkout2)
         txtWorkoutName1 = view.findViewById(R.id.txtWorkoutName1)
         txtWorkoutl1 = view.findViewById(R.id.txtWorkoutl1)
         imgWorkout1 = view.findViewById(R.id.imgWorkout1)
@@ -182,7 +206,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private fun updateUI(data: ProfileStatusResponse) {
 
         // 1. Header (Gagamitin natin yung txtHeaderName na na-bind na natin)
-        txtHeaderName?.text = "Welcome, ${data.username ?: "User"}!"
+        txtHeaderName?.text = "Welcome, ${data.username ?: data.name ?: "User"}!"
         txtHeaderEmail?.text = data.userEmail ?: ""
 
         // 2. Fitness Level
@@ -342,6 +366,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         progressRing = null; progressIntake = null; progressBurned = null
         txtBMIScore = null; tvBMIStatus = null; btnBMIViewMore = null
         txtWaterCount = null; btnUpdateWater = null; waterGlass = null
+        btnSeeMoreWorkouts = null
+        itemWorkout1 = null
+        itemWorkout2 = null
         super.onDestroyView()
     }
 }

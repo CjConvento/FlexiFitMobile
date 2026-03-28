@@ -15,7 +15,7 @@ object AppPrefs {
 
     fun getNightMode(context: Context): Int {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .getInt(KEY_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            .getInt(KEY_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_NO) // Default to light mode
     }
 
     fun setReadMode(context: Context, enabled: Boolean) {

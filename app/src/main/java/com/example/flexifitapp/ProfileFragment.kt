@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.flexifitapp.ApiClient.api
 import com.example.flexifitapp.databinding.FragmentProfileffBinding
 import com.example.flexifitapp.profile.*
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
 
     private var _binding: FragmentProfileffBinding? = null
     private val binding get() = _binding!!
+    private var latestProfile: UserProfileResponse? = null
 
     private val pickAvatar = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { uploadAvatar(it) }
@@ -46,8 +48,25 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         binding.rowWorkoutData.setOnClickListener {
             WorkoutDataDialogFragment().show(parentFragmentManager, "WorkoutDataDialog")
         }
+        // ✅ Updated click listener with data passing
         binding.rowNutritionData.setOnClickListener {
-            NutritionalDataDialogFragment().show(parentFragmentManager, "NutritionDataDialog")
+            val dialog = NutritionalDataDialogFragment()
+            if (latestProfile != null) {
+                val args = Bundle().apply {
+                    putInt("age", latestProfile!!.age)
+                    putDouble("height", latestProfile!!.heightCm)
+                    putDouble("weight", latestProfile!!.weightKg)
+                    putDouble("targetWeight", latestProfile!!.targetWeightKg ?: 0.0)
+                    putDouble("bmi", latestProfile!!.bmi)
+                    putString("bmiCategory", latestProfile!!.bmiCategory)
+                    putString("nutritionGoal", latestProfile!!.nutritionGoal ?: "")
+                }
+                dialog.arguments = args
+            } else {
+                // Fallback: no data yet – show dialog without arguments; it will read from prefs
+                Log.d("ProfileFragment", "latestProfile is null, opening dialog without args")
+            }
+            dialog.show(parentFragmentManager, "NutritionDataDialog")
         }
         binding.rowTrackProgress.setOnClickListener {
             findNavController().navigate(R.id.nav_progresstracker)
@@ -77,15 +96,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
     internal fun syncProfileFromServer() {
         lifecycleScope.launch {
             try {
-                val api = ApiClient.api()
-                val response = api.getFullProfile()
+                val response = api().getFullProfile()   // ← added parentheses
                 if (response.isSuccessful && response.body() != null) {
-                    Log.d("ProfileFragment", "Full profile: ${response.body()!!}")
-                    storeProfileData(response.body()!!)
+                    latestProfile = response.body()!!
+                    storeProfileData(latestProfile!!)
                     loadLocalProfileData()
+                } else {
+                    Log.e("ProfileFragment", "Sync failed: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                // ignore, just log
+                Log.e("ProfileFragment", "Sync exception: ${e.message}")
             }
         }
     }

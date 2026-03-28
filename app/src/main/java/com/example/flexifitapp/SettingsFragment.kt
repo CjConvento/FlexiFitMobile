@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -15,7 +14,7 @@ import com.example.flexifitapp.databinding.FragmentSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import com.example.flexifitapp.AppPrefs
+import kotlin.math.roundToInt
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
@@ -27,10 +26,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private var currentWaterStartTime = "08:00"
     private var currentWaterEndTime = "20:00"
     private var currentWaterInterval = 60
-    private var currentWaterGoal = 8 // glasses
-    private var currentGlassSize = 250 // ml
+    private var currentWaterGoal = 8       // glasses
+    private var currentGlassSize = 250     // ml
+    private var currentDailyWaterGoalMl = 2000   // total ml goal
 
-    // Flags to avoid recursion
+    // Flags
     private var isLoadingNotifications = false
     private var isSettingSwitchProgrammatically = false
 
@@ -46,10 +46,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         setupAboutListeners()
         setupAccountListeners()
 
-        // Load appearance settings immediately (synchronous)
         loadAppearanceSettings()
-
-        // Load notification settings once (asynchronous)
         loadNotificationSettings()
     }
 
@@ -58,12 +55,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun setupNotificationListeners() {
-        // Workout reminder
         binding.switchWorkoutReminder.setOnCheckedChangeListener { _, isChecked ->
             binding.btnWorkoutReminderTime.isEnabled = isChecked
-            if (isChecked) {
-                saveSettings()
-            }
+            if (isChecked) saveSettings()
         }
 
         binding.btnWorkoutReminderTime.setOnClickListener {
@@ -74,12 +68,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             }
         }
 
-        // Meal reminder
         binding.switchMealReminder.setOnCheckedChangeListener { _, isChecked ->
             binding.btnMealReminderTime.isEnabled = isChecked
-            if (isChecked) {
-                saveSettings()
-            }
+            if (isChecked) saveSettings()
         }
 
         binding.btnMealReminderTime.setOnClickListener {
@@ -90,14 +81,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             }
         }
 
-        // Water reminder
         binding.switchWaterReminder.setOnCheckedChangeListener { _, isChecked ->
             binding.btnWaterStartTime.isEnabled = isChecked
             binding.btnWaterEndTime.isEnabled = isChecked
             binding.btnWaterInterval.isEnabled = isChecked
-            if (isChecked) {
-                saveSettings()
-            }
+            if (isChecked) saveSettings()
         }
 
         binding.btnWaterStartTime.setOnClickListener {
@@ -126,6 +114,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.btnWaterGoalMinus.setOnClickListener {
             if (currentWaterGoal > 1) {
                 currentWaterGoal--
+                currentDailyWaterGoalMl = currentWaterGoal * currentGlassSize
                 binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
                 saveSettings()
             }
@@ -134,6 +123,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.btnWaterGoalPlus.setOnClickListener {
             if (currentWaterGoal < 20) {
                 currentWaterGoal++
+                currentDailyWaterGoalMl = currentWaterGoal * currentGlassSize
                 binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
                 saveSettings()
             }
@@ -142,6 +132,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         // Glass size selection
         binding.ivDropSmall.setOnClickListener {
             currentGlassSize = 200
+            // Recalculate glasses based on stored ml goal
+            currentWaterGoal = (currentDailyWaterGoalMl.toFloat() / currentGlassSize).roundToInt().coerceAtLeast(1)
+            // Update ml goal to match the new glasses count (ensures integer glasses)
+            currentDailyWaterGoalMl = currentWaterGoal * currentGlassSize
+            binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
             binding.tvSelectedGlassLabel.text = "Small Glass"
             binding.tvSelectedGlassDesc.text = "Using 200ml per glass"
             updateGlassSelectionUI("small")
@@ -150,6 +145,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         binding.ivDropMedium.setOnClickListener {
             currentGlassSize = 250
+            currentWaterGoal = (currentDailyWaterGoalMl.toFloat() / currentGlassSize).roundToInt().coerceAtLeast(1)
+            currentDailyWaterGoalMl = currentWaterGoal * currentGlassSize
+            binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
             binding.tvSelectedGlassLabel.text = "Standard Glass"
             binding.tvSelectedGlassDesc.text = "Using 250ml per glass"
             updateGlassSelectionUI("medium")
@@ -158,6 +156,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         binding.ivDropLarge.setOnClickListener {
             currentGlassSize = 350
+            currentWaterGoal = (currentDailyWaterGoalMl.toFloat() / currentGlassSize).roundToInt().coerceAtLeast(1)
+            currentDailyWaterGoalMl = currentWaterGoal * currentGlassSize
+            binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
             binding.tvSelectedGlassLabel.text = "Large Glass"
             binding.tvSelectedGlassDesc.text = "Using 350ml per glass"
             updateGlassSelectionUI("large")
@@ -179,7 +180,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun setupAppearanceListeners() {
-        // Dark mode switch – ignore programmatic changes
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             if (isSettingSwitchProgrammatically) return@setOnCheckedChangeListener
             val mode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
@@ -188,7 +188,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             requireActivity().recreate()
         }
 
-        // Theme mode buttons – wrap switch changes with flag
         binding.btnThemeAuto.setOnClickListener {
             isSettingSwitchProgrammatically = true
             binding.switchDarkMode.isChecked = false
@@ -216,7 +215,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             requireActivity().recreate()
         }
 
-        // Read mode switch – ignore programmatic changes
         binding.switchReadMode.setOnCheckedChangeListener { _, isChecked ->
             if (isSettingSwitchProgrammatically) return@setOnCheckedChangeListener
             context?.let { AppPrefs.setReadMode(it, isChecked) }
@@ -250,7 +248,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
 
         binding.btnUpdateEmail.setOnClickListener {
-            Toast.makeText(requireContext(), "Update email feature coming soon", Toast.LENGTH_SHORT).show()
+            showChangeEmailDialog()
         }
 
         binding.btnLogout.setOnClickListener {
@@ -260,6 +258,58 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.btnDeleteAccount.setOnClickListener {
             showDeleteAccountDialog()
         }
+    }
+
+    private fun showChangeEmailDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_change_email, null)
+        val emailInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNewEmail)
+        val emailLayout = dialogView.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilEmail)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Change Email")
+            .setView(dialogView)
+            .setPositiveButton("Save") { dialog, _ ->
+                val newEmail = emailInput.text?.toString()?.trim() ?: ""
+                if (newEmail.isEmpty()) {
+                    emailLayout.error = "Email cannot be empty"
+                    return@setPositiveButton
+                }
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
+                    emailLayout.error = "Invalid email format"
+                    return@setPositiveButton
+                }
+
+                // Disable dialog buttons temporarily to prevent double submission
+                val positiveButton = (dialog as androidx.appcompat.app.AlertDialog).getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                positiveButton.isEnabled = false
+
+                lifecycleScope.launch {
+                    try {
+                        val api = ApiClient.api()
+                        val response = api.updateEmail(UpdateEmailDto(newEmail))
+                        if (response.isSuccessful) {
+                            Toast.makeText(requireContext(), "Email updated successfully!", Toast.LENGTH_SHORT).show()
+                            // Optionally update stored email in UserPrefs
+                            UserPrefs.putString(requireContext(), UserPrefs.KEY_USER_EMAIL, newEmail)
+                            dialog.dismiss()
+                        } else {
+                            val errorBody = response.errorBody()?.string()
+                            val errorMsg = if (errorBody?.contains("already in use") == true) {
+                                "This email is already registered."
+                            } else {
+                                "Failed to update email. Please try again."
+                            }
+                            emailLayout.error = errorMsg
+                            positiveButton.isEnabled = true
+                        }
+                    } catch (e: Exception) {
+                        emailLayout.error = "Network error: ${e.message}"
+                        positiveButton.isEnabled = true
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun loadAppearanceSettings() {
@@ -285,7 +335,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 if (response.isSuccessful) {
                     val settings = response.body()
                     settings?.let {
-                        // Load workout settings
+                        // Workout
                         binding.switchWorkoutReminder.isChecked = it.workoutReminderEnabled
                         it.workoutReminderTime?.let { time ->
                             currentWorkoutTime = time
@@ -293,7 +343,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                         }
                         binding.btnWorkoutReminderTime.isEnabled = it.workoutReminderEnabled
 
-                        // Load meal settings
+                        // Meal
                         binding.switchMealReminder.isChecked = it.mealReminderEnabled
                         it.mealReminderTime?.let { time ->
                             currentMealTime = time
@@ -301,7 +351,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                         }
                         binding.btnMealReminderTime.isEnabled = it.mealReminderEnabled
 
-                        // Load water settings
+                        // Water
                         binding.switchWaterReminder.isChecked = it.waterReminderEnabled
                         it.waterStartTime?.let { time ->
                             currentWaterStartTime = time
@@ -318,16 +368,18 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                         binding.btnWaterEndTime.isEnabled = it.waterReminderEnabled
                         binding.btnWaterInterval.isEnabled = it.waterReminderEnabled
 
-                        // Load water goal
+                        // Water goal (ml)
                         it.dailyWaterGoal?.let { goalMl ->
+                            currentDailyWaterGoalMl = goalMl
                             val glassSize = it.glassSizeMl ?: 250
-                            if (glassSize > 0) {
-                                currentWaterGoal = goalMl / glassSize
-                                binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
-                            }
+                            currentGlassSize = glassSize
+                            currentWaterGoal = (goalMl.toFloat() / glassSize).roundToInt().coerceAtLeast(1)
+                            // Update ml goal to match integer glasses (optional, keeps consistency)
+                            currentDailyWaterGoalMl = currentWaterGoal * currentGlassSize
+                            binding.tvWaterGoalValue.text = "$currentWaterGoal glasses"
                         }
 
-                        // Load glass size
+                        // Glass size
                         it.glassSizeMl?.let { size ->
                             currentGlassSize = size
                             when (size) {
@@ -337,7 +389,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                             }
                         }
 
-                        // Load calorie mode
+                        // Calorie mode
                         when (it.calorieDisplayMode) {
                             "Remaining" -> binding.toggleCalorieMode.check(R.id.btn_cal_remaining)
                             "Net Calories" -> binding.toggleCalorieMode.check(R.id.btn_cal_net)
@@ -361,7 +413,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             if (!isAdded) return@launch
             val ctx = context ?: return@launch
             try {
-                val settings = com.example.flexifitapp.NotificationSettingsDto(
+                val settings = NotificationSettingsDto(
                     workoutReminderEnabled = binding.switchWorkoutReminder.isChecked,
                     workoutReminderTime = currentWorkoutTime,
                     mealReminderEnabled = binding.switchMealReminder.isChecked,
@@ -370,18 +422,20 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     waterStartTime = currentWaterStartTime,
                     waterEndTime = currentWaterEndTime,
                     waterIntervalMinutes = currentWaterInterval,
-                    dailyWaterGoal = currentWaterGoal * currentGlassSize,
+                    dailyWaterGoal = currentDailyWaterGoalMl,   // send ml goal
                     glassSizeMl = currentGlassSize,
                     calorieDisplayMode = if (binding.toggleCalorieMode.checkedButtonId == R.id.btn_cal_remaining) "Remaining" else "Net Calories"
                 )
 
                 val api = ApiClient.api()
-                val request = com.example.flexifitapp.UpdateNotificationSettingsRequest(settings)
+                val request = UpdateNotificationSettingsRequest(settings)
                 val response = api.updateNotificationSettings(request)
 
                 if (response.isSuccessful) {
                     scheduleReminders(ctx, settings)
                     Toast.makeText(ctx, "Settings saved", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Optionally log error
                 }
             } catch (e: Exception) {
                 Toast.makeText(ctx, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -389,8 +443,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
     }
 
-    private fun scheduleReminders(ctx: Context, settings: com.example.flexifitapp.NotificationSettingsDto) {
-        val scheduler = com.example.flexifitapp.NotificationScheduler(ctx)
+    private fun scheduleReminders(ctx: Context, settings: NotificationSettingsDto) {
+        val scheduler = NotificationScheduler(ctx)
         scheduler.scheduleWorkoutReminder(
             settings.workoutReminderTime ?: "08:00",
             settings.workoutReminderEnabled
@@ -483,11 +537,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             .setTitle("Log Out")
             .setMessage("Are you sure you want to log out?")
             .setPositiveButton("Log Out") { _, _ ->
-                // Clear user data
                 val prefs = requireContext().getSharedPreferences("FlexiFitPrefs", Context.MODE_PRIVATE)
                 prefs.edit().clear().apply()
-
-                // Navigate to LoginActivity
                 val intent = Intent(requireContext(), LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

@@ -67,6 +67,14 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
         // If JOINT_PROBLEM, lock selection (optional logic)
         val isLocked = (safety == HealthSafety.JOINT_PROBLEM)
 
+        if (isLocked && selectedPrograms.isEmpty() && generatedPrograms.isNotEmpty()) {
+            selectedPrograms.addAll(generatedPrograms)
+            OnboardingStore.putStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS, selectedPrograms)
+            Log.d("FLEXIFIT_DEBUG", "Auto-selected ${selectedPrograms.size} rehab program(s) due to joint problems.")
+        } else {
+            Log.d("FLEXIFIT_DEBUG", "Auto-selection condition failed.")
+        }
+
         adapter = ProgramCardAdapter(
             items = generatedPrograms,
             selected = selectedPrograms,
