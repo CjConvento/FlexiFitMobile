@@ -105,6 +105,7 @@
                             android:paddingStart="10dp"
                             android:text="Upper Body Injury"
                             android:textColor="@color/colorPrimary"
+                            android:textSize="15dp"
                             app:buttonTint="@color/colorPrimary" />
 
                         <CheckBox
@@ -116,6 +117,7 @@
                             android:paddingStart="10dp"
                             android:text="Lower Body Injury"
                             android:textColor="@color/colorPrimary"
+                            android:textSize="15dp"
                             app:buttonTint="@color/colorPrimary" />
 
                         <CheckBox
@@ -126,6 +128,7 @@
                             android:buttonTint="@color/colorPrimary"
                             android:paddingStart="10dp"
                             android:text="Short Breathe"
+                            android:textSize="15dp"
                             android:textColor="@color/colorPrimary"
                             app:buttonTint="@color/colorPrimary" />
 
@@ -137,7 +140,20 @@
                             android:buttonTint="@color/colorPrimary"
                             android:paddingStart="10dp"
                             android:text="Joint Problems"
+                            android:textSize="15dp"
                             android:textColor="@color/colorPrimary"
+                            app:buttonTint="@color/colorPrimary" />
+
+                        <CheckBox
+                            android:id="@+id/cbAllergy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:button="@drawable/rounded_checkbox"
+                            android:buttonTint="@color/colorPrimary"
+                            android:paddingStart="10dp"
+                            android:text="Allergy"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="15dp"
                             app:buttonTint="@color/colorPrimary" />
 
                         <CheckBox
@@ -148,6 +164,7 @@
                             android:buttonTint="@color/colorPrimary"
                             android:paddingStart="10dp"
                             android:text="None"
+                            android:textSize="15dp"
                             android:textColor="@color/colorPrimary"
                             app:buttonTint="@color/colorPrimary" />
 
@@ -198,16 +215,17 @@
     <TextView
         android:id="@+id/btnConfirm"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:background="@drawable/flexifit_border"
+        android:layout_height="48dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/btn_gradient"
         android:gravity="center"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
-        android:text="Confirm"
-        android:textColor="@color/colorPrimary"
+        android:minWidth="200dp"
+        android:paddingHorizontal="40dp"
+        android:text="Next"
+        android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardContainer" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

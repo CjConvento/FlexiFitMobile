@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Awesome!"
+            android:text="OK!"
             android:textColor="#92A3FD"
             app:backgroundTint="@color/white"
             app:cornerRadius="16dp" />

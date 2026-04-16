@@ -38,5 +38,8 @@ data class OnboardingProfileRequest(
     @SerializedName("DietType") val dietType: String,
 
     @SerializedName("SelectedPrograms") val selectedPrograms: List<DetailedProgram>,
-    @SerializedName("IsRehab") val isRehab: Boolean
+    @SerializedName("IsRehab") val isRehab: Boolean,
+
+    // ADDED: Allergies field
+    @SerializedName("Allergies") val allergies: List<String> = emptyList()
 )

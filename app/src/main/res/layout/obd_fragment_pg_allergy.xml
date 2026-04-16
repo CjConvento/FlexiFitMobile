@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen_white"
@@ -11,9 +10,9 @@
     <include
         android:id="@+id/header"
         layout="@layout/view_onboarding_header"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
@@ -23,62 +22,49 @@
         android:layout_marginTop="14dp"
         app:cardCornerRadius="25dp"
         app:cardElevation="8dp"
-        app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toTopOf="@+id/dotsContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:strokeWidth="0dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:padding="20dp">
 
             <TextView
-                android:id="@+id/tvLocTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Workout Location"
+                android:layout_gravity="center"
+                android:text="Allergies"
                 android:textColor="@color/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvLocSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Where do you usually train?"
+                android:layout_gravity="center"
+                android:layout_marginTop="6dp"
+                android:text="Select any allergies you have"
                 android:textColor="@color/colorPrimary"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvLocTitle" />
+                android:textSize="12sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvEnvironment"
+                android:id="@+id/rvAllergies"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
                 android:overScrollMode="never"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvLocSubtitle"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="2"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_option_tile" />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Dots container -->
+    <!-- Dots container (optional, for consistency) -->
     <LinearLayout
         android:id="@+id/dotsContainer"
         android:layout_width="wrap_content"

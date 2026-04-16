@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.example.flexifitapp.onboarding.FlexiFitKeys
 import com.example.flexifitapp.onboarding.OnboardingStore
 import kotlinx.coroutines.launch
 
@@ -125,7 +126,17 @@ class OnboardingActivity : AppCompatActivity() {
 
     // Add method to navigate between pages
     fun nextPage() {
-        if (viewPager.currentItem < adapter.itemCount - 1) {
+        val current = viewPager.currentItem
+        if (current == 2) { // Health page index
+            val hasAllergies = OnboardingStore.getBoolean(this, FlexiFitKeys.HAS_ALLERGIES)
+            if (!hasAllergies) {
+                // Skip allergy page (index 3)
+                val target = if (current + 2 < adapter.itemCount) current + 2 else adapter.itemCount - 1
+                viewPager.currentItem = target
+                return
+            }
+        }
+        if (current < adapter.itemCount - 1) {
             viewPager.currentItem += 1
         }
     }

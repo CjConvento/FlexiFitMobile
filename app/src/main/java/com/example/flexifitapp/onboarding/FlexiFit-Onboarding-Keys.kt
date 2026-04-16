@@ -18,6 +18,10 @@ object FlexiFitKeys {
     const val SHORT_BREATH = "short_breath"
     const val HEALTH_NONE = "health_none"
 
+    // --- ALLERGIES ---
+    const val HAS_ALLERGIES = "has_allergies"          // kung nag-check ng allergy sa health page
+    const val ALLERGIES_LIST = "allergies_list"        // set ng napiling specific allergies (e.g., "Shrimp", "Milk")
+
     // --- PG3: FITNESS BACKGROUND ---
     const val FITNESS_LIFESTYLE = "fitness_lifestyle"
     // Note: Ito ang magiging "Main Level" base sa hierarchy (Cardio/Muscle > Rehab)

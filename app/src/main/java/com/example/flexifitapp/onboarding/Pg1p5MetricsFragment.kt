@@ -6,6 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import androidx.recyclerview.widget.LinearSmoothScroller
+import android.view.ViewTreeObserver
+import android.util.TypedValue
+import androidx.core.content.ContextCompat
 
 class Pg1p5MetricsFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg1p5_metrics,
@@ -58,40 +62,52 @@ class Pg1p5MetricsFragment : BaseOnboardingFragment(
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
 
-        val snapHelper = LinearSnapHelper()
-        if (recyclerView.onFlingListener == null) {
-            snapHelper.attachToRecyclerView(recyclerView)
-        }
-
         adapter.onBindNumber = { tv, _, isSelected ->
             tv.alpha = if (isSelected) 1f else 0.35f
             tv.textSize = if (isSelected) 24f else 18f
             tv.setTypeface(null, if (isSelected) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+            tv.setTextColor(ContextCompat.getColor(requireContext(),
+                if (isSelected) R.color.colorPrimary else R.color.textSecondary))
         }
 
-        // PRE-FILL: Kunin ang data mula sa OnboardingStore
         val savedValue = OnboardingStore.getInt(requireContext(), storeKey, defaultVal)
             .coerceIn(range.first(), range.last())
 
         val initialPos = adapter.getVirtualPosForNumber(savedValue)
         adapter.setSelectedVirtualPos(initialPos)
 
+        // Flag to ignore the first scroll listener event (caused by initial scroll)
+        var isInitialScroll = true
+
+        // Calculate offset to center the item
         recyclerView.post {
-            lm.scrollToPositionWithOffset(initialPos, 0)
-            // Siguraduhing naka-save agad ang initial value sa store
+            val itemHeight = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 48f, resources.displayMetrics
+            ).toInt()
+            val visibleHeight = recyclerView.height - recyclerView.paddingTop - recyclerView.paddingBottom
+            val offset = (visibleHeight / 2) - (itemHeight / 2)
+            lm.scrollToPositionWithOffset(initialPos, offset)
             OnboardingStore.putInt(requireContext(), storeKey, savedValue)
         }
+
+        // Attach snap helper after a delay to avoid interfering with the initial scroll
+        recyclerView.postDelayed({
+            val snapHelper = LinearSnapHelper()
+            snapHelper.attachToRecyclerView(recyclerView)
+        }, 300)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(rv: RecyclerView, newState: Int) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (isInitialScroll) {
+                        isInitialScroll = false
+                        return
+                    }
+                    val snapHelper = LinearSnapHelper()
                     val snappedView = snapHelper.findSnapView(lm) ?: return
                     val pos = lm.getPosition(snappedView)
-
                     val selectedNumber = adapter.getNumberAtVirtualPos(pos)
                     adapter.setSelectedVirtualPos(pos)
-
-                    // Auto-save sa bawat scroll
                     OnboardingStore.putInt(requireContext(), storeKey, selectedNumber)
                 }
             }

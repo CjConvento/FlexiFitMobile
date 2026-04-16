@@ -105,7 +105,7 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
             tvRight.text = state.options[norm(i + 1)]
         }
 
-        render() // Initial render
+        render()
 
         val detector = GestureDetector(swipeTarget.context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, vx: Float, vy: Float): Boolean {
@@ -123,11 +123,20 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
         })
 
         swipeTarget.setOnTouchListener { v, event ->
+            // Prevent parent (ViewPager) from intercepting when we start a touch
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.parent?.requestDisallowInterceptTouchEvent(true)
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.parent?.requestDisallowInterceptTouchEvent(false)
+                }
+            }
             val handled = detector.onTouchEvent(event)
             if (event.action == MotionEvent.ACTION_UP && !handled) {
                 v.performClick()
             }
-            true
+            true // Consume all touch events so parent doesn't steal
         }
     }
 

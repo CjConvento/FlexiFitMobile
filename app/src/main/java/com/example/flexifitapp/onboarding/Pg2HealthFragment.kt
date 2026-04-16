@@ -7,9 +7,10 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.onboarding.FlexiFitKeys
 import com.google.android.material.card.MaterialCardView
 
-class Pg2HealthFragment : BaseOnboardingFragment(
+class   Pg2HealthFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg2_health,
     nextActionId = R.id.a3
 ) {
@@ -18,6 +19,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
     private var cbLowerBodyInjury: CheckBox? = null
     private var cbJointProblems: CheckBox? = null
     private var cbShortBreath: CheckBox? = null
+    private var cbAllergy: CheckBox? = null
     private var cbNone: CheckBox? = null
 
     private var cardHealthWarning: MaterialCardView? = null
@@ -32,6 +34,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
         cbLowerBodyInjury = view.findViewById(R.id.cbLBi)
         cbJointProblems = view.findViewById(R.id.cbJoint)
         cbShortBreath = view.findViewById(R.id.cbSB)
+        cbAllergy = view.findViewById(R.id.cbAllergy)
         cbNone = view.findViewById(R.id.cbNone)
 
         cardHealthWarning = view.findViewById(R.id.cardHealthWarning)
@@ -39,10 +42,19 @@ class Pg2HealthFragment : BaseOnboardingFragment(
 
         // 1. Restore state from store (Hydration)
         preloadSelections()
+
         // 2. Bind listeners for auto-save and mutual exclusion
         bindListeners()
+
         // 3. Initial UI update for warnings
         updateWarnings()
+
+        // Load saved allergy flag
+        val savedHasAllergies = OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.HAS_ALLERGIES)
+        cbAllergy?.isChecked = savedHasAllergies
+
+        // 🔥 Sync stored flags with current UI state
+        saveSelections()
     }
 
     override fun validateBeforeNext(): String? {
@@ -50,6 +62,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
                 cbLowerBodyInjury?.isChecked == true ||
                 cbJointProblems?.isChecked == true ||
                 cbShortBreath?.isChecked == true ||
+                cbAllergy?.isChecked == true ||
                 cbNone?.isChecked == true
 
         return if (!anyChecked) "Please select at least one option." else null
@@ -64,6 +77,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
                 cbLowerBodyInjury?.isChecked = false
                 cbJointProblems?.isChecked = false
                 cbShortBreath?.isChecked = false
+                cbAllergy?.isChecked = false   // <-- idagdag ito
                 suppressListener = false
             }
             saveSelections()
@@ -85,6 +99,17 @@ class Pg2HealthFragment : BaseOnboardingFragment(
         cbLowerBodyInjury?.setOnCheckedChangeListener(medicalListener)
         cbJointProblems?.setOnCheckedChangeListener(medicalListener)
         cbShortBreath?.setOnCheckedChangeListener(medicalListener)
+
+        cbAllergy?.setOnCheckedChangeListener { _, isChecked ->
+            if (suppressListener) return@setOnCheckedChangeListener
+            if (isChecked) {
+                suppressListener = true
+                cbNone?.isChecked = false
+                suppressListener = false
+            }
+            saveSelections()
+            updateWarnings()
+        }
     }
 
     private fun preloadSelections() {
@@ -95,6 +120,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
         cbJointProblems?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS)
         cbShortBreath?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.SHORT_BREATH)
         cbNone?.isChecked = OnboardingStore.getBoolean(ctx, FlexiFitKeys.HEALTH_NONE)
+        // Huwag i-load ang HAS_ALLERGIES dito para hindi ma-override ang manual load sa onViewCreated
         suppressListener = false
     }
 
@@ -105,6 +131,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
         val lower = cbLowerBodyInjury?.isChecked == true
         val joint = cbJointProblems?.isChecked == true
         val breath = cbShortBreath?.isChecked == true
+        val hasAllergies = cbAllergy?.isChecked == true   // idagdag ito
         val none = cbNone?.isChecked == true
 
         // Logging bago i-save
@@ -116,6 +143,7 @@ class Pg2HealthFragment : BaseOnboardingFragment(
         OnboardingStore.putBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS, joint)
         OnboardingStore.putBoolean(ctx, FlexiFitKeys.SHORT_BREATH, breath)
         OnboardingStore.putBoolean(ctx, FlexiFitKeys.HEALTH_NONE, none)
+        OnboardingStore.putBoolean(ctx, FlexiFitKeys.HAS_ALLERGIES, hasAllergies)   // idagdag ito
 
         // Ang napaka-importanteng Rehab Flag
         val isRehab = upper || lower || joint

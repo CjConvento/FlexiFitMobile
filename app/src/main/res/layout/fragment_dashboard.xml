@@ -97,7 +97,7 @@
                     android:id="@+id/tvBMITitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="BMI (Body Mass Index)"
+                    android:text="Your BMI"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"

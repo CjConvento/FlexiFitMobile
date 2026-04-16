@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.example.flexifitapp.onboarding.FlexiFitKeys
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -30,7 +31,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
 
         bindSummary(view)
 
-        view.findViewById<MaterialButton>(R.id.btnFinish)?.setOnClickListener {
+        view.findViewById<TextView>(R.id.btnFinish)?.setOnClickListener {
             submitProfile()
         }
     }
@@ -56,7 +57,16 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val bodyComp = OnboardingStore.getString(ctx, FlexiFitKeys.BODYCOMP_GOAL)
         val goals = OnboardingStore.getStringSet(ctx, FlexiFitKeys.FITNESS_GOALS)
         val programs = OnboardingStore.getStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS)
+
+        // Convert environment to lowercase for case‑insensitive matching
         val envs = OnboardingStore.getStringSet(ctx, FlexiFitKeys.ENVIRONMENT)
+            .map { it.lowercase() }
+            .toSet()
+
+        // Allergies – filter out blank entries to avoid trailing comma
+        val allergies = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ALLERGIES_LIST)
+            .filter { it.isNotBlank() }
+        view.findViewById<TextView>(R.id.tvSumAllergies).text = if (allergies.isEmpty()) "None" else allergies.joinToString(", ")
 
         // 2. UI BINDING
         view.findViewById<TextView>(R.id.tvSumAge)?.text = if (age > 0) age.toString() else "N/A"
@@ -70,8 +80,28 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         view.findViewById<TextView>(R.id.tvSumBodyComp)?.text = bodyComp.replace("_", " ").capitalizeWords()
         view.findViewById<TextView>(R.id.tvSumGoal)?.text = goals.joinToString(", ") { it.replace("_", " ").capitalizeWords() }
 
+        // Workout location chips (case‑insensitive)
         view.findViewById<TextView>(R.id.chipGym)?.isVisible = envs.contains("gym")
         view.findViewById<TextView>(R.id.chipHome)?.isVisible = envs.contains("home")
+
+        // Allergies (only once)
+        view.findViewById<TextView>(R.id.tvSumAllergies).text = if (allergies.isEmpty()) "None" else allergies.joinToString(", ")
+
+        // Health & Safety Check
+        val upperBody = OnboardingStore.getBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY)
+        val lowerBody = OnboardingStore.getBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY)
+        val joint = OnboardingStore.getBoolean(ctx, FlexiFitKeys.JOINT_PROBLEMS)
+        val shortBreath = OnboardingStore.getBoolean(ctx, FlexiFitKeys.SHORT_BREATH)
+        val healthNone = OnboardingStore.getBoolean(ctx, FlexiFitKeys.HEALTH_NONE)
+
+        val healthIssues = mutableListOf<String>()
+        if (upperBody) healthIssues.add("Upper Body Injury")
+        if (lowerBody) healthIssues.add("Lower Body Injury")
+        if (joint) healthIssues.add("Joint Problems")
+        if (shortBreath) healthIssues.add("Short Breath")
+        if (healthNone) healthIssues.add("None")
+
+        view.findViewById<TextView>(R.id.tvSumHealth).text = if (healthIssues.isEmpty()) "None" else healthIssues.joinToString(", ")
 
         // 3. RENDER PROGRAM CHIPS
         val programsWrap = view.findViewById<LinearLayout>(R.id.programsWrap)
@@ -96,7 +126,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
 
     private fun submitProfile() {
         val ctx = requireContext()
-        val btnFinish = view?.findViewById<MaterialButton>(R.id.btnFinish)
+        val btnFinish = view?.findViewById<TextView>(R.id.btnFinish)
         btnFinish?.isEnabled = false
 
         // 1. PRE-MAPPING
@@ -129,11 +159,15 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
             )
         }
 
+        // Retrieve allergies
+        val allergies = OnboardingStore.getStringSet(ctx, FlexiFitKeys.ALLERGIES_LIST).toList()
+
         // 🔥 FIX: Use stored user name and username from UserPrefs (set during sign-in)
         val userName = UserPrefs.getString(ctx, UserPrefs.KEY_NAME, "")
         val userUsername = UserPrefs.getString(ctx, UserPrefs.KEY_USERNAME, "")
 
         // Fallback: If UserPrefs are empty, try OnboardingStore (which may have been set during sign-up)
+
         // If still empty, use a safe default (but avoid "user" which is already taken)
         val finalName = userName.ifEmpty { OnboardingStore.getString(ctx, "user_name", "User") }
         val finalUsername = userUsername.ifEmpty { OnboardingStore.getString(ctx, "user_handle", "") }
@@ -167,7 +201,8 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
             environment = OnboardingStore.getStringSet(ctx, FlexiFitKeys.ENVIRONMENT).map { it.uppercase() },
             fitnessGoals = OnboardingStore.getStringSet(ctx, FlexiFitKeys.FITNESS_GOALS).map { it.uppercase() },
             selectedPrograms = detailedPrograms,
-            isRehab = OnboardingStore.getBoolean(ctx, FlexiFitKeys.IS_REHAB_USER)
+            isRehab = OnboardingStore.getBoolean(ctx, FlexiFitKeys.IS_REHAB_USER),
+            allergies = allergies   // Added here
         )
 
         Log.d("FLEXIFIT_DEBUG", "SUBMITTING -> BodyGoal: ${request.bodyGoal}, Diet: ${request.dietType}, Username: ${request.username}, Name: ${request.name}")
