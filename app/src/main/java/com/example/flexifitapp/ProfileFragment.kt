@@ -233,7 +233,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
                     val newUrl = response.body()?.url
                     UserPrefs.putString(context, "avatar_url", newUrl ?: "")
                     loadLocalProfileData()
-                    Toast.makeText(context, "Avatar updated!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Profile updated!", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Upload error", Toast.LENGTH_SHORT).show()

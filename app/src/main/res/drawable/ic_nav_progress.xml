@@ -16,7 +16,7 @@
                           V7.5
                           A3.7,3.7 0,0 1,7.5 3.8 Z"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#17152B"
+        android:strokeColor="@color/gradientStart"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
@@ -25,21 +25,21 @@
     <path
         android:pathData="M8,15.8 V12.2"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#17152B"
+        android:strokeColor="@color/gradientStart"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"/>
 
     <path
         android:pathData="M12,15.8 V8.6"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#17152B"
+        android:strokeColor="@color/gradientStart"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"/>
 
     <path
         android:pathData="M16,15.8 V10.4"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#17152B"
+        android:strokeColor="@color/gradientStart"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"/>
 </vector>

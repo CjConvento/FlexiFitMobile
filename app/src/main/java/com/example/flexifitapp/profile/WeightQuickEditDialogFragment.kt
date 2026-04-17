@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.flexifitapp.R
 import com.example.flexifitapp.UserPrefs
-import com.example.flexifitapp.profile.AchievementEngine
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import androidx.lifecycle.lifecycleScope
@@ -123,9 +122,6 @@ class WeightQuickEditDialogFragment :
                 UserPrefs.putFloat(ctx, UserPrefs.KEY_BMI, newBmi)
                 UserPrefs.putString(ctx, "bmi_category", "") // will be refreshed by server
             }
-
-            // 3. Update achievements locally
-            AchievementEngine.updateAchievementsLocally(ctx)
 
             // 4. Disable button to prevent double-click
             btnSave?.isEnabled = false

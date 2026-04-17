@@ -9,7 +9,7 @@
                           a3.7,3.7 0,1 1,0 -7.4
                           a3.7,3.7 0,1 1,0 7.4Z"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#17152B"
+        android:strokeColor="@color/gradientStart"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
@@ -21,7 +21,7 @@
                           C18,18.8 16.4,19.9 12,19.9
                           C7.6,19.9 6,18.8 6,17.2Z"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#17152B"
+        android:strokeColor="@color/gradientStart"
         android:strokeWidth="1.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
