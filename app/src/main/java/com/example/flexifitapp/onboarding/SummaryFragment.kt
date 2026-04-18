@@ -162,23 +162,9 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         // Retrieve allergies
         val allergies = OnboardingStore.getStringSet(ctx, FlexiFitKeys.ALLERGIES_LIST).toList()
 
-        // 🔥 FIX: Use stored user name and username from UserPrefs (set during sign-in)
-        val userName = UserPrefs.getString(ctx, UserPrefs.KEY_NAME, "")
-        val userUsername = UserPrefs.getString(ctx, UserPrefs.KEY_USERNAME, "")
-
-        // Fallback: If UserPrefs are empty, try OnboardingStore (which may have been set during sign-up)
-
-        // If still empty, use a safe default (but avoid "user" which is already taken)
-        val finalName = userName.ifEmpty { OnboardingStore.getString(ctx, "user_name", "User") }
-        val finalUsername = userUsername.ifEmpty { OnboardingStore.getString(ctx, "user_handle", "") }
-
-        // If username is still empty, generate a unique one (e.g., using the user ID from token)
-        val safeUsername = if (finalUsername.isBlank()) {
-            val userId = UserPrefs.getUserId(ctx)
-            "user_$userId"
-        } else {
-            finalUsername
-        }
+        // 🔥 Send empty strings – backend will keep existing name/username from usr_users
+        val finalName = ""
+        val safeUsername = ""
 
         // 🔥 CRITICAL: Use the computed name and username, NOT the old hardcoded ones
         val request = OnboardingProfileRequest(

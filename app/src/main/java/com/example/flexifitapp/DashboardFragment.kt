@@ -183,6 +183,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             try {
                 val response = ApiClient.api().getDashboardData()
                 if (response.isSuccessful) {
+
                     val data = response.body()
                     if (data != null) {
                         Log.d("DEBUG_JSON", "Raw Response: $data")
@@ -207,7 +208,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         // 1. Header (Gagamitin natin yung txtHeaderName na na-bind na natin)
         txtHeaderName?.text = "Welcome, ${data.username ?: data.name ?: "User"}!"
-        txtHeaderEmail?.text = data.userEmail ?: ""
 
         // 2. Fitness Level
         txtLevel?.text = data.fitnessLevel ?: "Beginner"

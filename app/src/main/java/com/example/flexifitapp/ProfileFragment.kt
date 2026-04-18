@@ -159,7 +159,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
 
     private fun loadLocalProfileData() {
         val ctx = requireContext()
-        val name = UserPrefs.getString(ctx, UserPrefs.KEY_NAME, "User Name")
+        val name = UserPrefs.getString(ctx, UserPrefs.KEY_USERNAME, "User Name")
         val goal = UserPrefs.getString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, "User Goal")
         val age = UserPrefs.getInt(ctx, UserPrefs.KEY_AGE, 0)
         val height = UserPrefs.getFloat(ctx, UserPrefs.KEY_HEIGHT_CM, 0f).toInt()

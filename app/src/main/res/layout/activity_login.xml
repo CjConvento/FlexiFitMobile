@@ -165,7 +165,7 @@
                         android:id="@+id/btnGoogleSignIn"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="18dp"
                         android:text="Continue with Google"
                         android:textAllCaps="false"

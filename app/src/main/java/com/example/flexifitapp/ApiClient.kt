@@ -54,7 +54,8 @@ object ApiClient {
 
         // Logging interceptor (optional, for debugging)
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.HEADERS
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.HEADERS
+                    else HttpLoggingInterceptor.Level.HEADERS
         }
         clientBuilder.addInterceptor(logging)
 
