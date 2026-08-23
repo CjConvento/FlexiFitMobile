@@ -284,7 +284,7 @@ dependencies {
 
 ## 📸 Screenshots
 
-_Add screenshots of your app here._
+_to be added..._
 
 ---
 
@@ -306,7 +306,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Cj Convento**
+**Natajimura**
 - GitHub: [@CjConvento](https://github.com/CjConvento)
 - Email: conventocj110@gmail.com
 
@@ -315,7 +315,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - [Material Design 3](https://m3.material.io/) for design guidelines
-- [OpenAI](https://openai.com/) for AI-assisted development support
 - [JetBrains](https://www.jetbrains.com/) for Kotlin and Android Studio
 - All open-source libraries used in this project
 
