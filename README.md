@@ -4,7 +4,7 @@ A modern, high-performance **Android application** built with Kotlin that serves
 
 ---
 
-## 📱 Tech Stack
+## Tech Stack
 
 - **Language:** Kotlin
 - **UI Framework:** Android View System with Material Design 3
@@ -20,27 +20,27 @@ A modern, high-performance **Android application** built with Kotlin that serves
 
 ## 📲 Core Features
 
-### 🔐 Authentication & User Management
+### Authentication & User Management
 - **Email/Password Sign-up & Login** with Firebase Authentication
 - **Google Sign-In** integration for quick access
 - **Secure JWT Token Management** - automatic token refresh on expiry
 - **Email Verification** flow to confirm user accounts
 
-### 🏋️ Intelligent Workout System
+### Intelligent Workout System
 - **Adaptive 28-Day Programs** (Push/Pull/Legs, Upper/Lower, Rehab)
 - **Warmup & Main Workout** sections with exercise details
 - **Exercise Library** with images, sets, reps, and descriptions
 - **Workout Progress Tracking** - mark sessions as Complete or Skip
 - **Calendar View** to track workout history and upcoming sessions
 
-### 🥗 Smart Nutrition Planning
+### Smart Nutrition Planning
 - **Personalized Meal Plans** based on dietary preferences (Balanced, Vegan, High-Protein)
 - **Macro Tracking** - Protein, Carbs, Fats with progress indicators
 - **Food Database** with detailed nutritional information
 - **Water Intake Tracking** with customizable glass sizes
 - **Meal Logging** - log Breakfast, Lunch, Snacks, and Dinner
 
-### 📅 Unified Calendar
+### Unified Calendar
 - **28-Day Program Calendar** showing daily workout status
 - **Color-coded Status Indicators**:
   - 🟢 COMPLETED - Day finished
@@ -50,20 +50,20 @@ A modern, high-performance **Android application** built with Kotlin that serves
   - ⚫ NOT_STARTED - Future day
 - **Day Detail View** with workout and nutrition tabs
 
-### 📊 Progress Tracking
+### Progress Tracking
 - **Weight Trends Chart** to monitor changes
 - **Calories Burned Bar Chart** for activity visualization
 - **Streak Tracking** - days of consecutive activity
 - **Achievement System** - badges for milestones (streaks, workouts, nutrition)
 - **Compliance Rate** - percentage of completed workouts
 
-### 🔔 Intelligent Reminders
+### Intelligent Reminders
 - **Workout Reminders** - daily schedule-based notifications
 - **Meal Reminders** - consistent meal logging
 - **Water Reminders** - hourly hydration prompts
 - **Notification Settings** - customizable intervals and times
 
-### ⚙️ Customizable Settings
+### Customizable Settings
 - **Dark Mode / Light Mode / Auto** theme support
 - **Notification Preferences** for workout, meal, and water reminders
 - **Water Goal & Glass Size** customization
@@ -72,7 +72,7 @@ A modern, high-performance **Android application** built with Kotlin that serves
 
 ---
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 ```
 app/
@@ -100,7 +100,7 @@ app/
 
 ---
 
-## 🎨 Screens
+## Screens
 
 | Screen | Description |
 |--------|-------------|
@@ -127,7 +127,7 @@ app/
 
 ---
 
-## 🚀 Developer Setup
+## Developer Setup
 
 ### Prerequisites
 
@@ -214,7 +214,7 @@ app/build/outputs/apk/debug/app-debug.apk
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 ```gradle
 dependencies {
@@ -282,13 +282,13 @@ dependencies {
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 _to be added..._
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -298,13 +298,13 @@ _to be added..._
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Natajimura**
 - GitHub: [@CjConvento](https://github.com/CjConvento)
@@ -312,7 +312,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Material Design 3](https://m3.material.io/) for design guidelines
 - [JetBrains](https://www.jetbrains.com/) for Kotlin and Android Studio
@@ -320,7 +320,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## ⚡ Quick Commands
+## Quick Commands
 
 | Command | Purpose |
 |---------|---------|
