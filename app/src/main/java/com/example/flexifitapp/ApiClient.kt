@@ -32,6 +32,15 @@ object ApiClient {
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
 
+         // ✅ Interceptor to bypass zrok interstitial page
+        clientBuilder.addInterceptor { chain ->
+            val original = chain.request()
+            val newRequest = original.newBuilder()
+                .header("skip_zrok_interstitial", "true")
+                .build()
+            chain.proceed(newRequest)
+        }
+
         // Authorization interceptor – adds the JWT token to every request
         // Inside ApiClient.build() – authorization interceptor
         clientBuilder.addInterceptor { chain ->

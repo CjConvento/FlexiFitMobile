@@ -2,7 +2,7 @@ package com.example.flexifitapp
 
 object ApiConfig {
 
-    const val BASE_URL = "https://xxx"
+    const val BASE_URL = "https://flexifitapi.shares.zrok.io/"
 
     // Eto ang "shortcut" para sa food images
     // Siguraduhin na match ito sa wwwroot folder structure mo sa C#
