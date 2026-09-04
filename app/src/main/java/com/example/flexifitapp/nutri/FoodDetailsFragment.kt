@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.example.flexifitapp.ApiClient
 import com.example.flexifitapp.R
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.ImageHelper
 
 class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
 
@@ -177,7 +178,7 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
     private fun loadFoodImage() {
         arguments?.getString("imageUrl")?.let { imageUrl ->
             Glide.with(this)
-                .load(imageUrl)
+                .load(ImageHelper.getImageUrl(imageUrl, "foods"))                   
                 .placeholder(R.drawable.ic_food_placeholder)
                 .error(R.drawable.ic_food_placeholder)
                 .into(imgHero)

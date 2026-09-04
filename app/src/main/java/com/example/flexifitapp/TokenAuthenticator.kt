@@ -16,13 +16,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 class TokenAuthenticator(private val context: Context) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
-        Log.d("TokenAuthenticator", "authenticate called with code ${response.code}")
+        AppLogger.d("TokenAuthenticator", "authenticate called with code ${response.code}")
         if (response.code != 401) return null
 
-        Log.d("TokenAuthenticator", "Token expired, attempting refresh")
+        AppLogger.d("TokenAuthenticator", "Token expired, attempting refresh")
         val newToken = getNewTokenBlocking() ?: run {
             // Refresh failed – clear local data and force logout
-            Log.e("TokenAuthenticator", "Refresh failed, clearing auth")
+            AppLogger.e("TokenAuthenticator", "Refresh failed, clearing auth")
             UserPrefs.clearAuth(context)
             // Also sign out Firebase to clean up
             FirebaseAuth.getInstance().signOut()
@@ -34,7 +34,7 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
 
         if (newToken != null) {
             UserPrefs.putString(context, UserPrefs.KEY_JWT_TOKEN, newToken)
-            Log.d("TokenAuthenticator", "New token saved, retrying request")
+            AppLogger.d("TokenAuthenticator", "New token saved, retrying request")
             return response.request.newBuilder()
                 .header("Authorization", "Bearer $newToken")
                 .build()
@@ -47,10 +47,10 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
             val firebaseToken = UserPrefs.getString(context, UserPrefs.KEY_FIREBASE_TOKEN, "")
 
             // 🔽 Add logging here
-            Log.d("TokenAuthenticator", "Stored Firebase token: ${firebaseToken.take(20)}")
+            AppLogger.d("TokenAuthenticator", "Firebase Token stored")
 
             if (firebaseToken.isBlank()) {
-                Log.e("TokenAuthenticator", "No stored Firebase token, cannot refresh")
+                AppLogger.e("TokenAuthenticator", "No stored Firebase token, cannot refresh")
                 return@runBlocking null
             }
 
@@ -67,14 +67,14 @@ class TokenAuthenticator(private val context: Context) : Authenticator {
             val response = api.refreshToken(request)
 
             if (response.isSuccessful && response.body() != null) {
-                Log.d("TokenAuthenticator", "Refresh succeeded, new token: ${response.body()!!.token.take(20)}")
+                AppLogger.d("TokenAuthenticator", "Refresh succeeded, new token is ready")
                 response.body()!!.token
             } else {
-                Log.e("TokenAuthenticator", "Refresh failed with code ${response.code()}")
+                AppLogger.e("TokenAuthenticator", "Refresh failed with code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e("TokenAuthenticator", "Refresh exception", e)
+            AppLogger.e("TokenAuthenticator", "Refresh exception", e)
             null
         }
     }

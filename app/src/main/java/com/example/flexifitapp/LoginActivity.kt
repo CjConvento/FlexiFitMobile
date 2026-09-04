@@ -33,6 +33,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import android.util.Patterns
 import java.security.MessageDigest
+import com.example.flexifitapp.utils.AppLogger
 
 class LoginActivity : AppCompatActivity() {
 
@@ -56,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
 
 //        // Auto-login if we have a saved token
 //        if (UserPrefs.isLoggedIn(this)) {
-//            Log.d("LoginActivity", "Auto-login with existing token")
+//            AppLogger.d("LoginActivity", "Auto-login with existing token")
 //            startActivity(Intent(this, MainActivity::class.java))
 //            finish()
 //            return
@@ -176,7 +177,7 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val account = task.getResult(ApiException::class.java)
                 val idToken = account.idToken
-                Log.d("GOOGLE_DEBUG", "Old API succeeded, ID token: ${idToken?.take(20)}")
+                AppLogger.d("GOOGLE_DEBUG", "Old API succeeded, ID token received")
                 // Sign in to Firebase with the token
                 val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
                 mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener { authTask ->
@@ -189,7 +190,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: ApiException) {
-                Log.e("GOOGLE_DEBUG", "Old API failed", e)
+                AppLogger.e("GOOGLE_DEBUG", "Old API failed", e)
                 setAuthLoading(false)
                 Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
             }
@@ -203,13 +204,12 @@ class LoginActivity : AppCompatActivity() {
                 val md = MessageDigest.getInstance("SHA")
                 md.update(signature.toByteArray())
                 val sha1 = android.util.Base64.encodeToString(md.digest(), android.util.Base64.NO_WRAP)
-                Log.d("SHA1", "SHA-1 (Base64): $sha1")
                 val hex = StringBuilder()
                 for (b in md.digest()) hex.append(String.format("%02X", b))
-                Log.d("SHA1", "SHA-1 (Hex): $hex")
-            }
+                
+                }
         } catch (e: Exception) {
-            Log.e("SHA1", "Failed to get SHA-1", e)
+            AppLogger.e("SHA1", "Failed to get SHA-1", e)
         }
     }
 
@@ -217,10 +217,10 @@ class LoginActivity : AppCompatActivity() {
         val currentUser = mAuth.currentUser
         var token = UserPrefs.getToken(this)
 
-        Log.d("AUTO_LOGIN", "currentUser=${currentUser?.uid}, token=${token.take(20)}...")
+        AppLogger.d("AUTO_LOGIN", "currentUser=${currentUser?.uid}, token exists: ${token.isNotEmpty()}")
 
         if (currentUser != null && token.isNotEmpty()) {
-            Log.d("LoginFlow", "Case 1: user & token exist → validating via bootstrap")
+            AppLogger.d("LoginFlow", "Case 1: user & token exist → validating via bootstrap")
             // Already have a token – validate via bootstrap
             loadingOverlay.visibility = View.VISIBLE
             setAuthLoading(true)
@@ -233,7 +233,7 @@ class LoginActivity : AppCompatActivity() {
                         val body = bootRes.body()!!
 
                         // 🔥 ADD THIS LOGGING 🔥
-                        Log.d("BOOTSTRAP_DEBUG", "LoginActivity bootstrap: profileComplete=${body.profileComplete}, " +
+                        AppLogger.d("BOOTSTRAP_DEBUG", "LoginActivity bootstrap: profileComplete=${body.profileComplete}, " +
                                 "status=${body.status}, userId=${body.userId}, " +
                                 "name=${body.name}, username=${body.username}")
 
@@ -243,15 +243,15 @@ class LoginActivity : AppCompatActivity() {
                         }
                         // Redirect based on profile completeness
                         if (body.profileComplete) {
-                            Log.d("LoginFlow", "profileComplete=true → goToMain()")
+                            AppLogger.d("LoginFlow", "profileComplete=true → goToMain()")
                             goToMain()
                         } else {
-                            Log.d("LoginFlow", "profileComplete=false → goToOnboard()")
+                            AppLogger.d("LoginFlow", "profileComplete=false → goToOnboard()")
                             goToOnboard()
                         }
                     } else {
                         // Bootstrap failed – token may be invalid
-                        Log.e("AUTO_LOGIN", "bootstrap failed: ${bootRes.code()}")
+                        AppLogger.e("AUTO_LOGIN", "bootstrap failed: ${bootRes.code()}")
                         loadingOverlay.visibility = View.GONE
                         setAuthLoading(false)
                         // Also sign out Firebase to clean up
@@ -261,39 +261,39 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("AUTO_LOGIN", "bootstrap exception", e)
+                    AppLogger.e("AUTO_LOGIN", "bootstrap exception", e)
                     loadingOverlay.visibility = View.GONE
                     setAuthLoading(false)
                 }
             }
         } else if (currentUser != null && token.isEmpty()) {
             // Firebase user exists but no local token – try to get a fresh token
-            Log.d("LoginFlow", "Case 2: user exists but token empty → fetch fresh token")
+            AppLogger.d("LoginFlow", "Case 2: user exists but token empty → fetch fresh token")
             loadingOverlay.visibility = View.VISIBLE
             setAuthLoading(true)
             currentUser.getIdToken(true).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val newToken = task.result?.token
                     if (newToken != null) {
-                        Log.d("LoginFlow", "Got fresh token, saving and retrying")
+                        AppLogger.d("LoginFlow", "Got fresh token, saving and retrying")
                         UserPrefs.putString(this, UserPrefs.KEY_JWT_TOKEN, newToken)
                         // Retry the auto-login
                         checkExistingLogin()
                     } else {
-                        Log.w("LoginFlow", "Fresh token null")
+                        AppLogger.w("LoginFlow", "Fresh token null")
                         loadingOverlay.visibility = View.GONE
                         setAuthLoading(false)
                         Toast.makeText(this, "Unable to restore session", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.e("LoginFlow", "getIdToken failed", task.exception)
+                    AppLogger.e("LoginFlow", "getIdToken failed", task.exception)
                     loadingOverlay.visibility = View.GONE
                     setAuthLoading(false)
                     Toast.makeText(this, "Unable to restore session", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
-            Log.d("LoginFlow", "Case 3: no session → show login UI")
+            AppLogger.d("LoginFlow", "Case 3: no session → show login UI")
             // No session – show login UI
             loadingOverlay.visibility = View.GONE
             setAuthLoading(false)
@@ -302,8 +302,8 @@ class LoginActivity : AppCompatActivity() {
 
     private fun startGoogleSignIn() {
         val webClientId = getString(R.string.default_web_client_id)
-        Log.d("GOOGLE_DEBUG", "Web client ID: $webClientId")
-        Log.d("GOOGLE_DEBUG", "Package name: $packageName")
+        AppLogger.d("GOOGLE_DEBUG", "Web client ID: $webClientId")
+        AppLogger.d("GOOGLE_DEBUG", "Package name: $packageName")
         logAppSha1()
 
         val googleIdOption = GetGoogleIdOption.Builder()
@@ -337,7 +337,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 setAuthLoading(false)
-                Log.e("GOOGLE_ERROR", "Exception: ${e.message}", e)
+                AppLogger.e("GOOGLE_ERROR", "Exception: ${e.message}", e)
                 Toast.makeText(this@LoginActivity, "Google Auth Failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
@@ -378,7 +378,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 setAuthLoading(false)
-                Log.e("LOGIN_ERROR", e.message ?: "Unknown error")
+                AppLogger.e("LOGIN_ERROR", e.message ?: "Unknown error")
                 Toast.makeText(this@LoginActivity, "Connection Error", Toast.LENGTH_SHORT).show()
             }
         }
@@ -419,7 +419,7 @@ class LoginActivity : AppCompatActivity() {
         firebaseToken: String?
     ) {
 
-        Log.d("LoginActivity", "handleSuccessfulAuth: firebaseToken = ${firebaseToken?.take(20)}")
+        AppLogger.d("LoginActivity", "handleSuccessfulAuth: firebaseToken received")
 
         UserPrefs.saveAuth(
             ctx = this@LoginActivity,
@@ -432,7 +432,7 @@ class LoginActivity : AppCompatActivity() {
             photoUrl = auth.photoUrl ?: "", // At ito rin
             firebaseToken = firebaseToken
         )
-        Log.d("AUTH", "Saved token: ${UserPrefs.getToken(this@LoginActivity)}")
+        AppLogger.d("AUTH", "User logged in successfully. UserId: ${UserPrefs.getUserId(this)}")
 
         // Optional: I-save na rin natin yung Name at Photo para sa ProfileFragment
         UserPrefs.putString(this@LoginActivity, UserPrefs.KEY_NAME, auth.name ?: "")
@@ -441,7 +441,7 @@ class LoginActivity : AppCompatActivity() {
         val bootRes = api.bootstrap()
         if (bootRes.isSuccessful && bootRes.body() != null) {
             val body = bootRes.body()!!
-            Log.d(
+            AppLogger.d(
                 "BOOTSTRAP_DEBUG",
                 "handleSuccessfulAuth bootstrap: profileComplete=${body.profileComplete}, status=${body.status}, userId=${body.userId}, name=${body.name}, username=${body.username}"
             )
@@ -453,15 +453,15 @@ class LoginActivity : AppCompatActivity() {
 
             // Determine where to go
             if (body.profileComplete) {
-                Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=true → goToMain()")
+                AppLogger.d("LoginFlow", "handleSuccessfulAuth: profileComplete=true → goToMain()")
                 goToMain()
             } else {
-                Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
+                AppLogger.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
                 goToOnboard()
             }
         } else {
             // Default to onboarding if bootstrap fails but login succeeded
-            Log.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
+            AppLogger.d("LoginFlow", "handleSuccessfulAuth: profileComplete=false → goToOnboard()")
             goToOnboard()
         }
     }
@@ -473,7 +473,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToMain() {
-        Log.d("LoginFlow", "goToMain() called")
+        AppLogger.d("LoginFlow", "goToMain() called")
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -481,7 +481,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun goToOnboard() {
-        Log.d("LoginFlow", "goToOnboard() called")
+        AppLogger.d("LoginFlow", "goToOnboard() called")
         val intent = Intent(this, OnboardingActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

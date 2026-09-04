@@ -79,7 +79,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                 putInt("ARG_MONTH", monthArg)
                 putBoolean("ARG_FROM_HOST", fromHost)
             }
-            Log.d("WORKOUT_TAB", "Restored from savedInstanceState: Day=$day, Month=$monthArg, fromHost=$fromHost")
+            AppLogger.d("WORKOUT_TAB", "Restored from savedInstanceState: Day=$day, Month=$monthArg, fromHost=$fromHost")
         } else if (arguments == null) {
             // Fallback: try to get arguments from parent fragment
             val parent = parentFragment
@@ -92,7 +92,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                     putInt("ARG_MONTH", parentMonth)
                     putBoolean("ARG_FROM_HOST", parentFromHost)
                 }
-                Log.d("WORKOUT_TAB", "Recovered arguments from parent: Day=$parentDay, Month=$parentMonth")
+                AppLogger.d("WORKOUT_TAB", "Recovered arguments from parent: Day=$parentDay, Month=$parentMonth")
             } else {
                 // Default (should only happen when opened from bottom navigation)
                 arguments = Bundle().apply {
@@ -109,7 +109,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         outState.putInt("ARG_DAY", day)
         outState.putInt("ARG_MONTH", monthArg)
         outState.putBoolean("ARG_FROM_HOST", fromHost)
-        Log.d("WORKOUT_TAB", "Saving state: Day=$day, Month=$monthArg, fromHost=$fromHost")
+        AppLogger.d("WORKOUT_TAB", "Saving state: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -132,7 +132,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         day = arguments?.getInt("ARG_DAY", -1) ?: -1
         monthArg = arguments?.getInt("ARG_MONTH", 1) ?: 1
         fromHost = arguments?.getBoolean("ARG_FROM_HOST", false) ?: false
-        Log.i("WORKOUT_TAB", "Args: Day=$day, Month=$monthArg, fromHost=$fromHost")
+        AppLogger.i("WORKOUT_TAB", "Args: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
@@ -205,7 +205,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                     showError("No record found for Day ${if (fromHost) day else "today"}.")
                 }
             } catch (e: Exception) {
-                Log.e("WORKOUT_TAB", "Error: ${e.message}")
+                AppLogger.e("WORKOUT_TAB", "Error: ${e.message}")
                 showError("Connection error. Check your API!")
             }
         }
@@ -415,7 +415,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                     bundle
                 )
             } catch (e: Exception) {
-                Log.e("WORKOUT_TAB", "Navigation failed: ${e.message}")
+                AppLogger.e("WORKOUT_TAB", "Navigation failed: ${e.message}")
             }
         }
     }

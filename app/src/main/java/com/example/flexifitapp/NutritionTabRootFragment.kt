@@ -116,7 +116,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         // waterGlass = view.findViewById(R.id.waterGlass)
 
             btnCalendar.isVisible = !fromHost
-        Log.d("NUTRITION_TAB", "Calendar button visibility set to: ${btnCalendar.isVisible}, fromHost=$fromHost")
+        AppLogger.d("NUTRITION_TAB", "Calendar button visibility set to: ${btnCalendar.isVisible}, fromHost=$fromHost")
     }
 
     private fun setupButtons() {
@@ -132,7 +132,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
                 )
                 findNavController().navigate(R.id.action_nutritionTabRootFragment_to_unifiedCalendarFragment, bundle)
             } else {
-                Log.d("NUTRITION_TAB", "Calendar button clicked but fragment is in host mode – ignoring.")
+                AppLogger.d("NUTRITION_TAB", "Calendar button clicked but fragment is in host mode – ignoring.")
             }
         }
 
@@ -420,7 +420,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
                     tvWaterValue.text = "$glasses/8"
                 }
             } catch (e: Exception) {
-                Log.e("NUTRITION", "Error loading water: ${e.message}")
+                AppLogger.e("NUTRITION", "Error loading water: ${e.message}")
             }
         }
     }

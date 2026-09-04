@@ -21,7 +21,7 @@ class NotificationScheduler(private val context: Context) {
                 val hour = parts[0].toInt()
                 val minute = parts[1].toInt()
                 val delay = calculateDelay(hour, minute)
-                Log.d("NotificationScheduler", "Workout delay: $delay ms")
+                AppLogger.d("NotificationScheduler", "Workout delay: $delay ms")
                 val workRequest = OneTimeWorkRequestBuilder<WorkoutReminderWorker>()
                     .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                     .build()
@@ -32,7 +32,7 @@ class NotificationScheduler(private val context: Context) {
                 )
             }
         } catch (e: Exception) {
-            Log.e("NotificationScheduler", "Workout reminder scheduling failed", e)
+            AppLogger.e("NotificationScheduler", "Workout reminder scheduling failed", e)
         }
     }
 
@@ -48,7 +48,7 @@ class NotificationScheduler(private val context: Context) {
                 val hour = parts[0].toInt()
                 val minute = parts[1].toInt()
                 val delay = calculateDelay(hour, minute)
-                Log.d("NotificationScheduler", "Meal delay: $delay ms")
+                AppLogger.d("NotificationScheduler", "Meal delay: $delay ms")
                 val workRequest = OneTimeWorkRequestBuilder<MealReminderWorker>()
                     .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                     .build()
@@ -59,7 +59,7 @@ class NotificationScheduler(private val context: Context) {
                 )
             }
         } catch (e: Exception) {
-            Log.e("NotificationScheduler", "Meal reminder scheduling failed", e)
+            AppLogger.e("NotificationScheduler", "Meal reminder scheduling failed", e)
         }
     }
 
@@ -116,12 +116,12 @@ class NotificationScheduler(private val context: Context) {
                     ExistingWorkPolicy.REPLACE,
                     workRequest
                 )
-                Log.d("NotificationScheduler", "First water reminder scheduled with delay $delay ms")
+                AppLogger.d("NotificationScheduler", "First water reminder scheduled with delay $delay ms")
             } else {
-                Log.e("NotificationScheduler", "Water reminder delay <= 0, no work scheduled")
+                AppLogger.e("NotificationScheduler", "Water reminder delay <= 0, no work scheduled")
             }
         } catch (e: Exception) {
-            Log.e("NotificationScheduler", "Water reminder scheduling failed", e)
+            AppLogger.e("NotificationScheduler", "Water reminder scheduling failed", e)
         }
     }
 
@@ -136,7 +136,7 @@ class NotificationScheduler(private val context: Context) {
             }
         }
         val delay = calendar.timeInMillis - System.currentTimeMillis()
-        Log.d("NotificationScheduler", "Calculated delay for $hour:$minute = $delay ms")
+        AppLogger.d("NotificationScheduler", "Calculated delay for $hour:$minute = $delay ms")
         return delay
     }
 }

@@ -126,7 +126,7 @@ class CreateUsernameActivity : AppCompatActivity() {
 
                 val authBody = registerRes.body()!!
 
-                Log.d("CreateUsername", "firebaseToken = ${firebaseToken.take(20)}")
+                AppLogger.d("CreateUsername", "Firebase token retrieved successfully")
 
                 // Heto ang tamang paraan babe, kailangan nating gamitin ang 'authBody.'
                 // para makuha ang data mula sa server response.

@@ -13,7 +13,7 @@ object ProgramNameParser {
 
     fun parse(name: String): ProgramInfo {
         val trimmed = name.trim().replace(Regex("\\s+"), " ")
-        Log.d("FLEXIFIT_DEBUG", "Parsing Program: '$trimmed'")
+        AppLogger.d("FLEXIFIT_DEBUG", "Parsing Program: '$trimmed'")
 
         // 1. INJURY SAFE CHECK (Format: "Upper Body Injury Safe Muscle Gain Beginner (Gym)")
         val injuryPrefix1 = "Upper Body Injury Safe"
@@ -101,6 +101,6 @@ object ProgramNameParser {
     }
 
     private fun logResult(info: ProgramInfo) {
-        Log.d("FLEXIFIT_DEBUG", "Parsed Result -> Cat: ${info.category}, Lvl: ${info.level}, Env: ${info.environment}")
+        AppLogger.d("FLEXIFIT_DEBUG", "Parsed Result -> Cat: ${info.category}, Lvl: ${info.level}, Env: ${info.environment}")
     }
 }

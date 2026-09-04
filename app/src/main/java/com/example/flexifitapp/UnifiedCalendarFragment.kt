@@ -27,7 +27,7 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
         val month = arguments?.getInt(NavKeys.ARG_MONTH, 1) ?: 1
         val sourceTab = arguments?.getString(NavKeys.ARG_SOURCE_TAB) ?: "WORKOUT"
 
-        Log.d(TAG, "Fragment Started: Month=$month, Tab=$sourceTab")
+        AppLogger.d(TAG, "Fragment Started: Month=$month, Tab=$sourceTab")
 
         // Month dropdown
         val ddMonth = view.findViewById<MaterialAutoCompleteTextView>(R.id.ddMonth)
@@ -55,12 +55,12 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                Log.d(TAG, "Calling getCalendarHistory()")
+                AppLogger.d(TAG, "Calling getCalendarHistory()")
                 val response = api.getCalendarHistory()
 
                 if (response.isSuccessful) {
                     val historyList = response.body() ?: emptyList()
-                    Log.d(TAG, "API Success: Found ${historyList.size} records")
+                    AppLogger.d(TAG, "API Success: Found ${historyList.size} records")
 
                     val calendarItems = generateCalendarDays(historyList)
 
@@ -75,11 +75,11 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
                     }
 
                 } else {
-                    Log.e(TAG, "API Error: ${response.code()}")
+                    AppLogger.e(TAG, "API Error: ${response.code()}")
                     Toast.makeText(requireContext(), "Failed to load calendar", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error: ${e.message}", e)
+                AppLogger.e(TAG, "Error: ${e.message}", e)
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
@@ -140,7 +140,7 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
         }
 
         calendarDays.forEachIndexed { index, day ->
-            Log.d("CALENDAR_DEBUG", "Index $index: dayNumber=${day.dayNumber}, isClickable=${day.isClickable}")
+            AppLogger.d("CALENDAR_DEBUG", "Index $index: dayNumber=${day.dayNumber}, isClickable=${day.isClickable}")
         }
 
         // Optionally, add empty cells at the end to fill the grid (not necessary, RecyclerView will handle)

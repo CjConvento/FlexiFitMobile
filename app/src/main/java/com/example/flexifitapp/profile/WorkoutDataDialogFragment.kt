@@ -143,8 +143,8 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
         val fitnessGoals = UserPrefs.getStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET)
 
 // 🔽 Add these two lines here
-        Log.d("WorkoutDialog", "selectedPrograms = $selectedPrograms")
-        Log.d("WorkoutDialog", "fitnessGoals = $fitnessGoals")
+        AppLogger.d("WorkoutDialog", "selectedPrograms = $selectedPrograms")
+        AppLogger.d("WorkoutDialog", "fitnessGoals = $fitnessGoals")
 
         tvProgramsValue?.text = if (selectedPrograms.isNotEmpty()) {
             selectedPrograms.joinToString("\n") { prettifyValue(it) }

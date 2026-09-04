@@ -27,7 +27,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         rootView = view
-        Log.d("FLEXIFIT_DEBUG", "--- Final Summary Page ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Final Summary Page ---")
 
         bindSummary(view)
 
@@ -191,7 +191,7 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
             allergies = allergies   // Added here
         )
 
-        Log.d("FLEXIFIT_DEBUG", "SUBMITTING -> BodyGoal: ${request.bodyGoal}, Diet: ${request.dietType}, Username: ${request.username}, Name: ${request.name}")
+        AppLogger.d("FLEXIFIT_DEBUG", "SUBMITTING -> BodyGoal: ${request.bodyGoal}, Diet: ${request.dietType}, Username: ${request.username}, Name: ${request.name}")
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -206,13 +206,13 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
                 } else {
                     btnFinish?.isEnabled = true
                     val errorMsg = res.errorBody()?.string() ?: "Unknown Server Error"
-                    Log.e("FLEXIFIT_DEBUG", "--- SERVER ERROR ---")
-                    Log.e("FLEXIFIT_DEBUG", "Detail: $errorMsg")
+                    AppLogger.e("FLEXIFIT_DEBUG", "--- SERVER ERROR ---")
+                    AppLogger.e("FLEXIFIT_DEBUG", "Detail: $errorMsg")
                     Toast.makeText(ctx, "Error: $errorMsg", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 btnFinish?.isEnabled = true
-                Log.e("FLEXIFIT_DEBUG", "Request Failed", e)
+                AppLogger.e("FLEXIFIT_DEBUG", "Request Failed", e)
                 Toast.makeText(ctx, "Connection Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }

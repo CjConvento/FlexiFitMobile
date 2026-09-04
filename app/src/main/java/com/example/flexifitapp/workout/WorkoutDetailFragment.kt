@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.flexifitapp.R
 import com.google.android.material.button.MaterialButton
+import com.example.flexifitapp.utils.ImageHelper
 
 class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
 
@@ -72,7 +73,7 @@ class WorkoutDetailFragment : Fragment(R.layout.fragment_workout_detail) {
 
         val imageUrl = arguments?.getString("image")
         Glide.with(this)
-            .load(imageUrl)
+            .load(ImageHelper.getImageUrl(imageUrl, "workouts"))            
             .placeholder(R.drawable.ic_workout)
             .into(ivWorkoutHeroImage!!)
 

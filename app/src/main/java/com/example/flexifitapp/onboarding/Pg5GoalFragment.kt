@@ -28,9 +28,9 @@ class Pg5GoalFragment : BaseOnboardingFragment(
         val savedGoals = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
         val isRehabUser = OnboardingStore.getBoolean(requireContext(), FlexiFitKeys.IS_REHAB_USER)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Page 5 Hydration ---")
-        Log.d("FLEXIFIT_DEBUG", "Restored Goals: $savedGoals")
-        Log.d("FLEXIFIT_DEBUG", "Current User Status: ${if(isRehabUser) "REHAB" else "REGULAR"}")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Page 5 Hydration ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Restored Goals: $savedGoals")
+        AppLogger.d("FLEXIFIT_DEBUG", "Current User Status: ${if(isRehabUser) "REHAB" else "REGULAR"}")
 
         // 3. LAYOUT LOGIC: Centering the last item if odd
         val glm = GridLayoutManager(requireContext(), 2)
@@ -46,7 +46,7 @@ class Pg5GoalFragment : BaseOnboardingFragment(
             items = goals,
             preselected = savedGoals
         ) { selectedIds ->
-            Log.d("FLEXIFIT_DEBUG", "Fitness Goals Updated: $selectedIds")
+            AppLogger.d("FLEXIFIT_DEBUG", "Fitness Goals Updated: $selectedIds")
             OnboardingStore.putStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS, selectedIds)
         }
     }
@@ -54,8 +54,8 @@ class Pg5GoalFragment : BaseOnboardingFragment(
     override fun validateBeforeNext(): String? {
         val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.FITNESS_GOALS)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 5 ---")
-        Log.d("FLEXIFIT_DEBUG", "Final Goals to Save: $selected")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Validating Page 5 ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Final Goals to Save: $selected")
 
         return if (selected.isEmpty()) {
             "Please select at least one fitness goal to continue."

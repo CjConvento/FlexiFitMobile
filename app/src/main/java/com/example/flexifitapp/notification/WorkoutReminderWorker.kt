@@ -11,7 +11,7 @@ class WorkoutReminderWorker(
 ) : Worker(context, params) {
 
     override fun doWork(): Result {
-        Log.d("ReminderWorker", "Workout reminder executed")
+        AppLogger.d("ReminderWorker", "Workout reminder executed")
         try {
             val notificationService = NotificationService(applicationContext)
             notificationService.showNotification(
@@ -21,7 +21,7 @@ class WorkoutReminderWorker(
             )
             return Result.success()
         } catch (e: Exception) {
-            Log.e("ReminderWorker", "Workout reminder failed", e)
+            AppLogger.e("ReminderWorker", "Workout reminder failed", e)
             return Result.failure()
         }
     }

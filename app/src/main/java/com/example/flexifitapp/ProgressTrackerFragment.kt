@@ -46,7 +46,7 @@ class ProgressTrackerFragment : Fragment(R.layout.fragment_progress_tracker) {
                 if (response.isSuccessful) {
                     response.body()?.let { data ->
 
-                        Log.d("PROGRESS", "Data received: compliance=${data.compliancePercentage}, avgCalories=${data.avgCalories}, streak=${data.currentStreak}")
+                        AppLogger.d("PROGRESS", "Data received: compliance=${data.compliancePercentage}, avgCalories=${data.avgCalories}, streak=${data.currentStreak}")
 
                         updateUI(data)
                     }

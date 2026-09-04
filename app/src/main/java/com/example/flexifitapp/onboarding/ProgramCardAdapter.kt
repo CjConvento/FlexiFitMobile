@@ -73,15 +73,15 @@ class ProgramCardAdapter(
                 // 4. LIMIT LOGIC with Logs
                 if (isAdding) {
                     if (selected.size >= maxSelection) {
-                        Log.w("FLEXIFIT_DEBUG", "Selection Limit Reached ($maxSelection). Cannot add: $programName")
+                        AppLogger.w("FLEXIFIT_DEBUG", "Selection Limit Reached ($maxSelection). Cannot add: $programName")
                         onLimitReached?.invoke()
                         return@setOnClickListener
                     }
                     selected.add(programName)
-                    Log.d("FLEXIFIT_DEBUG", "Program Added: $programName (Total: ${selected.size})")
+                    AppLogger.d("FLEXIFIT_DEBUG", "Program Added: $programName (Total: ${selected.size})")
                 } else {
                     selected.remove(programName)
-                    Log.d("FLEXIFIT_DEBUG", "Program Removed: $programName (Total: ${selected.size})")
+                    AppLogger.d("FLEXIFIT_DEBUG", "Program Removed: $programName (Total: ${selected.size})")
                 }
 
                 onToggle(programName, isAdding)

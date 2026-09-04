@@ -27,8 +27,8 @@ class Pg4LocationFragment : BaseOnboardingFragment(
         // 2. HYDRATION: Restore from Store with Logs
         val savedEnvironments = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Page 4 Hydration ---")
-        Log.d("FLEXIFIT_DEBUG", "Restored Environments: $savedEnvironments")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Page 4 Hydration ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Restored Environments: $savedEnvironments")
 
         // 3. LAYOUT LOGIC: Centering the last item if odd
         val glm = GridLayoutManager(requireContext(), 2)
@@ -44,7 +44,7 @@ class Pg4LocationFragment : BaseOnboardingFragment(
             items = tiles,
             preselected = savedEnvironments
         ) { selectedIds ->
-            Log.d("FLEXIFIT_DEBUG", "Environment Selection Updated: $selectedIds")
+            AppLogger.d("FLEXIFIT_DEBUG", "Environment Selection Updated: $selectedIds")
             // Auto-save using the optimized OnboardingStore
             OnboardingStore.putStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT, selectedIds)
         }
@@ -53,8 +53,8 @@ class Pg4LocationFragment : BaseOnboardingFragment(
     override fun validateBeforeNext(): String? {
         val selected = OnboardingStore.getStringSet(requireContext(), FlexiFitKeys.ENVIRONMENT)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 4 ---")
-        Log.d("FLEXIFIT_DEBUG", "Final Environments: $selected")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Validating Page 4 ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Final Environments: $selected")
 
         return if (selected.isEmpty()) {
             "Please choose at least one environment where you can workout."

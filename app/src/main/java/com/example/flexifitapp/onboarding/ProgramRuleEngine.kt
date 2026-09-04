@@ -17,12 +17,12 @@ data class ProgramInputs(
 object ProgramRuleEngine {
 
     fun generate(inputs: ProgramInputs): List<String> {
-        Log.d("FLEXIFIT_DEBUG", "--- Rule Engine: Processing Inputs ---")
-        Log.d("FLEXIFIT_DEBUG", "Goals: ${inputs.goals}, Safety: ${inputs.safety}, Level: ${inputs.level}")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Rule Engine: Processing Inputs ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Goals: ${inputs.goals}, Safety: ${inputs.safety}, Level: ${inputs.level}")
 
         // 1. JOINT/CRITICAL SAFETY CHECK: Force Rehab regardless of goals
         if (inputs.safety == HealthSafety.JOINT_PROBLEM) {
-            Log.w("FLEXIFIT_DEBUG", "Joint Problem Detected: Forcing Rehab-only programs.")
+            AppLogger.w("FLEXIFIT_DEBUG", "Joint Problem Detected: Forcing Rehab-only programs.")
             return inputs.locations.map { loc ->
                 "Rehab ${locText(loc)} Program"
             }.distinct()
@@ -73,7 +73,7 @@ object ProgramRuleEngine {
         }
 
         val result = cards.distinct()
-        Log.d("FLEXIFIT_DEBUG", "Engine Generated ${result.size} programs.")
+        AppLogger.d("FLEXIFIT_DEBUG", "Engine Generated ${result.size} programs.")
         return result
     }
 

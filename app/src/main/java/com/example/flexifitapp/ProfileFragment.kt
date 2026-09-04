@@ -20,6 +20,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
+import com.example.flexifitapp.utils.ImageHelper
 
 class ProfileFragment : Fragment(R.layout.fragment_profileff) {
 
@@ -64,7 +65,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
                 dialog.arguments = args
             } else {
                 // Fallback: no data yet – show dialog without arguments; it will read from prefs
-                Log.d("ProfileFragment", "latestProfile is null, opening dialog without args")
+                AppLogger.d("ProfileFragment", "latestProfile is null, opening dialog without args")
             }
             dialog.show(parentFragmentManager, "NutritionDataDialog")
         }
@@ -102,10 +103,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
                     storeProfileData(latestProfile!!)
                     loadLocalProfileData()
                 } else {
-                    Log.e("ProfileFragment", "Sync failed: ${response.code()} - ${response.message()}")
+                    AppLogger.e("ProfileFragment", "Sync failed: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                Log.e("ProfileFragment", "Sync exception: ${e.message}")
+                AppLogger.e("ProfileFragment", "Sync exception: ${e.message}")
             }
         }
     }
@@ -122,7 +123,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         data.targetWeightKg?.let { UserPrefs.putFloat(ctx, UserPrefs.KEY_TARGET_WEIGHT_KG, it.toFloat()) }
 
         // Log basic info
-        Log.d("ProfileFragment", "Stored basic: name=${data.name}, username=${data.username}, age=${data.age}, height=${data.heightCm}, weight=${data.weightKg}")
+        AppLogger.d("ProfileFragment", "Stored basic: name=${data.name}, username=${data.username}, age=${data.age}, height=${data.heightCm}, weight=${data.weightKg}")
 
         // Goals & achievements
         UserPrefs.putString(ctx, UserPrefs.KEY_BODYCOMP_GOAL, data.goalSubtitle)
@@ -132,13 +133,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         UserPrefs.putInt(ctx, "completed_sessions", data.completedSessions)
         UserPrefs.putInt(ctx, "total_program_sessions", data.totalProgramSessions)
 
-        Log.d("ProfileFragment", "Stored goals: bodyComp=${data.goalSubtitle}, nutritionGoal=${data.nutritionGoal}, sessions=$data.totalSessions, workouts=$data.totalWorkouts")
+        AppLogger.d("ProfileFragment", "Stored goals: bodyComp=${data.goalSubtitle}, nutritionGoal=${data.nutritionGoal}, sessions=$data.totalSessions, workouts=$data.totalWorkouts")
 
         // Programs & goals (for WorkoutData dialog)
         UserPrefs.putStringSet(ctx, UserPrefs.KEY_SELECTED_PROGRAMS, data.selectedPrograms.toSet())
         UserPrefs.putStringSet(ctx, UserPrefs.KEY_FITNESS_GOAL_SET, data.fitnessGoals.toSet())
 
-        Log.d("ProfileFragment", "Stored programs: ${data.selectedPrograms}, fitnessGoals: ${data.fitnessGoals}")
+        AppLogger.d("ProfileFragment", "Stored programs: ${data.selectedPrograms}, fitnessGoals: ${data.fitnessGoals}")
 
         // Nutrition targets
         UserPrefs.putInt(ctx, "daily_calorie_target", data.dailyCalorieTarget)
@@ -153,8 +154,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         UserPrefs.putFloat(ctx, "bmi_value", data.bmi.toFloat())
         UserPrefs.putString(ctx, "bmi_category", data.bmiCategory)
 
-        Log.d("ProfileFragment", "Stored nutrition: calorieTarget=${data.dailyCalorieTarget}, protein=${data.proteinG}, carbs=${data.carbsG}, fats=${data.fatsG}")
-        Log.d("ProfileFragment", "Stored BMI: ${data.bmi}, category=${data.bmiCategory}")
+        AppLogger.d("ProfileFragment", "Stored nutrition: calorieTarget=${data.dailyCalorieTarget}, protein=${data.proteinG}, carbs=${data.carbsG}, fats=${data.fatsG}")
+        AppLogger.d("ProfileFragment", "Stored BMI: ${data.bmi}, category=${data.bmiCategory}")
     }
 
     private fun loadLocalProfileData() {
@@ -174,7 +175,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profileff) {
         val avatarUrl = UserPrefs.getString(ctx, "avatar_url", "")
         if (avatarUrl.isNotBlank()) {
             Glide.with(this)
-                .load(if (avatarUrl.startsWith("http")) avatarUrl else ApiConfig.BASE_URL + avatarUrl)
+                .load(ImageHelper.getImageUrl(avatarUrl, "avatars"))
                 .placeholder(R.drawable.profile)
                 .circleCrop()
                 .into(binding.imgAvatar)

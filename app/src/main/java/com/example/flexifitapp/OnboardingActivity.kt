@@ -99,26 +99,26 @@ class OnboardingActivity : AppCompatActivity() {
                     val data = response.body()
 
                     if (data != null) {
-                        Log.d("BOOTSTRAP_DEBUG", "OnboardingActivity bootstrap: profileComplete=${data.profileComplete}, " +
+                        AppLogger.d("BOOTSTRAP_DEBUG", "OnboardingActivity bootstrap: profileComplete=${data.profileComplete}, " +
                                 "status=${data.status}, userId=${data.userId}, " +
                                 "name=${data.name}, username=${data.username}")
 
                         // ✅ FIX: Do NOT auto‑redirect when in update mode
                         if (data.profileComplete && !isUpdateMode) {
                             UserPrefs.setOnboardingDone(this@OnboardingActivity, true)
-                            Log.d("FLEXIFIT_DEBUG", "Server says Profile is Complete and not in update mode. Going to Main.")
+                            AppLogger.d("FLEXIFIT_DEBUG", "Server says Profile is Complete and not in update mode. Going to Main.")
                             goToMain()
                         } else {
                             // Stay in onboarding (either incomplete or update mode)
                             UserPrefs.setOnboardingDone(this@OnboardingActivity, false)
-                            Log.d("FLEXIFIT_DEBUG", "Profile Incomplete or Update Mode. Stay in Onboarding.")
+                            AppLogger.d("FLEXIFIT_DEBUG", "Profile Incomplete or Update Mode. Stay in Onboarding.")
                         }
                     }
                 } else {
-                    Log.e("FLEXIFIT_DEBUG", "Bootstrap Failed: ${response.code()}")
+                    AppLogger.e("FLEXIFIT_DEBUG", "Bootstrap Failed: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("FLEXIFIT_DEBUG", "Network Error in Bootstrap", e)
+                AppLogger.e("FLEXIFIT_DEBUG", "Network Error in Bootstrap", e)
                 // Keep user in onboarding (local check could be added)
             }
         }

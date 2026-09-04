@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.ImageHelper
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
@@ -178,7 +179,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     }
 
     private fun fetchDashboardData() {
-        Log.d("Dashboard", "Token before API call: ${UserPrefs.getToken(requireContext()).take(20)}...")
+        AppLogger.d("Dashboard", "Token before API call")
         lifecycleScope.launch {
             try {
                 val response = ApiClient.api().getDashboardData()
@@ -186,19 +187,19 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
                     val data = response.body()
                     if (data != null) {
-                        Log.d("DEBUG_JSON", "Raw Response: $data")
+                        AppLogger.d("DEBUG_JSON", "Raw Response: $data")
 
                         globalProfileData = data
                         updateUI(data)
                     } else {
-                        Log.e("DEBUG_JSON", "Babe, empty yung body (null) kahit successful.")
+                        AppLogger.e("DEBUG_JSON", "Babe, empty yung body (null) kahit successful.")
                     }
                 } else {
                     Toast.makeText(context, "Server error: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 // Importante itong catch babe para pag walang internet or timeout
-                Log.e("DASHBOARD_ERROR", "Crash babe: ${e.message}")
+                AppLogger.e("DASHBOARD_ERROR", "Crash babe: ${e.message}")
                 Toast.makeText(context, "Network error. Check connection!", Toast.LENGTH_SHORT).show()
             }
         }
@@ -259,7 +260,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
             imgWorkout1?.let { imageView ->
                 Glide.with(this)
-                    .load(firstWorkout.imageFileName) // URL ng unang thumbnail
+                    .load(ImageHelper.getImageUrl(firstWorkout.imageFileName, "workouts"))
                     .placeholder(R.drawable.ic_workout)
                     .error(R.drawable.ic_workout)
                     .into(imageView)
@@ -281,7 +282,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 }
             } else {
                 // Kung isa lang ang workout, pwede mong i-clear o i-hide yung pangalawang card
-                Log.d("DEBUG_DASHBOARD", "Babe, isa lang ang workout sa listahan.")
+                AppLogger.d("DEBUG_DASHBOARD", "Babe, isa lang ang workout sa listahan.")
             }
         }
 
@@ -315,7 +316,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     }
 
     private fun updateMealList(mealType: String) {
-        Log.d("DEBUG_MEALS", "Searching for Group Type: $mealType")
+        AppLogger.d("DEBUG_MEALS", "Searching for Group Type: $mealType")
 
         // Siguraduhin na hindi null ang container bago linisin
         mealItemsContainer?.removeAllViews()
@@ -331,7 +332,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         if (mealsToShow.isNullOrEmpty()) {
             // Pwede kang mag-inflate ng "No meals planned" layout dito babe para hindi lang blank
-            Log.w("DEBUG_MEALS", "Walang laman ang $mealType babe.")
+            AppLogger.w("DEBUG_MEALS", "Walang laman ang $mealType babe.")
             return
         }
 
@@ -345,7 +346,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
             val foodImg = mealView.findViewById<ImageView>(R.id.imgFood)
             Glide.with(this)
-                .load(meal.imageUrl)
+                .load(ImageHelper.getImageUrl(meal.imageUrl, "foods"))
                 .placeholder(R.drawable.ic_nutri)
                 .error(R.drawable.ic_nutri) // Safety para sa broken links
                 .into(foodImg)

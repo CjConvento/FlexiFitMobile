@@ -13,14 +13,14 @@ class WorkoutRepository(private val apiService: ApiService) {
         return try {
             val response = apiService.getTodayWorkout()
             if (response.isSuccessful) {
-                Log.d(TAG, "Today's Workout Success: ${response.body()}")
+                AppLogger.d(TAG, "Today's Workout Success: ${response.body()}")
                 response.body()
             } else {
-                Log.e(TAG, "Today's Workout Failed: Code ${response.code()}, errorBody: ${response.errorBody()?.string()}")
+                AppLogger.e(TAG, "Today's Workout Failed: Code ${response.code()}, errorBody: ${response.errorBody()?.string()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Today's Workout Exception: ${e.message}")
+            AppLogger.e(TAG, "Today's Workout Exception: ${e.message}")
             null
         }
     }
@@ -28,17 +28,17 @@ class WorkoutRepository(private val apiService: ApiService) {
     // 2. Get workout by date (for calendar)
     suspend fun getWorkoutByDate(day: Int, month: Int): WorkoutSessionResponse? {
         return try {
-            Log.d(TAG, "Fetching Workout for Day: $day, Month: $month")
+            AppLogger.d(TAG, "Fetching Workout for Day: $day, Month: $month")
             val response = apiService.getWorkoutHistoryDetail(day, month)
             if (response.isSuccessful) {
-                Log.d(TAG, "Workout Detail Success")
+                AppLogger.d(TAG, "Workout Detail Success")
                 response.body()
             } else {
-                Log.e(TAG, "Workout Detail Failed: Code ${response.code()}")
+                AppLogger.e(TAG, "Workout Detail Failed: Code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Workout Detail Exception: ${e.message}")
+            AppLogger.e(TAG, "Workout Detail Exception: ${e.message}")
             null
         }
     }
@@ -52,7 +52,7 @@ class WorkoutRepository(private val apiService: ApiService) {
         skipReason: String? = null
     ): WorkoutSessionResultDto? {
         return try {
-            Log.d(TAG, "Completing/Skipping Session: $sessionId, Status: $status")
+            AppLogger.d(TAG, "Completing/Skipping Session: $sessionId, Status: $status")
             val request = WorkoutSessionCompleteDto(
                 sessionId = sessionId,
                 totalCalories = totalCalories,
@@ -62,14 +62,14 @@ class WorkoutRepository(private val apiService: ApiService) {
             )
             val response = apiService.completeWorkout(request)
             if (response.isSuccessful) {
-                Log.d(TAG, "Session completed/skipped successfully")
+                AppLogger.d(TAG, "Session completed/skipped successfully")
                 response.body()
             } else {
-                Log.e(TAG, "Complete/Skip Failed: Code ${response.code()}")
+                AppLogger.e(TAG, "Complete/Skip Failed: Code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Complete/Skip Exception: ${e.message}")
+            AppLogger.e(TAG, "Complete/Skip Exception: ${e.message}")
             null
         }
     }
@@ -77,16 +77,16 @@ class WorkoutRepository(private val apiService: ApiService) {
     // 4. ✅ CHECK IF USER CAN SKIP TODAY
     suspend fun canSkipToday(): CanSkipResponse? {
         return try {
-            Log.d(TAG, "Checking if can skip today...")
+            AppLogger.d(TAG, "Checking if can skip today...")
             val response = apiService.canSkipToday()
             if (response.isSuccessful) {
                 response.body()
             } else {
-                Log.e(TAG, "CanSkip Failed: Code ${response.code()}")
+                AppLogger.e(TAG, "CanSkip Failed: Code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "CanSkip Exception: ${e.message}")
+            AppLogger.e(TAG, "CanSkip Exception: ${e.message}")
             null
         }
     }

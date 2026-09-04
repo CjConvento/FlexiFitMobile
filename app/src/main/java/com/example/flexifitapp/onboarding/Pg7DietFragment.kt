@@ -30,8 +30,8 @@ class Pg7DietFragment : BaseOnboardingFragment(
         // 2. HYDRATION: Restore from Store
         val savedDiet = OnboardingStore.getString(requireContext(), FlexiFitKeys.DIETARY_TYPE)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Page 7 Hydration ---")
-        Log.d("FLEXIFIT_DEBUG", "Restored Diet Type: '$savedDiet'")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Page 7 Hydration ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Restored Diet Type: '$savedDiet'")
 
         // 3. LAYOUT LOGIC: Grid with 2 columns
         val glm = GridLayoutManager(requireContext(), 2)
@@ -47,7 +47,7 @@ class Pg7DietFragment : BaseOnboardingFragment(
             items = diets,
             initiallySelectedId = savedDiet
         ) { selected ->
-            Log.d("FLEXIFIT_DEBUG", "Diet Selected: ${selected.id}")
+            AppLogger.d("FLEXIFIT_DEBUG", "Diet Selected: ${selected.id}")
             OnboardingStore.putString(requireContext(), FlexiFitKeys.DIETARY_TYPE, selected.id)
         }
     }
@@ -55,8 +55,8 @@ class Pg7DietFragment : BaseOnboardingFragment(
     override fun validateBeforeNext(): String? {
         val diet = OnboardingStore.getString(requireContext(), FlexiFitKeys.DIETARY_TYPE)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 7 ---")
-        Log.d("FLEXIFIT_DEBUG", "Final Diet Type: '$diet'")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Validating Page 7 ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Final Diet Type: '$diet'")
 
         return if (diet.isBlank()) {
             "Please select a dietary preference to help us customize your meals."

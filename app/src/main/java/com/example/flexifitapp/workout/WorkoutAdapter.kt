@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flexifitapp.R
 import com.example.flexifitapp.databinding.ItemWorkoutEntryBinding
+import com.example.flexifitapp.utils.ImageHelper
 
 class WorkoutAdapter(
     private val items: List<WorkoutItem>,
@@ -44,7 +45,7 @@ class WorkoutAdapter(
 
             // 3. Image Loading (Direct load dahil full URL na)
             Glide.with(context)
-                .load(item.imageFileName)
+                .load(ImageHelper.getImageUrl(item.imageFileName, "workouts"))                
                 .placeholder(R.drawable.ic_workout)
                 .error(R.drawable.ic_workout)
                 .into(binding.ivWorkoutIcon)

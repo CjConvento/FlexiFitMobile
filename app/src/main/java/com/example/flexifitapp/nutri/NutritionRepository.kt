@@ -9,34 +9,34 @@ class NutritionRepository(private val apiService: ApiService) {
 
     suspend fun getTodayNutrition(): NutritionResponse? {
         return try {
-            Log.d(TAG, "Fetching Today's Nutrition...")
+            AppLogger.d(TAG, "Fetching Today's Nutrition...")
             val response = apiService.getTodayNutrition()
             if (response.isSuccessful) {
-                Log.d(TAG, "Today's Nutrition Success")
+                AppLogger.d(TAG, "Today's Nutrition Success")
                 response.body()
             } else {
-                Log.e(TAG, "Today's Nutrition Failed: Code ${response.code()}")
+                AppLogger.e(TAG, "Today's Nutrition Failed: Code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Today's Nutrition Exception: ${e.message}")
+            AppLogger.e(TAG, "Today's Nutrition Exception: ${e.message}")
             null
         }
     }
 
     suspend fun getNutritionByDate(day: Int, month: Int): NutritionResponse? {
         return try {
-            Log.d(TAG, "Fetching Nutrition for Day: $day, Month: $month")
+            AppLogger.d(TAG, "Fetching Nutrition for Day: $day, Month: $month")
             val response = apiService.getNutritionHistoryDetail(day, month)
             if (response.isSuccessful) {
-                Log.d(TAG, "Nutrition Detail Success")
+                AppLogger.d(TAG, "Nutrition Detail Success")
                 response.body()
             } else {
-                Log.e(TAG, "Nutrition Detail Failed: Code ${response.code()}")
+                AppLogger.e(TAG, "Nutrition Detail Failed: Code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Nutrition Detail Exception: ${e.message}")
+            AppLogger.e(TAG, "Nutrition Detail Exception: ${e.message}")
             null
         }
     }
@@ -46,18 +46,18 @@ class NutritionRepository(private val apiService: ApiService) {
         meals: List<LogMealEntry>
     ): NutritionCompleteResultDto? {
         return try {
-            Log.d(TAG, "Completing Nutrition Day...")
+            AppLogger.d(TAG, "Completing Nutrition Day...")
             val request = LogFullDayRequest(cycleId, meals)
             val response = apiService.completeNutrition(request)
             if (response.isSuccessful) {
-                Log.d(TAG, "Nutrition Day Completed")
+                AppLogger.d(TAG, "Nutrition Day Completed")
                 response.body()
             } else {
-                Log.e(TAG, "Complete Nutrition Failed: Code ${response.code()}")
+                AppLogger.e(TAG, "Complete Nutrition Failed: Code ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Complete Nutrition Exception: ${e.message}")
+            AppLogger.e(TAG, "Complete Nutrition Exception: ${e.message}")
             null
         }
     }
@@ -65,43 +65,43 @@ class NutritionRepository(private val apiService: ApiService) {
     // ✅ ADD WATER METHODS
     suspend fun addWater(amountMl: Int = 250): WaterResponse? {
         return try {
-            Log.d(TAG, "Adding water: $amountMl ml")
+            AppLogger.d(TAG, "Adding water: $amountMl ml")
             val response = apiService.addWater(AddWaterRequest(amountMl))
             if (response.isSuccessful) {
                 response.body()
             } else {
-                Log.e(TAG, "Add water failed: ${response.code()}")
+                AppLogger.e(TAG, "Add water failed: ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Add water exception: ${e.message}")
+            AppLogger.e(TAG, "Add water exception: ${e.message}")
             null
         }
     }
 
     suspend fun getWaterToday(): WaterResponse? {
         return try {
-            Log.d(TAG, "Getting today's water intake")
+            AppLogger.d(TAG, "Getting today's water intake")
             val response = apiService.getWaterToday()
             if (response.isSuccessful) {
                 response.body()
             } else {
-                Log.e(TAG, "Get water failed: ${response.code()}")
+                AppLogger.e(TAG, "Get water failed: ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Get water exception: ${e.message}")
+            AppLogger.e(TAG, "Get water exception: ${e.message}")
             null
         }
     }
 
     suspend fun resetWater(): Boolean {
         return try {
-            Log.d(TAG, "Resetting water")
+            AppLogger.d(TAG, "Resetting water")
             val response = apiService.resetWater()
             response.isSuccessful
         } catch (e: Exception) {
-            Log.e(TAG, "Reset water exception: ${e.message}")
+            AppLogger.e(TAG, "Reset water exception: ${e.message}")
             false
         }
     }
@@ -109,16 +109,16 @@ class NutritionRepository(private val apiService: ApiService) {
     // ✅ ADD FOOD DETAILS METHOD
     suspend fun getFoodDetails(foodId: Int): FoodDetailsResponse? {
         return try {
-            Log.d(TAG, "Getting food details for ID: $foodId")
+            AppLogger.d(TAG, "Getting food details for ID: $foodId")
             val response = apiService.getFoodDetails(foodId)
             if (response.isSuccessful) {
                 response.body()
             } else {
-                Log.e(TAG, "Get food details failed: ${response.code()}")
+                AppLogger.e(TAG, "Get food details failed: ${response.code()}")
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Get food details exception: ${e.message}")
+            AppLogger.e(TAG, "Get food details exception: ${e.message}")
             null
         }
     }
@@ -126,27 +126,27 @@ class NutritionRepository(private val apiService: ApiService) {
     // ✅ ADD MEAL ITEM UPDATE METHODS
     suspend fun updateMealItem(mealItemId: Int, newQty: Double): Boolean {
         return try {
-            Log.d(TAG, "Updating meal item $mealItemId to quantity $newQty")
+            AppLogger.d(TAG, "Updating meal item $mealItemId to quantity $newQty")
             val response = apiService.updateMealItem(mealItemId, UpdateMealItemRequest(newQty))
             if (response.isSuccessful) {
                 true
             } else {
-                Log.e(TAG, "Update failed: ${response.code()} - ${response.errorBody()?.string()}")
+                AppLogger.e(TAG, "Update failed: ${response.code()} - ${response.errorBody()?.string()}")
                 false
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Update exception: ${e.message}")
+            AppLogger.e(TAG, "Update exception: ${e.message}")
             false
         }
     }
 
     suspend fun swapFoodItem(mealItemId: Int, newFoodId: Int): Boolean {
         return try {
-            Log.d(TAG, "Swapping meal item $mealItemId to food $newFoodId")
+            AppLogger.d(TAG, "Swapping meal item $mealItemId to food $newFoodId")
             val response = apiService.swapFoodItem(mealItemId, SwapFoodRequest(newFoodId))
             response.isSuccessful
         } catch (e: Exception) {
-            Log.e(TAG, "Swap food item exception: ${e.message}")
+            AppLogger.e(TAG, "Swap food item exception: ${e.message}")
             false
         }
     }

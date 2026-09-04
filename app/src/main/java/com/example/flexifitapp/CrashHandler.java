@@ -26,7 +26,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         String stack = getFullStackTrace(e);
 
-        Log.e("APP_CRASH", stack);
+        AppLogger.e("APP_CRASH", stack);
 
         // ✅ Save crash log to file
         writeCrashToFile(stack);
@@ -59,7 +59,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         try {
 
-            File dir = new File(appContext.getExternalFilesDir(null), "FlexiFit");
+            File dir = new File(appContext.getFilesDir(), "FlexiFit");
 
             if (!dir.exists()) {
                 dir.mkdirs();
@@ -88,7 +88,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         } catch (Exception ex) {
 
-            Log.e("CRASH_HANDLER", "Failed to write crash log", ex);
+            AppLogger.e("CRASH_HANDLER", "Failed to write crash log", ex);
         }
     }
 

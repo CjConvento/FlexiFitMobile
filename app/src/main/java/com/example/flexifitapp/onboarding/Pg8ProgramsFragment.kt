@@ -21,7 +21,7 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Page 8: Recommendations ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Page 8: Recommendations ---")
 
         // 1. INITIALIZE UI
         rv = view.findViewById(R.id.rvprogramgoal)
@@ -70,9 +70,9 @@ class Pg8ProgramsFragment : BaseOnboardingFragment(
         if (isLocked && selectedPrograms.isEmpty() && generatedPrograms.isNotEmpty()) {
             selectedPrograms.addAll(generatedPrograms)
             OnboardingStore.putStringSet(ctx, FlexiFitKeys.SELECTED_PROGRAMS, selectedPrograms)
-            Log.d("FLEXIFIT_DEBUG", "Auto-selected ${selectedPrograms.size} rehab program(s) due to joint problems.")
+            AppLogger.d("FLEXIFIT_DEBUG", "Auto-selected ${selectedPrograms.size} rehab program(s) due to joint problems.")
         } else {
-            Log.d("FLEXIFIT_DEBUG", "Auto-selection condition failed.")
+            AppLogger.d("FLEXIFIT_DEBUG", "Auto-selection condition failed.")
         }
 
         adapter = ProgramCardAdapter(

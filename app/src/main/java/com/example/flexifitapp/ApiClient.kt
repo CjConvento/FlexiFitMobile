@@ -32,29 +32,20 @@ object ApiClient {
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
 
-         // ✅ Interceptor to bypass zrok interstitial page
-        clientBuilder.addInterceptor { chain ->
-            val original = chain.request()
-            val newRequest = original.newBuilder()
-                .header("skip_zrok_interstitial", "true")
-                .build()
-            chain.proceed(newRequest)
-        }
-
         // Authorization interceptor – adds the JWT token to every request
         // Inside ApiClient.build() – authorization interceptor
         clientBuilder.addInterceptor { chain ->
             val original = chain.request()
             val token = UserPrefs.getToken(appContext)
-            Log.d("ApiClient", "Token length: ${token.length}")
+            AppLogger.d("ApiClient", "Token length: ${token.length}")
             val req = if (token.isNotBlank()) {
                 val newRequest = original.newBuilder()
                     .header("Authorization", "Bearer $token")
                     .build()
-                Log.d("ApiClient", "Authorization header added")
+                AppLogger.d("ApiClient", "Authorization header added")
                 newRequest
             } else {
-                Log.e("ApiClient", "Token is empty – request will be unauthorized")
+                AppLogger.e("ApiClient", "Token is empty – request will be unauthorized")
                 original
             }
             chain.proceed(req)
@@ -64,7 +55,7 @@ object ApiClient {
         // Logging interceptor (optional, for debugging)
         val logging = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.HEADERS
-                    else HttpLoggingInterceptor.Level.HEADERS
+                    else HttpLoggingInterceptor.Level.NONE
         }
         clientBuilder.addInterceptor(logging)
 

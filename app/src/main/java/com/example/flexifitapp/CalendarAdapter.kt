@@ -27,7 +27,7 @@ class CalendarAdapter(
         val item = items[position]
 
         // Add this line
-        Log.d("CALENDAR_ADAPTER", "Position $position: dayNumber=${item.dayNumber}, clickable=${item.isClickable}")
+        AppLogger.d("CALENDAR_ADAPTER", "Position $position: dayNumber=${item.dayNumber}, clickable=${item.isClickable}")
 
         if (item.dayNumber == null) {
             holder.txtDay.text = ""
@@ -38,7 +38,7 @@ class CalendarAdapter(
         }
 
         holder.txtDay.text = item.dayNumber.toString()
-        Log.d("CALENDAR_ADAPTER", "Day ${item.dayNumber}, status: ${item.status}")
+        AppLogger.d("CALENDAR_ADAPTER", "Day ${item.dayNumber}, status: ${item.status}")
 
         if (item.isClickable) {
             holder.itemView.alpha = 1f
@@ -56,7 +56,7 @@ class CalendarAdapter(
 
             // ✅ Safe click: ensure dayNumber is not null
             holder.itemView.setOnClickListener {
-                Log.d("CALENDAR_ADAPTER", "Clicked day: ${item.dayNumber}")
+                AppLogger.d("CALENDAR_ADAPTER", "Clicked day: ${item.dayNumber}")
                 onDayClick(item.dayNumber)   // now it's non-null because we checked above
             }
         } else {

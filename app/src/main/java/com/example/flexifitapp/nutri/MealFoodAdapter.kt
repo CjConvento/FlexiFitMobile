@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flexifitapp.ApiConfig
 import com.example.flexifitapp.R
+import com.example.flexifitapp.utils.ImageHelper
 
 class MealFoodAdapter(
     private val items: MutableList<MealFood>,
@@ -39,7 +40,7 @@ class MealFoodAdapter(
 
         // AKTIBONG GLIDE: I-lo-load na nito ang images mula sa API mo
         Glide.with(h.itemView.context)
-            .load(fullUrl)
+            .load(ImageHelper.getImageUrl(item.imageUrl, "foods"))            .placeholder(R.drawable.ic_food_placeholder)
             .placeholder(R.drawable.ic_food_placeholder)
             .error(R.drawable.ic_food_placeholder) // Fallback kung walang file sa server
             .centerCrop()

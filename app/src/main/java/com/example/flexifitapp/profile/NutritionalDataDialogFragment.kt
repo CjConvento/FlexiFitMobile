@@ -163,7 +163,7 @@ class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional
             UserPrefs.getString(ctx, "bmi_category", "")
         }
 
-        Log.d("NutritionalDialog", "age=$age, height=$heightCm, weight=$currentWeightKg, target=$targetWeightKg, bmi=$bmi")
+        AppLogger.d("NutritionalDialog", "age=$age, height=$heightCm, weight=$currentWeightKg, target=$targetWeightKg, bmi=$bmi")
 
         // UI Mapping
         tvNutritionalGoalValue?.text = nutritionalGoal.ifBlank { "-" }

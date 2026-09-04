@@ -12,7 +12,7 @@ class WaterReminderWorker(
 ) : Worker(context, params) {
 
     override fun doWork(): Result {
-        Log.d("ReminderWorker", "Water reminder executed")
+        AppLogger.d("ReminderWorker", "Water reminder executed")
 
         try {
             // Show notification
@@ -54,15 +54,15 @@ class WaterReminderWorker(
                         ExistingWorkPolicy.REPLACE,
                         nextWork
                     )
-                    Log.d("ReminderWorker", "Next water reminder scheduled at $nextTime")
+                    AppLogger.d("ReminderWorker", "Next water reminder scheduled at $nextTime")
                 }
             } else {
-                Log.d("ReminderWorker", "End of water reminders for today")
+                AppLogger.d("ReminderWorker", "End of water reminders for today")
             }
 
             return Result.success()
         } catch (e: Exception) {
-            Log.e("ReminderWorker", "Water reminder failed", e)
+            AppLogger.e("ReminderWorker", "Water reminder failed", e)
             return Result.failure()
         }
     }

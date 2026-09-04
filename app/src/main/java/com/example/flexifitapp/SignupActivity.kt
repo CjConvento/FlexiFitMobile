@@ -231,7 +231,7 @@ class SignupActivity : AppCompatActivity() {
 
             } catch (e: GetCredentialException) {
                 setLoading(false) // 2. Patayin ang loading kung nag-error ang framework
-                Log.e("GOOGLE_SIGNUP", "Type: ${e::class.java.simpleName}, Msg: ${e.message}")
+                AppLogger.e("GOOGLE_SIGNUP", "Type: ${e::class.java.simpleName}, Msg: ${e.message}")
 
                 when (e) {
                     is GetCredentialCancellationException -> {
@@ -253,11 +253,11 @@ class SignupActivity : AppCompatActivity() {
 
             } catch (e: GoogleIdTokenParsingException) {
                 setLoading(false)
-                Log.e("GOOGLE_SIGNUP", "Parsing error: ${e.message}")
+                AppLogger.e("GOOGLE_SIGNUP", "Parsing error: ${e.message}")
                 Toast.makeText(this@SignupActivity, "Invalid Google credential.", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
                 setLoading(false)
-                Log.e("GOOGLE_SIGNUP", "Unexpected: ${e.message}")
+                AppLogger.e("GOOGLE_SIGNUP", "Unexpected: ${e.message}")
                 Toast.makeText(
                     this@SignupActivity,
                     "Google sign up failed: ${e.message ?: "Unknown error"}",

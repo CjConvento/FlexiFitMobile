@@ -30,8 +30,8 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
         val savedLifestyle = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE)
         val savedLevel = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LEVEL)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Page 3 Hydration ---")
-        Log.d("FLEXIFIT_DEBUG", "Restoring Lifestyle: '$savedLifestyle', Level: '$savedLevel'")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Page 3 Hydration ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Restoring Lifestyle: '$savedLifestyle', Level: '$savedLevel'")
 
         lifestyleState = WheelState(
             options = lifestyleOptions,
@@ -51,7 +51,7 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
             tvSelected = view.findViewById(R.id.tvLifestyleSelected),
             tvRight = view.findViewById(R.id.tvLifestyleRight)
         ) { selected ->
-            Log.d("FLEXIFIT_DEBUG", "Lifestyle Swiped -> $selected")
+            AppLogger.d("FLEXIFIT_DEBUG", "Lifestyle Swiped -> $selected")
             OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE, selected)
         }
 
@@ -63,7 +63,7 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
             tvSelected = view.findViewById(R.id.tvLevelSelected),
             tvRight = view.findViewById(R.id.tvLevelRight)
         ) { selected ->
-            Log.d("FLEXIFIT_DEBUG", "Level Swiped -> $selected")
+            AppLogger.d("FLEXIFIT_DEBUG", "Level Swiped -> $selected")
             OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LEVEL, selected)
         }
 
@@ -78,7 +78,7 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
         OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE, lifestyle)
         OnboardingStore.putString(requireContext(), FlexiFitKeys.FITNESS_LEVEL, level)
 
-        Log.d("FLEXIFIT_DEBUG", "Initial State Saved: Lifestyle=$lifestyle, Level=$level")
+        AppLogger.d("FLEXIFIT_DEBUG", "Initial State Saved: Lifestyle=$lifestyle, Level=$level")
     }
 
     private fun bindSwipeWheelWrap(
@@ -144,8 +144,8 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
         val lifestyle = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LIFESTYLE)
         val level = OnboardingStore.getString(requireContext(), FlexiFitKeys.FITNESS_LEVEL)
 
-        Log.d("FLEXIFIT_DEBUG", "--- Validating Page 3 ---")
-        Log.d("FLEXIFIT_DEBUG", "Final Data: Lifestyle='$lifestyle', Level='$level'")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Validating Page 3 ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Final Data: Lifestyle='$lifestyle', Level='$level'")
 
         return when {
             lifestyle.isBlank() -> "Please select your activity level."

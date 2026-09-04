@@ -135,8 +135,8 @@ class   Pg2HealthFragment : BaseOnboardingFragment(
         val none = cbNone?.isChecked == true
 
         // Logging bago i-save
-        Log.d("FLEXIFIT_DEBUG", "--- Saving Health Page ---")
-        Log.d("FLEXIFIT_DEBUG", "Injuries: Upper=$upper, Lower=$lower, Joint=$joint, Breath=$breath")
+        AppLogger.d("FLEXIFIT_DEBUG", "--- Saving Health Page ---")
+        AppLogger.d("FLEXIFIT_DEBUG", "Injuries: Upper=$upper, Lower=$lower, Joint=$joint, Breath=$breath")
 
         OnboardingStore.putBoolean(ctx, FlexiFitKeys.UPPER_BODY_INJURY, upper)
         OnboardingStore.putBoolean(ctx, FlexiFitKeys.LOWER_BODY_INJURY, lower)
@@ -149,7 +149,7 @@ class   Pg2HealthFragment : BaseOnboardingFragment(
         val isRehab = upper || lower || joint
         OnboardingStore.putBoolean(ctx, FlexiFitKeys.IS_REHAB_USER, isRehab)
 
-        Log.d("FLEXIFIT_DEBUG", "Final Decision -> IS_REHAB_USER: $isRehab")
+        AppLogger.d("FLEXIFIT_DEBUG", "Final Decision -> IS_REHAB_USER: $isRehab")
     }
 
     private fun updateWarnings() {

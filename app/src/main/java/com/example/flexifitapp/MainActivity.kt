@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.example.flexifitapp.utils.ImageHelper
 
 
 
@@ -218,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         // Load avatar
         if (avatarUrl.isNotBlank()) {
             Glide.with(this)
-                .load(if (avatarUrl.startsWith("http")) avatarUrl else ApiConfig.BASE_URL + avatarUrl)
+                .load(ImageHelper.getImageUrl(avatarUrl, "avatars"))
                 .placeholder(R.drawable.profile)
                 .error(R.drawable.profile)
                 .circleCrop()
@@ -241,9 +242,9 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1001) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("MainActivity", "Notification permission granted")
+                AppLogger.d("MainActivity", "Notification permission granted")
             } else {
-                Log.d("MainActivity", "Notification permission denied")
+                AppLogger.d("MainActivity", "Notification permission denied")
             }
         }
     }
