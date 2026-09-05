@@ -1,7 +1,9 @@
 package com.example.flexifitapp;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.work.Configuration;
 import androidx.work.WorkManager;
@@ -11,11 +13,19 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class FlexiFitApp extends Application {
 
-    @Override
-    public void onCreate() {
+    // ✅ Static context holder
+    private static Context appContext;
+
+    public static Context getAppContext() {
+        return appContext;
+    }
+        @Override
+        public void onCreate() {
         super.onCreate();
 
-        SecurePrefs.INSTANCE.init(this);
+        appContext = getApplicationContext();
+
+        Toast.makeText(this, "App STARTED!", Toast.LENGTH_SHORT).show();  // 👈 Add this
 
         // ✅ Initialize WorkManager with a default configuration
         WorkManager.initialize(this, new Configuration.Builder().build());

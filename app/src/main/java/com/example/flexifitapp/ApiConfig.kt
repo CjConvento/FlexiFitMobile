@@ -2,7 +2,7 @@ package com.example.flexifitapp
 
 object ApiConfig {
 
-    const val BASE_URL = "https://flexifit-api-bqdrdcchf8faagat.japaneast-01.azurewebsites.net/"
+    const val BASE_URL = "https://flexifitapinet.shares.zrok.io/"
 
     // Azure Blob Storage URLs
     const val WORKOUT_IMAGE_URL = "https://flexifitstorage.blob.core.windows.net/workouts/"

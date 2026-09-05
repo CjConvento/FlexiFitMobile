@@ -28,10 +28,14 @@ object ApiClient {
     fun api(): ApiService = get().create(ApiService::class.java)
 
     private fun build(): Retrofit {
+        Log.d("ApiClient", "Building Retrofit client...")
+
         val clientBuilder = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+
+        Log.d("ApiClient", "Adding authorization interceptor...")
 
         // Authorization interceptor – adds the JWT token to every request
         // Inside ApiClient.build() – authorization interceptor
