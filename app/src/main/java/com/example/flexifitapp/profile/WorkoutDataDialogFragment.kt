@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.flexifitapp.R
 import com.example.flexifitapp.UserPrefs
+import com.example.flexifitapp.utils.AppLogger
 
 class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
 
@@ -61,7 +62,7 @@ class WorkoutDataDialogFragment : DialogFragment(R.layout.dialog_workout_data) {
         bindViews(view)
         setupClicks()
 
-        // TAWAGIN MO ITONG DALAWA BABE:
+        // TAWAGIN MO ITONG DALAWA :
         loadWorkoutData()  // Para sa Programs at Goals
         loadWorkoutStats() // Para sa Numbers (Sessions/Workouts)
     }

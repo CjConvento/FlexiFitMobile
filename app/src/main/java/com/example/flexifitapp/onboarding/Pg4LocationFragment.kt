@@ -6,6 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.utils.AppLogger
 
 class Pg4LocationFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg4_location,

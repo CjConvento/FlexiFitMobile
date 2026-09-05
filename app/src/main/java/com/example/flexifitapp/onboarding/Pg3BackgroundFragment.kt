@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.TextView
 import com.example.flexifitapp.R
 import kotlin.math.abs
+import com.example.flexifitapp.utils.AppLogger
 
 class Pg3BackgroundFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg3_background,
@@ -22,7 +23,7 @@ class Pg3BackgroundFragment : BaseOnboardingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. OPTIONS DEFINITION (Dapat match sa database categories mo babe)
+        // 1. OPTIONS DEFINITION (Dapat match sa database categories mo )
         val lifestyleOptions = listOf("Sedentary", "Lightly Active", "Active", "Very Active")
         val levelOptions = listOf("Beginner", "Intermediate", "Advanced")
 

@@ -6,6 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flexifitapp.R
+import com.example.flexifitapp.utils.AppLogger
 
 class Pg7DietFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg7_diet,
@@ -17,7 +18,7 @@ class Pg7DietFragment : BaseOnboardingFragment(
 
         val rv = view.findViewById<RecyclerView>(R.id.rvdietgoal)
 
-        // 1. OPTIONS: Siguraduhing match ang keys sa C# DTO / Database mo babe
+        // 1. OPTIONS: Siguraduhing match ang keys sa C# DTO / Database mo 
         val diets = listOf(
             OptionTile("balanced", "Balanced", R.drawable.ic_diet_balanced),
             OptionTile("high_protein", "High Protein", R.drawable.ic_diet_protein),

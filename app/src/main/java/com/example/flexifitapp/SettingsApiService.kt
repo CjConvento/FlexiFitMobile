@@ -31,7 +31,7 @@ interface SettingsApiService {
 
     companion object {
         fun create(context: android.content.Context): SettingsApiService {
-            // Gamitin ang .get(context) dahil yun ang nasa ApiClient.kt mo babe
+            // Gamitin ang .get(context) dahil yun ang nasa ApiClient.kt mo 
             return ApiClient.get().create(SettingsApiService::class.java)
         }
     } // Isara ang companion object

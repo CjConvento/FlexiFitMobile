@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.*
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
+import com.example.flexifitapp.utils.AppLogger
 
 class WaterReminderWorker(
     context: Context,

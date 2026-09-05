@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import com.example.flexifitapp.utils.AppLogger
 
 class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
 

@@ -17,12 +17,13 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.flexifitapp.custom.WaterGlassView
 import com.example.flexifitapp.dashboard.BmiDetailsDialog
-import com.example.flexifitapp.dashboard.ProfileStatusResponse // Gamitin yung bagong model babe
+import com.example.flexifitapp.dashboard.ProfileStatusResponse // Gamitin yung bagong model 
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.launch
 import com.example.flexifitapp.utils.ImageHelper
+import com.example.flexifitapp.utils.AppLogger
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
@@ -56,7 +57,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private var txtWorkoutl2: TextView? = null
     private var imgWorkout2: ImageView? = null
 
-    // Meals Section (Eto na yung container at modern dropdown babe)
+    // Meals Section (Eto na yung container at modern dropdown )
     private var mealItemsContainer: android.widget.LinearLayout? = null
     private var autoCompleteMealType: AutoCompleteTextView? = null // Pinalitan ang Spinner
     private var txtTodayMealsHeader: TextView? = null
@@ -161,7 +162,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         txtWorkoutl2 = view.findViewById(R.id.txtWorkoutl2)
         imgWorkout2 = view.findViewById(R.id.imgWorkout2)
 
-        // 5. MEALS SECTION (🔥 ETO YUNG BINAGO NATIN BABE)
+        // 5. MEALS SECTION (🔥 ETO YUNG BINAGO NATIN )
         mealItemsContainer = view.findViewById(R.id.mealItemsContainer)
         autoCompleteMealType = view.findViewById(R.id.autoCompleteMealType) // Match sa modern XML ID
         txtTodayMealsHeader = view.findViewById(R.id.txtTodayMealsHeader)
@@ -192,14 +193,14 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                         globalProfileData = data
                         updateUI(data)
                     } else {
-                        AppLogger.e("DEBUG_JSON", "Babe, empty yung body (null) kahit successful.")
+                        AppLogger.e("DEBUG_JSON", ", empty yung body (null) kahit successful.")
                     }
                 } else {
                     Toast.makeText(context, "Server error: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                // Importante itong catch babe para pag walang internet or timeout
-                AppLogger.e("DASHBOARD_ERROR", "Crash babe: ${e.message}")
+                // Importante itong catch  para pag walang internet or timeout
+                AppLogger.e("DASHBOARD_ERROR", "Crash : ${e.message}")
                 Toast.makeText(context, "Network error. Check connection!", Toast.LENGTH_SHORT).show()
             }
         }
@@ -282,7 +283,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 }
             } else {
                 // Kung isa lang ang workout, pwede mong i-clear o i-hide yung pangalawang card
-                AppLogger.d("DEBUG_DASHBOARD", "Babe, isa lang ang workout sa listahan.")
+                AppLogger.d("DEBUG_DASHBOARD", ", isa lang ang workout sa listahan.")
             }
         }
 
@@ -331,8 +332,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         val mealsToShow = selectedGroup?.foodItems // O kaya selectedGroup?.foodItems?.take(2)
 
         if (mealsToShow.isNullOrEmpty()) {
-            // Pwede kang mag-inflate ng "No meals planned" layout dito babe para hindi lang blank
-            AppLogger.w("DEBUG_MEALS", "Walang laman ang $mealType babe.")
+            // Pwede kang mag-inflate ng "No meals planned" layout dito  para hindi lang blank
+            AppLogger.w("DEBUG_MEALS", "Walang laman ang $mealType .")
             return
         }
 

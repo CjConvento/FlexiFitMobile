@@ -1,6 +1,7 @@
 package com.example.flexifitapp
 
 import android.content.Context
+import com.example.flexifitapp.utils.AppLogger
 
 object TokenStore {
     private const val KEY_ID_TOKEN = "firebase_id_token"
@@ -10,7 +11,8 @@ object TokenStore {
     }
 
     fun getIdToken(ctx: Context): String? {
-        return SecurePrefs.getString(KEY_ID_TOKEN, null)
+        val token = SecurePrefs.getString(KEY_ID_TOKEN, "")
+        return if (token.isNotEmpty()) token else null
     }
 
     fun clear(ctx: Context) {

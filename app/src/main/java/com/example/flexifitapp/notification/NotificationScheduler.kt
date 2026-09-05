@@ -6,6 +6,7 @@ import androidx.work.*
 import java.time.LocalTime
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import com.example.flexifitapp.utils.AppLogger
 
 class NotificationScheduler(private val context: Context) {
 

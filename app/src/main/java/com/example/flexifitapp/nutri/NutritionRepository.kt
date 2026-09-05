@@ -2,6 +2,7 @@ package com.example.flexifitapp.nutri
 
 import android.util.Log
 import com.example.flexifitapp.ApiService
+import com.example.flexifitapp.utils.AppLogger
 
 class NutritionRepository(private val apiService: ApiService) {
 

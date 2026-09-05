@@ -15,7 +15,7 @@ data class RegisterRequest(
     @SerializedName("fcmToken")
     val fcmToken: String? = null,
 
-    // ETO ANG KULANG MO BABE:
+    // ETO ANG KULANG MO :
     @SerializedName("authProvider")
     val authProvider: String// Default natin sa EMAIL para safe
 )

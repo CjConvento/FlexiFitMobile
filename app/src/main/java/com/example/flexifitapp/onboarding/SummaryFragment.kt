@@ -19,6 +19,7 @@ import com.example.flexifitapp.R
 import com.example.flexifitapp.UserPrefs
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.AppLogger
 
 class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
 

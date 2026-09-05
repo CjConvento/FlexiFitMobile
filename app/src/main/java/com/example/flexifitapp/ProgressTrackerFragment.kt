@@ -13,6 +13,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.AppLogger
 
 class ProgressTrackerFragment : Fragment(R.layout.fragment_progress_tracker) {
 

@@ -15,6 +15,8 @@ public class FlexiFitApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        SecurePrefs.INSTANCE.init(this);
+
         // ✅ Initialize WorkManager with a default configuration
         WorkManager.initialize(this, new Configuration.Builder().build());
 

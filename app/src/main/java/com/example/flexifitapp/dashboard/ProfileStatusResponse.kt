@@ -30,7 +30,7 @@ data class NutritionData(
     @SerializedName("waterTarget") val waterTarget: Int
 )
 
-// Eto yung para sa "Today Meals" section mo babe
+// Eto yung para sa "Today Meals" section mo 
 data class FoodItemDto(
     @SerializedName("name") val name: String?,
     @SerializedName("calories") val calories: Int,
@@ -39,7 +39,7 @@ data class FoodItemDto(
     @SerializedName("unit") val unit: String?,
 )
 
-// 2. Dagdagan ng MealGroupDto (Match sa C# mo babe!)
+// 2. Dagdagan ng MealGroupDto (Match sa C# mo !)
 data class MealGroupDto(
     @SerializedName("mealType") val mealType: String?, // B, L, S, D
     @SerializedName("status") val status: String?,

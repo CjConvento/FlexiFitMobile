@@ -1,6 +1,7 @@
 package com.example.flexifitapp.onboarding
 
 import android.util.Log
+import com.example.flexifitapp.utils.AppLogger
 
 data class ProgramInfo(
     val category: String,

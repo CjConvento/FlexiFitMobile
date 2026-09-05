@@ -428,7 +428,7 @@ class LoginActivity : AppCompatActivity() {
             role = auth.role,
             status = auth.status,
             isVerified = auth.isVerified,
-            name = auth.name ?: "",      // Idagdag mo ito babe
+            name = auth.name ?: "",      // Idagdag mo ito 
             photoUrl = auth.photoUrl ?: "", // At ito rin
             firebaseToken = firebaseToken
         )

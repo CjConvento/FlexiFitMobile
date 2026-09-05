@@ -3,6 +3,7 @@ package com.example.flexifitapp
 import android.content.Context
 import android.util.Log
 import com.example.flexifitapp.BuildConfig
+import com.example.flexifitapp.utils.AppLogger
 
 object UserPrefs {
     // =========================================================

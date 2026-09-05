@@ -28,6 +28,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.example.flexifitapp.utils.ImageHelper
+import com.example.flexifitapp.utils.AppLogger
 
 
 

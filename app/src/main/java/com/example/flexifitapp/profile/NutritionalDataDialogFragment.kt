@@ -14,6 +14,7 @@ import com.example.flexifitapp.R
 import com.example.flexifitapp.UserPrefs
 import java.util.Locale
 import kotlin.math.pow
+import com.example.flexifitapp.utils.AppLogger
 
 class NutritionalDataDialogFragment : DialogFragment(R.layout.dialog_nutritional_data) {
 

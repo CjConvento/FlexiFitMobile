@@ -26,7 +26,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         String stack = getFullStackTrace(e);
 
-        AppLogger.e("APP_CRASH", stack);
+        Log.e("APP_CRASH", stack);
 
         // ✅ Save crash log to file
         writeCrashToFile(stack);
@@ -88,7 +88,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
         } catch (Exception ex) {
 
-            AppLogger.e("CRASH_HANDLER", "Failed to write crash log", ex);
+            Log.e("CRASH_HANDLER", "Failed to write crash log", ex);
         }
     }
 

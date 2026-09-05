@@ -601,9 +601,9 @@ Event: 23.553 Thread 0x000001ebfe9f6b40 Uncommon trap: trap_request=0xffffff45 f
 Event: 23.553 Thread 0x000001ebfe9f6b40 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001ebeb640984 method=java.lang.CharacterDataLatin1.digit(II)I @ 12 c2
 Event: 23.553 Thread 0x000001ebfe9f6b40 DEOPT PACKING pc=0x000001ebeb640984 sp=0x000000405a4f8950
 Event: 23.553 Thread 0x000001ebfe9f6b40 DEOPT UNPACKING pc=0x000001ebeafe69a3 sp=0x000000405a4f8770 mode 2
-Event: 23.560 Thread 0x000001ebfe9f6b40 Uncommon trap: trap_request=0xffffff45 fr.pc=0x000001ebebabe1a4 relative=0x0000000000000324
-Event: 23.560 Thread 0x000001ebfe9f6b40 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001ebebabe1a4 method=com.google.gson.stream.JsonReader.doPeek()I @ 525 c2
-Event: 23.560 Thread 0x000001ebfe9f6b40 DEOPT PACKING pc=0x000001ebebabe1a4 sp=0x000000405a4f8c70
+Event: 23.560 Thread 0x000001ebfe9f6b40 Uncommon trap: trap_request=0xffffff45 fr.pc=0x000001ebe1a4 relative=0x0000000000000324
+Event: 23.560 Thread 0x000001ebfe9f6b40 Uncommon trap: reason=unstable_if action=reinterpret pc=0x000001ebe1a4 method=com.google.gson.stream.JsonReader.doPeek()I @ 525 c2
+Event: 23.560 Thread 0x000001ebfe9f6b40 DEOPT PACKING pc=0x000001ebe1a4 sp=0x000000405a4f8c70
 Event: 23.560 Thread 0x000001ebfe9f6b40 DEOPT UNPACKING pc=0x000001ebeafe69a3 sp=0x000000405a4f8bf0 mode 2
 Event: 23.667 Thread 0x000001ebfe9f6b40 Uncommon trap: trap_request=0xffffff6e fr.pc=0x000001ebeb54f028 relative=0x0000000000000188
 Event: 23.667 Thread 0x000001ebfe9f6b40 Uncommon trap: reason=loop_limit_check action=maybe_recompile pc=0x000001ebeb54f028 method=java.lang.StringLatin1.lastIndexOf([BII)I @ 19 c2

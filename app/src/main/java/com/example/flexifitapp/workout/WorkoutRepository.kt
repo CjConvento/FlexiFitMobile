@@ -3,6 +3,7 @@ package com.example.flexifitapp.workout
 import android.util.Log
 import com.example.flexifitapp.ApiService
 import com.example.flexifitapp.CalendarHistoryDto
+import com.example.flexifitapp.utils.AppLogger
 
 class WorkoutRepository(private val apiService: ApiService) {
 

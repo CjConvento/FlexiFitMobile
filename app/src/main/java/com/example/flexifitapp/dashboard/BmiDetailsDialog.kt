@@ -11,7 +11,7 @@ import com.example.flexifitapp.R
 
 // ... (mga imports mo sa taas)
 
-// Dito mo siya babaguhin babe, sa loob ng parenthesis ()
+// Dito mo siya babaguhin , sa loob ng parenthesis ()
 class BmiDetailsDialog(
     private val bmi: Double,
     private val status: String // <-- Dagdag natin 'to para galing na sa API

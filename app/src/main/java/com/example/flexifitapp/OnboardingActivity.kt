@@ -14,6 +14,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.flexifitapp.onboarding.FlexiFitKeys
 import com.example.flexifitapp.onboarding.OnboardingStore
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.AppLogger
 
 class OnboardingActivity : AppCompatActivity() {
 

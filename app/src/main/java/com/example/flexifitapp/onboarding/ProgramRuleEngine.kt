@@ -1,6 +1,7 @@
 package com.example.flexifitapp.onboarding
 
 import android.util.Log
+import com.example.flexifitapp.utils.AppLogger
 
 enum class Goal { CARDIO, MUSCLE_GAIN, REHAB }
 enum class Level { BEGINNER, INTERMEDIATE, ADVANCED }

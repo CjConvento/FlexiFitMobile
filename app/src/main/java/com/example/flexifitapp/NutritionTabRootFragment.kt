@@ -22,6 +22,7 @@ import com.example.flexifitapp.nutri.*  // ✅ This imports everything including
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import com.example.flexifitapp.utils.AppLogger
 
 class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
 

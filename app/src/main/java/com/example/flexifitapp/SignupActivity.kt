@@ -39,6 +39,7 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import com.example.flexifitapp.utils.AppLogger
 
 class SignupActivity : AppCompatActivity() {
 
@@ -239,10 +240,10 @@ class SignupActivity : AppCompatActivity() {
                         Toast.makeText(this@SignupActivity, "Sign-up cancelled", Toast.LENGTH_SHORT).show()
                     }
                     is NoCredentialException -> {
-                        // Ito yung case mo sa emulator babe
+                        // Ito yung case mo sa emulator 
                         Toast.makeText(
                             this@SignupActivity,
-                            "No Google Account found. Please add one in Settings first, babe!",
+                            "No Google Account found. Please add one in Settings first, !",
                             Toast.LENGTH_LONG
                         ).show()
                     }

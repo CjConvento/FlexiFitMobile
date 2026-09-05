@@ -21,6 +21,7 @@ import com.example.flexifitapp.workout.WorkoutRepository
 import com.example.flexifitapp.workout.WorkoutSessionResponse
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.AppLogger
 
 class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 

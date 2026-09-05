@@ -5,7 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import android.util.Log // Siguraduhin na may import ito babe
+import android.util.Log
+import com.example.flexifitapp.utils.AppLogger
 
 class CalendarAdapter(
     private val items: List<CalendarDay>,

@@ -26,6 +26,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
+import com.example.flexifitapp.utils.AppLogger
 
 class CreateUsernameActivity : AppCompatActivity() {
 
@@ -128,7 +129,7 @@ class CreateUsernameActivity : AppCompatActivity() {
 
                 AppLogger.d("CreateUsername", "Firebase token retrieved successfully")
 
-                // Heto ang tamang paraan babe, kailangan nating gamitin ang 'authBody.'
+                // Heto ang tamang paraan , kailangan nating gamitin ang 'authBody.'
                 // para makuha ang data mula sa server response.
                 UserPrefs.saveAuth(
                     ctx = this@CreateUsernameActivity,

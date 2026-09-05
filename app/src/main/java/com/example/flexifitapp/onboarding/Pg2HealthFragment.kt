@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.example.flexifitapp.R
 import com.example.flexifitapp.onboarding.FlexiFitKeys
 import com.google.android.material.card.MaterialCardView
+import com.example.flexifitapp.utils.AppLogger
 
 class   Pg2HealthFragment : BaseOnboardingFragment(
     layoutId = R.layout.obd_fragment_pg2_health,

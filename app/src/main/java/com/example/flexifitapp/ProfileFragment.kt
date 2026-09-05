@@ -21,6 +21,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import com.example.flexifitapp.utils.ImageHelper
+import com.example.flexifitapp.utils.AppLogger
 
 class ProfileFragment : Fragment(R.layout.fragment_profileff) {
 
