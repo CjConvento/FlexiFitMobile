@@ -10,8 +10,8 @@ data class MealFood(
     val mealItemId: Int,               // id ng daily plan item (important for updates)
     val foodId: Int,
     val name: String,
-    val description: String?, // DAGDAG NA WEAPON!
-    val imageUrl: String?,             // from ASP.NET /images/foods/...
+    val description: String?,
+    val imageUrl: String?,             // Full URL from API (Appwrite) — resolved via ImageHelper
     var servingLabel: String,          // "1 serving (2 pancakes)"
     var qty: Int,
     var calories: Int,

@@ -10,7 +10,7 @@ object AppLogger {
 
     fun e(tag: String, msg: String, tr: Throwable? = null) {
         if (BuildConfig.DEBUG) {
-            if (tr != null) AppLogger.e(tag, msg, tr) else Log.e(tag, msg)
+            if (tr != null) Log.e(tag, msg, tr) else Log.e(tag, msg)
         }
     }
 

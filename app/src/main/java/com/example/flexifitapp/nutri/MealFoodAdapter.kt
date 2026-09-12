@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.flexifitapp.ApiConfig
 import com.example.flexifitapp.R
 import com.example.flexifitapp.utils.ImageHelper
 
@@ -35,14 +34,11 @@ class MealFoodAdapter(
         h.name.text = item.name
         h.sub.text = "${item.servingLabel} • ${item.calories} kcal"
 
-        // Bubuuin ang full path gamit ang ApiConfig
-        val fullUrl = "${ApiConfig.FOOD_IMAGE_URL}${item.imageUrl}"
-
-        // AKTIBONG GLIDE: I-lo-load na nito ang images mula sa API mo
+        // Image URL is now resolved via ImageHelper (handles full URLs from API)
         Glide.with(h.itemView.context)
-            .load(ImageHelper.getImageUrl(item.imageUrl, "foods"))            .placeholder(R.drawable.ic_food_placeholder)
+            .load(ImageHelper.getImageUrl(item.imageUrl, "foods"))
             .placeholder(R.drawable.ic_food_placeholder)
-            .error(R.drawable.ic_food_placeholder) // Fallback kung walang file sa server
+            .error(R.drawable.ic_food_placeholder)
             .centerCrop()
             .into(h.img)
 
