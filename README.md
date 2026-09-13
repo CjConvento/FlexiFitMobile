@@ -1,6 +1,8 @@
 # FlexiFit Android App - Personalized Fitness & Nutrition Planning
 
-A modern, high-performance **Android application** built with Kotlin that serves as the mobile frontend for the FlexiFit personalized fitness ecosystem. This app connects to the FlexiFit REST API to deliver dynamic workout plans, intelligent nutrition tracking, and a unified calendar interface.
+An **Android application** built with Kotlin that serves as the mobile frontend for the FlexiFit personalized fitness ecosystem. This app connects to the FlexiFit REST API to deliver dynamic workout plans, nutrition tracking, and a unified calendar interface.
+
+**Live Production:** Backend deployed on Render • Cloud storage on Appwrite • Database on Supabase
 
 ---
 
@@ -11,11 +13,12 @@ A modern, high-performance **Android application** built with Kotlin that serves
 - **Architecture:** MVVM (Model-View-ViewModel) with Repository pattern
 - **Network:** Retrofit 2 with OkHttp Interceptors
 - **Authentication:** Firebase Authentication with JWT token management
-- **Local Storage:** SharedPreferences for secure token storage and user preferences
+- **Local Storage:** Encrypted SharedPreferences for secure token storage
+- **Cloud Storage:** Appwrite (via API) — *migrated from Azure Blob Storage, Sept 2026*
 - **Background Tasks:** WorkManager for workout/meal/water reminders
 - **Charts:** MPAndroidChart for fitness progress visualization
-- **Image Loading:** Glide for efficient image caching and loading
-
+- **Image Loading:** Glide with centralized `ImageHelper` abstraction
+  
 ---
 
 ## 📲 Core Features
@@ -39,6 +42,7 @@ A modern, high-performance **Android application** built with Kotlin that serves
 - **Food Database** with detailed nutritional information
 - **Water Intake Tracking** with customizable glass sizes
 - **Meal Logging** - log Breakfast, Lunch, Snacks, and Dinner
+- **Allergy-aware meal seeding** — filters unsafe foods automatically
 
 ### Unified Calendar
 - **28-Day Program Calendar** showing daily workout status
@@ -120,10 +124,20 @@ app/
 
 ---
 
+## 🖼️ Image Handling Strategy
+
+The app uses a **centralized `ImageHelper`** utility for resolving all image URLs. This design keeps the mobile app **storage-provider agnostic** — it doesn't care whether images come from Azure, Appwrite, AWS S3, or any other provider.
+
+---
+
 ## 🔗 Related Projects
 
-- **[FlexiFit API](https://github.com/CjConvento/FlexiFit.Api)** - Backend REST API (C#) - *Required for full app functionality*
-- **[FlexiFit Admin Panel](https://github.com/CjConvento/FlexiFitAdminPanel)** - Admin dashboard
+- **[FlexiFit API](https://github.com/CjConvento/FlexiFit.Api)** — Backend REST API (C# .NET 8)
+  - **Storage:** Appwrite *(migrated from Azure Blob, Sept 2026)*
+  - **Database:** PostgreSQL (Supabase)
+  - **Auth:** Firebase Admin + JWT
+  - **Deployment:** Render
+- **[FlexiFit Admin Panel](https://github.com/CjConvento/FlexiFitAdminPanel)** — Admin web dashboard
 
 ---
 
@@ -282,9 +296,53 @@ dependencies {
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
-_to be added..._
+<div align="center">
+
+### Authentication
+<table>
+  <tr>
+    <td align="center"><b>Login</b></td>
+    <td align="center"><b>Register</b></td>
+    <td align="center"><b>Onboarding</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/01-login.png" width="220" /></td>
+    <td><img src="screenshots/02-register.png" width="220" /></td>
+    <td><img src="screenshots/03-onboarding.png" width="220" /></td>
+  </tr>
+</table>
+
+### Main Screens
+<table>
+  <tr>
+    <td align="center"><b>Dashboard</b></td>
+    <td align="center"><b>Workout Plan</b></td>
+    <td align="center"><b>Nutrition</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/04-dashboard.png" width="220" /></td>
+    <td><img src="screenshots/05-workout.png" width="220" /></td>
+    <td><img src="screenshots/06-nutrition.png" width="220" /></td>
+  </tr>
+</table>
+
+### Tracking & Progress
+<table>
+  <tr>
+    <td align="center"><b>Calendar</b></td>
+    <td align="center"><b>Progress Tracker</b></td>
+    <td align="center"><b>Profile</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/07-calendar.png" width="220" /></td>
+    <td><img src="screenshots/08-progress.png" width="220" /></td>
+    <td><img src="screenshots/09-profile.png" width="220" /></td>
+  </tr>
+</table>
+
+</div>
 
 ---
 
@@ -298,25 +356,11 @@ _to be added..._
 
 ---
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
 ## Author
 
 **Natajimura**
 - GitHub: [@CjConvento](https://github.com/CjConvento)
 - Email: conventocj110@gmail.com
-
----
-
-## Acknowledgments
-
-- [Material Design 3](https://m3.material.io/) for design guidelines
-- [JetBrains](https://www.jetbrains.com/) for Kotlin and Android Studio
-- All open-source libraries used in this project
 
 ---
 
@@ -334,4 +378,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*Built with ❤️ for fitness enthusiasts everywhere.*
+*Built with ❤️ for fitness and calisthenics enthusiasts everywhere.*
