@@ -344,6 +344,16 @@ dependencies {
 
 </div>
 
+## 🎥 Demo Video
+
+<div align="center">
+
+**🎬 [Watch the FlexiFit Demo](https://github.com/CjConvento/FlexiFitMobile/releases/download/v1.0.0-demo/demovid.mp4)**
+
+*Runtime: ~1 minute | Covers onboarding, workouts, nutrition, and progress tracking*
+
+</div>
+
 ---
 
 ## Contributing
