@@ -45,8 +45,9 @@ class CalendarAdapter(
             holder.itemView.alpha = 1f
             holder.indicatorDot.visibility = View.VISIBLE
 
+            // ni-map ang "DONE" sa parehong green color ng "COMPLETED"
             val color = when (item.status.uppercase()) {
-                "COMPLETED" -> "#5c8a73"
+                "COMPLETED", "DONE" -> "#5c8a73"
                 "SKIPPED", "CANCELLED" -> "#621B21"
                 "PENDING" -> "#9EB9D4"
                 else -> "#9E9E9E"

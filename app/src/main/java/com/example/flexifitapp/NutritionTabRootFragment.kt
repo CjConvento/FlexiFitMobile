@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -31,6 +32,9 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private var monthArg: Int = 1
     private var currentCycleId: Int = 0
     private var currentNutritionResponse: NutritionResponse? = null
+
+    // class-level properties
+    private var layoutNutritionActions: LinearLayout? = null
 
     // UI Components
     private lateinit var btnBack: ImageButton
@@ -80,9 +84,11 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     }
 
     private fun readArgs() {
-        day = arguments?.getInt(NavKeys.ARG_DAY, -1) ?: -1
-        monthArg = arguments?.getInt(NavKeys.ARG_MONTH, 1) ?: 1
-        fromHost = arguments?.getBoolean(NavKeys.ARG_FROM_HOST, false) ?: false
+        day = arguments?.getInt(NavKeys.ARG_DAY, day) ?: day
+        monthArg = arguments?.getInt(NavKeys.ARG_MONTH, monthArg) ?: monthArg
+        fromHost = arguments?.getBoolean(NavKeys.ARG_FROM_HOST, fromHost) ?: fromHost
+
+        AppLogger.i("NUTRITION_TAB", "Args: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
 
     private fun initViews(view: View) {
@@ -115,6 +121,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         btnResetWater = view.findViewById(R.id.btnResetWater)
         tvWaterValue = view.findViewById(R.id.tvWaterValue)
         // waterGlass = view.findViewById(R.id.waterGlass)
+
+        layoutNutritionActions = view.findViewById(R.id.layoutNutritionActions)
 
             btnCalendar.isVisible = !fromHost
         AppLogger.d("NUTRITION_TAB", "Calendar button visibility set to: ${btnCalendar.isVisible}, fromHost=$fromHost")
@@ -252,10 +260,9 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
                     updateUI(response)
                     showContent()
 
-                    if (day < LocalDate.now().dayOfMonth) {
-                        btnComplete.isEnabled = false
-                        btnComplete.text = "Completed"
-                        btnSkip.isEnabled = false
+                    // Hindi ni i-load ang water intake kung fromHost (past/future day)
+                    if (!fromHost) {
+                        loadWaterIntake()
                     }
                 } else {
                     showError("No nutrition data for Day $day")
@@ -380,12 +387,32 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     }
 
     private fun showContent() {
+        // 1. Hide loading, show content
         progressBar.isVisible = false
         rvMeals.isVisible = true
         tvError.isVisible = false
         btnRetry.isVisible = false
-        btnComplete.isEnabled = true
-        btnSkip.isEnabled = true
+
+
+        // Itago ang buong Skip/Complete container kapag galing sa Calendar (fromHost)
+        layoutNutritionActions?.isVisible = !fromHost
+
+        // Itago ang Water buttons kapag galing sa Calendar
+        btnAddWater?.isVisible = !fromHost
+        btnResetWater?.isVisible = !fromHost
+
+        // I-apply lang ang normal button logic KAPAG HINDI fromHost (Today's view)
+        if (!fromHost && currentNutritionResponse != null) {
+            val allCompleted = currentNutritionResponse?.meals?.all { it.status == "DONE" } == true
+            if (allCompleted) {
+                btnComplete.isEnabled = false
+                btnComplete.text = "Completed"
+                btnSkip.isEnabled = false
+            } else {
+                btnComplete.isEnabled = true
+                btnComplete.text = "Complete"
+                btnSkip.isEnabled = true }
+        }
     }
 
     private fun showError(message: String) {

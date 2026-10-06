@@ -71,45 +71,19 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 
         // Restore state from saved instance
         if (savedInstanceState != null) {
-            day = savedInstanceState.getInt("ARG_DAY", -1)
-            monthArg = savedInstanceState.getInt("ARG_MONTH", 1)
-            fromHost = savedInstanceState.getBoolean("ARG_FROM_HOST", false)
-            // Recreate arguments so that readArgs() works
-            arguments = Bundle().apply {
-                putInt("ARG_DAY", day)
-                putInt("ARG_MONTH", monthArg)
-                putBoolean("ARG_FROM_HOST", fromHost)
-            }
+            day = savedInstanceState.getInt(NavKeys.ARG_DAY, -1)
+            monthArg = savedInstanceState.getInt(NavKeys.ARG_MONTH, 1)
+            fromHost = savedInstanceState.getBoolean(NavKeys.ARG_FROM_HOST, false)
+
             AppLogger.d("WORKOUT_TAB", "Restored from savedInstanceState: Day=$day, Month=$monthArg, fromHost=$fromHost")
-        } else if (arguments == null) {
-            // Fallback: try to get arguments from parent fragment
-            val parent = parentFragment
-            if (parent is DayHostFragment) {
-                val parentDay = parent.arguments?.getInt("ARG_DAY", -1) ?: -1
-                val parentMonth = parent.arguments?.getInt("ARG_MONTH", 1) ?: 1
-                val parentFromHost = parent.arguments?.getBoolean("ARG_FROM_HOST", false) ?: false
-                arguments = Bundle().apply {
-                    putInt("ARG_DAY", parentDay)
-                    putInt("ARG_MONTH", parentMonth)
-                    putBoolean("ARG_FROM_HOST", parentFromHost)
-                }
-                AppLogger.d("WORKOUT_TAB", "Recovered arguments from parent: Day=$parentDay, Month=$parentMonth")
-            } else {
-                // Default (should only happen when opened from bottom navigation)
-                arguments = Bundle().apply {
-                    putInt("ARG_DAY", -1)
-                    putInt("ARG_MONTH", 1)
-                    putBoolean("ARG_FROM_HOST", false)
-                }
-            }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("ARG_DAY", day)
-        outState.putInt("ARG_MONTH", monthArg)
-        outState.putBoolean("ARG_FROM_HOST", fromHost)
+        outState.putInt(NavKeys.ARG_DAY, day)
+        outState.putInt(NavKeys.ARG_MONTH, monthArg)
+        outState.putBoolean(NavKeys.ARG_FROM_HOST, fromHost)
         AppLogger.d("WORKOUT_TAB", "Saving state: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
 
@@ -130,9 +104,10 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
     // ─────────────────────────────────────────────────────────────────────────────
 
     private fun readArgs() {
-        day = arguments?.getInt("ARG_DAY", -1) ?: -1
-        monthArg = arguments?.getInt("ARG_MONTH", 1) ?: 1
-        fromHost = arguments?.getBoolean("ARG_FROM_HOST", false) ?: false
+        // Gamitin ang current value bilang default kung naka-restore na sa onCreate
+        day = arguments?.getInt(NavKeys.ARG_DAY, day) ?: day
+        monthArg = arguments?.getInt(NavKeys.ARG_MONTH, monthArg) ?: monthArg
+        fromHost = arguments?.getBoolean(NavKeys.ARG_FROM_HOST, fromHost) ?: fromHost
         AppLogger.i("WORKOUT_TAB", "Args: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
 

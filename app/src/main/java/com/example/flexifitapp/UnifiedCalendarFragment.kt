@@ -94,13 +94,17 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
         val calendarDays = mutableListOf<CalendarDay>()
         val today = LocalDate.now()
 
-        // Determine first day of the month for alignment (using current month, e.g., March 2025)
-        // For simplicity, we'll assume we're showing the current month. If you need to support month selection,
-        // you would pass a month parameter and use it here. For now, we use the current month.
-        val currentMonth = today.monthValue
+        // Determine currentDay.
+        // Fallback: find the first "PENDING" or "NOT_STARTED" day. If all completed, default to 28.
+        val currentDay = historyList.firstOrNull {
+            it.status == "PENDING" || it.status == "NOT_STARTED"
+        }?.day ?: 28
+
+        // Gamitin ang month argument kung meron, fallback sa current month
+        val monthArg = arguments?.getInt(NavKeys.ARG_MONTH, today.monthValue) ?: today.monthValue
         val currentYear = today.year
-        val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1)
-        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7  // 0 = Sunday (or adjust for Monday)
+        val firstDayOfMonth = LocalDate.of(currentYear, monthArg, 1)
+        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7  // 0 = Sunday
 
         // Add blank cells for days before the 1st
         for (i in 0 until firstDayOfWeek) {
@@ -119,11 +123,12 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
         // Days 1–28 (all days in the program)
         for (day in 1..28) {
             val history = historyMap[day]
-            // Determine if the day is in the past/current (clickable only if <= today's day of month)
-            // Since the calendar always shows the same 28 days, we mark all days as clickable if they are <= 28.
-            // Actually, we only allow clicking on days that are ≤ the current day in the program (backend handles day logic).
-            // For simplicity, we'll make all days clickable, and the DayHost will handle restrictions.
-            val isClickable = true   // or you can use: day <= today.dayOfMonth if you only show current month
+
+            // Clickable LANG kung araw na 'to o nakaraan na (relative sa currentDay ng program)
+            val isClickable = day <= currentDay
+
+            // I-highlight LANG ang actual current day ng program, hindi today.dayOfMonth
+            val isCurrentDay = day == currentDay
 
             // Build the CalendarDay object using the full data from history
             calendarDays.add(
@@ -135,13 +140,13 @@ class UnifiedCalendarFragment : Fragment(R.layout.fragment_unified_calendar) {
                     nutritionStatus = history?.nutritionStatus,
                     dayType = history?.dayType,
                     summary = history?.summary,
-                    isCurrentDay = day == today.dayOfMonth   // highlight only if it's the actual current day of month
+                    isCurrentDay = isCurrentDay
                 )
             )
         }
 
         calendarDays.forEachIndexed { index, day ->
-            AppLogger.d("CALENDAR_DEBUG", "Index $index: dayNumber=${day.dayNumber}, isClickable=${day.isClickable}")
+            AppLogger.d("CALENDAR_DEBUG", "Index $index: dayNumber=${day.dayNumber}, isClickable=${day.isClickable}, isCurrentDay=${day.isCurrentDay}")
         }
 
         // Optionally, add empty cells at the end to fill the grid (not necessary, RecyclerView will handle)
