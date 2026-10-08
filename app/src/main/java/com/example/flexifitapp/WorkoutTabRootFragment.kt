@@ -28,6 +28,10 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
     private var day: Int = -1
     private var fromHost: Boolean = false
     private var monthArg: Int = 1
+
+    private var currentProgramNumber: Int =1
+    private var totalPrograms: Int = 1
+
     private var currentSessionId: Int = 0
     private var currentResponse: WorkoutSessionResponse? = null
 
@@ -75,6 +79,9 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
             monthArg = savedInstanceState.getInt(NavKeys.ARG_MONTH, 1)
             fromHost = savedInstanceState.getBoolean(NavKeys.ARG_FROM_HOST, false)
 
+            currentProgramNumber = savedInstanceState.getInt("currentProgramNumber", 1)
+            totalPrograms = savedInstanceState.getInt("totalPrograms", 1)
+
             AppLogger.d("WORKOUT_TAB", "Restored from savedInstanceState: Day=$day, Month=$monthArg, fromHost=$fromHost")
         }
     }
@@ -84,6 +91,10 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         outState.putInt(NavKeys.ARG_DAY, day)
         outState.putInt(NavKeys.ARG_MONTH, monthArg)
         outState.putBoolean(NavKeys.ARG_FROM_HOST, fromHost)
+
+        outState.putInt("currentProgramNumber", currentProgramNumber)
+        outState.putInt("totalPrograms", totalPrograms)
+
         AppLogger.d("WORKOUT_TAB", "Saving state: Day=$day, Month=$monthArg, fromHost=$fromHost")
     }
 
@@ -95,6 +106,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         setupRecyclerViews()
         setupExpandCollapse()
         setupSessionButtons()
+        setupProgramSwitching()
         setupRetry()
         fetchWorkoutSession()
     }
@@ -148,7 +160,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
     // FETCH WORKOUT
     // ─────────────────────────────────────────────────────────────────────────────
 
-    private fun fetchWorkoutSession() {
+    private fun fetchWorkoutSession(programNumber: Int = currentProgramNumber) {
         lifecycleScope.launch {
             showLoading()
             try {
@@ -157,20 +169,26 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
 
                 val response = if (fromHost) {
                     if (day > 0) {
-                        repository.getWorkoutByDate(day, monthArg)
+                        repository.getWorkoutByDate(day, monthArg, programNumber = programNumber)
                     } else {
                         // Guard against invalid day when coming from host
                         showError("Invalid day number.")
                         null
                     }
                 } else {
-                    repository.getTodayWorkout()
+                    repository.getTodayWorkout(programNumber = programNumber)
                 }
 
                 if (response != null) {
                     currentResponse = response
                     currentSessionId = response.sessionId
+
+                    // Update program state from API response
+                    currentProgramNumber = response.program.programNumber
+                    totalPrograms = response.program.totalPrograms
+
                     updateUI(response)
+                    setupProgramSwitching()
                     showContent()
 
                     monthArg = response.program.month
@@ -185,6 +203,48 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                 showError("Connection error. Check your API!")
             }
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // PROGRAM SWITCHING
+    // ─────────────────────────────────────────────────────────────────────────────
+    private fun setupProgramSwitching() {
+        // Hide arrows if only 1 program
+        if (totalPrograms <= 1) {
+            btnPrevProgram?.isVisible = false
+            btnNextProgram?.isVisible = false
+        } else {
+            btnPrevProgram?.isVisible = true
+            btnNextProgram?.isVisible = true
+
+            // Disable "<" if on Program 1
+            btnPrevProgram?.isEnabled = currentProgramNumber > 1
+
+            // Disable ">" if on last program
+            btnNextProgram?.isEnabled = currentProgramNumber < totalPrograms
+        }
+
+        // Click Listener for Previous Program
+        btnPrevProgram?.setOnClickListener {
+            if (currentProgramNumber > 1) {
+                currentProgramNumber--
+                updateProgramHeader()
+                fetchWorkoutSession(programNumber = currentProgramNumber)
+            }
+        }
+
+        // Click Listener for Next Program
+        btnNextProgram?.setOnClickListener {
+            if (currentProgramNumber < totalPrograms) {
+                currentProgramNumber++
+                updateProgramHeader()
+                fetchWorkoutSession(programNumber = currentProgramNumber)
+            }
+        }
+    }
+
+    private fun updateProgramHeader() {
+        tvProgramHeader?.text = "Program $currentProgramNumber"
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
@@ -215,6 +275,13 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                 btnSkipWorkoutSession?.isEnabled = false
                 btnSkipWorkoutSession?.text = response.skipMessage ?: "Cannot Skip"
             }
+        }
+
+        // REST DAY CHECK: Hide Complete/Skip buttons if REST or sessionId == 0
+        if (response.status.equals("REST", ignoreCase = true) || response.sessionId == 0) {
+            layoutWorkoutSessionBottomActions?.isVisible = false
+        } else if (!fromHost) {
+            layoutWorkoutSessionBottomActions?.isVisible = true
         }
 
         // Set adapters
@@ -257,7 +324,6 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         progressWorkoutLoading?.isVisible = false
         layoutWarmupHeader?.isVisible = true
         layoutWorkoutHeader?.isVisible = true
-        layoutWorkoutSessionBottomActions?.isVisible = true
         rvWarmupItems?.isVisible = warmupExpanded
         rvWorkoutItems?.isVisible = workoutExpanded
     }

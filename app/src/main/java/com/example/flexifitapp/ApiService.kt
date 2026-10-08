@@ -69,12 +69,15 @@ interface ApiService {
 
     // --- WORKOUT ENGINE ---
     @GET("api/workout/today")
-    suspend fun getTodayWorkout(): Response<WorkoutSessionResponse>
+    suspend fun getTodayWorkout(
+        @Query("programNumber") programNumber: Int = 1 // NEW PARAM
+    ): Response<WorkoutSessionResponse>
 
     @GET("api/workout/history-detail")
     suspend fun getWorkoutHistoryDetail(
         @Query("day") day: Int,
-        @Query("month") month: Int
+        @Query("month") month: Int,
+        @Query("programNumber") programNumber: Int = 1 // NEW PARAM
     ): Response<WorkoutSessionResponse>
 
     @POST("api/workout/complete")

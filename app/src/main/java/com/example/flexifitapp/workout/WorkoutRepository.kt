@@ -10,9 +10,9 @@ class WorkoutRepository(private val apiService: ApiService) {
     private val TAG = "WORKOUT_REPO"
 
     // 1. Get today's workout
-    suspend fun getTodayWorkout(): WorkoutSessionResponse? {
+    suspend fun getTodayWorkout(programNumber: Int =1): WorkoutSessionResponse? {
         return try {
-            val response = apiService.getTodayWorkout()
+            val response = apiService.getTodayWorkout(programNumber = programNumber)
             if (response.isSuccessful) {
                 AppLogger.d(TAG, "Today's Workout Success: ${response.body()}")
                 response.body()
@@ -27,10 +27,10 @@ class WorkoutRepository(private val apiService: ApiService) {
     }
 
     // 2. Get workout by date (for calendar)
-    suspend fun getWorkoutByDate(day: Int, month: Int): WorkoutSessionResponse? {
+    suspend fun getWorkoutByDate(day: Int, month: Int, programNumber: Int =1): WorkoutSessionResponse? {
         return try {
             AppLogger.d(TAG, "Fetching Workout for Day: $day, Month: $month")
-            val response = apiService.getWorkoutHistoryDetail(day, month)
+            val response = apiService.getWorkoutHistoryDetail(day, month, programNumber = programNumber)
             if (response.isSuccessful) {
                 AppLogger.d(TAG, "Workout Detail Success")
                 response.body()
