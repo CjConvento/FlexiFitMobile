@@ -50,7 +50,14 @@ data class NutritionResponse(
     val templateName: String? = null,
 
     @SerializedName("meals")
-    val meals: List<MealGroupDto>
+    val meals: List<MealGroupDto>,
+
+    // Day Properties
+    @SerializedName("dayNo")
+    val dayNo: Int,
+
+    @SerializedName("weekNo")
+    val weekNo: Int
 )
 
 data class MealGroupDto(

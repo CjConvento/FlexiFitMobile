@@ -135,8 +135,9 @@ class SummaryFragment : Fragment(R.layout.obd_fragment_summary) {
         val rawDietType = OnboardingStore.getString(ctx, FlexiFitKeys.DIETARY_TYPE).lowercase()
 
         val mappedBodyGoal = when {
-            rawBodyGoal.contains("gain") -> "GAIN"
-            rawBodyGoal.contains("lose") -> "LOSE"
+            rawBodyGoal.contains("lean") || rawBodyGoal.contains("recomp") -> "MAINTAIN"
+            rawBodyGoal.contains("muscle") || rawBodyGoal.contains("gain") -> "GAIN"
+            rawBodyGoal.contains("lose") || rawBodyGoal.contains("cut") -> "LOSE"
             else -> "MAINTAIN"
         }
 

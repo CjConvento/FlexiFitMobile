@@ -311,7 +311,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     }
 
     private fun updateUI(response: NutritionResponse) {
-        tvMacrosTag.text = "Day ${response.dailyLogId}"
+        // Gamitin ang weekNo at dayNo instead of dailyLogId
+        tvMacrosTag.text = "Week ${response.weekNo} - Day ${response.dayNo}"
         tvCaloriesBurned.text = "${response.burnedCalories.toInt()} kcal"
 
         tvCalories.text = "${response.consumedCalories.toInt()} / ${response.targetCalories.toInt()} kcal"

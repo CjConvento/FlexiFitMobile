@@ -18,9 +18,9 @@ class Pg6BodyCompFragment : BaseOnboardingFragment(
 
         // ✅ IDs should match your backend's expected strings for Body Comp goals
         val options = listOf(
-            OptionTile("lose_weight", "Lean / Toned", R.drawable.ic_goal_cutting),
-            OptionTile("gain_weight", "Muscle Gain", R.drawable.ic_goal_bulking),
-            OptionTile("maintain", "Recomposition", R.drawable.ic_goal_leanbulk)
+            OptionTile("lean_toned", "Lean / Toned", R.drawable.ic_goal_cutting),
+            OptionTile("muscle_gain", "Muscle Gain", R.drawable.ic_goal_bulking),
+            OptionTile("recomp", "Recomposition", R.drawable.ic_goal_leanbulk)
         )
 
         // --- HYDRATION: Restore using FlexiFitKeys ---
