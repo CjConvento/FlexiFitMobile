@@ -3,6 +3,7 @@ package com.example.flexifitapp
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -96,6 +98,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         // 4. Fetch initial data from API
+        fetchDashboardData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh dashboard data when fragment becomes visible
         fetchDashboardData()
     }
 
@@ -331,18 +339,32 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         // Pero kung gusto mo lahat, alisin mo lang yung .take(2)
         val mealsToShow = selectedGroup?.foodItems // O kaya selectedGroup?.foodItems?.take(2)
 
+        // 3. Not only return but also show "no meals planned" message
         if (mealsToShow.isNullOrEmpty()) {
-            // Pwede kang mag-inflate ng "No meals planned" layout dito  para hindi lang blank
             AppLogger.w("DEBUG_MEALS", "Walang laman ang $mealType .")
+
+            val emptyView = TextView(requireContext()).apply {
+                text = "No meals planned for this meal type yet."
+                textSize = 14f
+                setTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+                gravity = Gravity.CENTER
+                setPadding(0, 32, 0, 32)
+            }
+            mealItemsContainer?.addView(emptyView)
             return
         }
 
-        // 3. Loop through food items
+        // 4. Loop through food items
         mealsToShow.forEach { meal ->
             val mealView = layoutInflater.inflate(R.layout.item_meal_food, mealItemsContainer, false)
 
             // I-bind ang data sa views ng item_meal_food.xml
             mealView.findViewById<TextView>(R.id.tvFoodName).text = meal.name ?: "Unknown Food"
+
+            // Safe handling ng Int/Double conversion para iwas crash
+            val calories = meal.calories.toInt()
+            val qty = meal.qty
+
             mealView.findViewById<TextView>(R.id.tvFoodSub).text = "${meal.calories.toInt()} kcal • ${meal.qty} ${meal.unit}"
 
             val foodImg = mealView.findViewById<ImageView>(R.id.imgFood)
