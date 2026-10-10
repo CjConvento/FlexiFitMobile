@@ -17,7 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.flexifitapp.custom.WaterGlassView
 import com.example.flexifitapp.dashboard.BmiDetailsDialog
-import com.example.flexifitapp.dashboard.ProfileStatusResponse // Gamitin yung bagong model 
+import com.example.flexifitapp.dashboard.ProfileStatusResponse // Gamitin yung bagong model
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -96,6 +96,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
 
         // 4. Fetch initial data from API
+        fetchDashboardData()
+    }
+
+    override fun onResume(){
+        super.onResume()
+        // refresh dashboard data kapag bumalik ang user sa tab
         fetchDashboardData()
     }
 
@@ -319,30 +325,43 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private fun updateMealList(mealType: String) {
         AppLogger.d("DEBUG_MEALS", "Searching for Group Type: $mealType")
 
-        // Siguraduhin na hindi null ang container bago linisin
+        // 1. Siguraduhin na hindi null ang container bago linisin
         mealItemsContainer?.removeAllViews()
 
-        // 1. Hanapin ang tamang GROUP base sa mealType (B, L, S, D)
+        // 2. Hanapin ang tamang GROUP base sa mealType (B, L, S, D)
         val selectedGroup = globalProfileData?.todayMeals?.find {
             it.mealType?.equals(mealType, ignoreCase = true) == true
         }
 
-        // 2. Kunin ang food items. Gamit tayo ng .take(2) kung gusto mo talagang dashboard style (top 2 only)
-        // Pero kung gusto mo lahat, alisin mo lang yung .take(2)
-        val mealsToShow = selectedGroup?.foodItems // O kaya selectedGroup?.foodItems?.take(2)
+        val mealsToShow = selectedGroup?.foodItems
 
+        // 3. magpakita ng "no meals planned" message imbes na blank
         if (mealsToShow.isNullOrEmpty()) {
-            // Pwede kang mag-inflate ng "No meals planned" layout dito  para hindi lang blank
             AppLogger.w("DEBUG_MEALS", "Walang laman ang $mealType .")
+
+            val emptyView = TextView(requireContext()).apply {
+                text = "No meals planned for this meal type yet."
+                textSize = 14f
+                setTextColor(android.graphics.Color.GRAY)
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 32, 0, 32)
+            }
+            mealItemsContainer?.addView(emptyView)
+
             return
         }
 
-        // 3. Loop through food items
+        // 4. Loop through food items
         mealsToShow.forEach { meal ->
             val mealView = layoutInflater.inflate(R.layout.item_meal_food, mealItemsContainer, false)
 
             // I-bind ang data sa views ng item_meal_food.xml
             mealView.findViewById<TextView>(R.id.tvFoodName).text = meal.name ?: "Unknown Food"
+
+            // Safe conversion from Double to Int para sa display
+            val calDisplay = meal.calories.toInt()
+            val qtyDisplay = meal.qty
+
             mealView.findViewById<TextView>(R.id.tvFoodSub).text = "${meal.calories.toInt()} kcal • ${meal.qty} ${meal.unit}"
 
             val foodImg = mealView.findViewById<ImageView>(R.id.imgFood)

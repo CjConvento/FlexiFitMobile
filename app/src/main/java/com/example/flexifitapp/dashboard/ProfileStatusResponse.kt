@@ -33,9 +33,9 @@ data class NutritionData(
 // Eto yung para sa "Today Meals" section mo 
 data class FoodItemDto(
     @SerializedName("name") val name: String?,
-    @SerializedName("calories") val calories: Int,
+    @SerializedName("calories") val calories: Double,
     @SerializedName("imageUrl") val imageUrl: String?,
-    @SerializedName("qty") val qty: Int,
+    @SerializedName("qty") val qty: Double,
     @SerializedName("unit") val unit: String?,
 )
 
