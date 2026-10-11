@@ -75,6 +75,9 @@ data class MealGroupDto(
 )
 
 data class FoodItemDto(
+    @SerializedName("itemLogId") // added itemlogid dto
+    val itemLogId: Int,
+
     @SerializedName("foodId")
     val foodId: Int,
 

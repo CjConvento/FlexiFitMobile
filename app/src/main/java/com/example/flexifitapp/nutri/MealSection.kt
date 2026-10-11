@@ -13,7 +13,7 @@ data class MealFood(
     val description: String?,
     val imageUrl: String?,             // Full URL from API (Appwrite) — resolved via ImageHelper
     var servingLabel: String,          // "1 serving (2 pancakes)"
-    var qty: Int,
+    var qty: Double,
     var calories: Int,
     var protein: Int,
     var carbs: Int,

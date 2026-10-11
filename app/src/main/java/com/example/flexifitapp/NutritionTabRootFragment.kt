@@ -209,7 +209,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
 
     private fun openFoodDetail(food: MealFood) {
         val bundle = bundleOf(
-            "mealItemId" to food.mealItemId,
+            "mealItemId" to food.itemLogId,
             "foodId" to food.foodId,
             "name" to food.name,
             "description" to food.description,
@@ -340,7 +340,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
                         description = food.description,
                         imageUrl = food.imageUrl,
                         servingLabel = "${food.qty} ${food.unit}",
-                        qty = food.qty.toInt(),
+                        qty = food.qty,
                         calories = food.calories.toInt(),
                         protein = food.protein.toInt(),
                         carbs = food.carbs.toInt(),
