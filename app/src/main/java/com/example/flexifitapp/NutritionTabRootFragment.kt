@@ -313,9 +313,20 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private fun updateUI(response: NutritionResponse) {
         // Gamitin ang weekNo at dayNo instead of dailyLogId
         tvMacrosTag.text = "Week ${response.weekNo} - Day ${response.dayNo}"
-        tvCaloriesBurned.text = "${response.burnedCalories.toInt()} kcal"
 
-        tvCalories.text = "${response.consumedCalories.toInt()} / ${response.targetCalories.toInt()} kcal"
+        // Display Burned Calories as Bonus
+        val bonusText = if (response.bonusCalories > 0) {
+            "${response.bonusCalories.toInt()} kcal (Bonus)"
+        }
+        else
+        {
+            "${response.bonusCalories.toInt()} kcal"
+        }
+        tvCaloriesBurned.text = bonusText
+
+        // Use totalTarget for UI display (Base + Bonus)
+        tvCalories.text = "${response.consumedCalories.toInt()} / $displayTarget kcal"
+
         tvProtein.text = "${response.consumedProtein.toInt()}g / ${response.targetProtein.toInt()}g"
         tvCarbs.text = "${response.consumedCarbs.toInt()}g / ${response.targetCarbs.toInt()}g"
         tvFats.text = "${response.consumedFats.toInt()}g / ${response.targetFats.toInt()}g"
@@ -324,7 +335,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
 
         updateMacroPieChart(response.consumedProtein, response.consumedCarbs, response.consumedFats)
 
-        pbCalories.progress = percent(response.consumedCalories.toInt(), response.targetCalories.toInt())
+        // Use totalTarget for progress bars
+        pbCalories.progress = percent(response.consumedCalories.toInt(), displayTarget)
         pbProtein.progress = percent(response.consumedProtein.toInt(), response.targetProtein.toInt())
         pbCarbs.progress = percent(response.consumedCarbs.toInt(), response.targetCarbs.toInt())
         pbFats.progress = percent(response.consumedFats.toInt(), response.targetFats.toInt())

@@ -18,6 +18,14 @@ data class NutritionResponse(
     @SerializedName("remainingCalories")
     val remainingCalories: Double,
 
+    // Nutrition Target Breakdown fields (Base + Bonus = Total)
+    @SerializedName("baseTarget")
+    val baseTarget: Double = 0.0,
+    @SerializedName("bonusCalories")
+    val bonusCalories: Double = 0.0,
+    @SerializedName("totalTarget")
+    val totalTarget: Double = 0.0,
+
     @SerializedName("targetProtein")
     val targetProtein: Double,
 
