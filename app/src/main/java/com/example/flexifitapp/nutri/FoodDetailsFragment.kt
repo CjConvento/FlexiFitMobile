@@ -37,7 +37,7 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
     // Data
     private var mealItemId: Int = 0
     private var foodId: Int = 0
-    private var currentQty: Int = 1
+    private var currentQty: Double = 1.0
     private var currentWeight: Double = 0.0
     private var baseWeight: Double = 100.0  // Default serving weight in grams
     private var baseCalories: Double = 0.0
@@ -45,6 +45,9 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
     private var baseCarbs: Double = 0.0
     private var baseFats: Double = 0.0
     private var unit: String = "g"
+
+    // Para ma-track kung nagbago ang user ng food details
+    private var hasChanges = false 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,7 +80,7 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
         arguments?.let {
             mealItemId = it.getInt("mealItemId", 0)
             foodId = it.getInt("foodId", 0)
-            currentQty = it.getInt("qty", 1)
+            currentQty = it.getDouble("qty", 1.0)
             tvFoodTitle.text = it.getString("name") ?: "Food"
             tvDescription.text = it.getString("description") ?: "No description available"
 
@@ -95,7 +98,7 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
             parseWeightFromServingLabel(servingLabel)
 
             // Set current values
-            tvQty.text = currentQty.toString()
+            tvQty.text = String.format("%.2f", currentQty) 
             updateMacros()
         }
     }
@@ -115,19 +118,19 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
         }
 
         btnMinus.setOnClickListener {
-            if (currentQty > 1) {
-                currentQty--
-                tvQty.text = currentQty.toString()
+            if (currentQty >= 0.25) {
+                currentQty -= 0.25 // Decrement by 0.25 
+                tvQty.text = String.format("%.2f", currentQty) 
                 updateMacros()
+                hasChanges = true // added to track changes
             }
         }
 
         btnPlus.setOnClickListener {
-            if (currentQty < 10) {
-                currentQty++
-                tvQty.text = currentQty.toString()
-                updateMacros()
-            }
+            currentQty += 0.25
+            tvQty.text = String.format("%.2f", currentQty)
+            updateMacros()
+            hasChanges = true // added to track changes
         }
     }
 
@@ -140,6 +143,7 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
                 if (weightStr.isNotEmpty()) {
                     currentWeight = weightStr.toDouble()
                     updateMacrosFromWeight()
+                    hasChanges = true // added to track changes
                 }
             }
         })
@@ -213,8 +217,10 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
     }
 
     override fun onDestroyView() {
-        // Save changes when fragment is destroyed
-        updateQuantityInDatabase()
+        // Save changes kung may changes ang user
+        if (hasChanges){
+            updateQuantityInDatabase()
+        }
         super.onDestroyView()
     }
 }
