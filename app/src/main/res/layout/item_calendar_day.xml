@@ -11,6 +11,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/btn_gradient">
 
+    <!-- Day Number -->
     <TextView
         android:id="@+id/txtDay"
         android:layout_width="match_parent"
@@ -21,14 +22,34 @@
         android:textSize="12sp"
         android:textStyle="bold" />
 
-    <View
-        android:id="@+id/indicatorDot"
-        android:layout_width="6dp"
-        android:layout_height="6dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="4dp"
-        android:background="@drawable/shape_dot"
+    <!-- Multi-Program Indicators Container -->
+    <LinearLayout
+        android:id="@+id/layoutIndicators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Primary Dot (e.g., Main Program) -->
+        <View
+            android:id="@+id/indicatorDot1"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_circle_soft"
+            android:backgroundTint="@color/colorPrimary" />
+
+        <!-- Secondary Dot (e.g., Secondary Program like Cardio) - Hidden by default -->
+        <View
+            android:id="@+id/indicatorDot2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_circle_soft"
+            android:backgroundTint="@color/colorSecondary"
         android:visibility="gone" />
+
+    </LinearLayout>
 
 </FrameLayout>
 </com.google.android.material.card.MaterialCardView>

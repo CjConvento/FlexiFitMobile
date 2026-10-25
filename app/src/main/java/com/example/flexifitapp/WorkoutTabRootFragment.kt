@@ -216,11 +216,7 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
         } else {
             btnPrevProgram?.isVisible = true
             btnNextProgram?.isVisible = true
-
-            // Disable "<" if on Program 1
             btnPrevProgram?.isEnabled = currentProgramNumber > 1
-
-            // Disable ">" if on last program
             btnNextProgram?.isEnabled = currentProgramNumber < totalPrograms
         }
 
@@ -241,6 +237,9 @@ class WorkoutTabRootFragment : Fragment(R.layout.fragment_workout) {
                 fetchWorkoutSession(programNumber = currentProgramNumber)
             }
         }
+
+        // Initial header update
+        updateProgramHeader()
     }
 
     private fun updateProgramHeader() {

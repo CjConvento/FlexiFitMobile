@@ -8,5 +8,7 @@ data class CalendarDay(
     val nutritionStatus: String? = null,
     val dayType: String? = null,
     val summary: String? = null,
-    val isCurrentDay: Boolean = false
+    val isCurrentDay: Boolean = false,
+    val isFuture: Boolean = false,
+    val isPast: Boolean = false
 )

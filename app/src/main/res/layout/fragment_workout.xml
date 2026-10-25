@@ -62,82 +62,93 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/btnBackWorkoutPlan" />
 
-            <ImageButton
-                android:id="@+id/btnPrevProgram"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="50dp"
-                android:background="@android:color/transparent"
-                android:padding="8dp"
-                android:src="@drawable/baseline_arrow_left_ios_new_24"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnBackWorkoutPlan" />
-
-            <TextView
-                android:id="@+id/tvProgramHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Program 1"
-                android:textColor="#111827"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/btnPrevProgram"
-                app:layout_constraintEnd_toStartOf="@id/btnNextProgram"
-                app:layout_constraintStart_toEndOf="@id/btnPrevProgram"
-                app:layout_constraintTop_toTopOf="@id/btnPrevProgram" />
-
-            <ImageButton
-                android:id="@+id/btnNextProgram"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="50dp"
-                android:background="@android:color/transparent"
-                android:padding="8dp"
-                android:src="@drawable/baseline_arrow_right_ios_new_24"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/btnPrevProgram"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnPrevProgram" />
-
+            <!-- PROGRAM SWITCHER CARD -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardProgramInfo"
+                android:id="@+id/cardProgramSwitcher"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="8dp"
-                app:cardUseCompatPadding="true"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeWidth="0dp"
-                app:layout_constraintTop_toBottomOf="@id/tvProgramHeader"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/cardDatePill"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="25dp">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
 
-                    <TextView
-                        android:id="@+id/tvCurrentProgramName"
-                        android:layout_width="wrap_content"
+                    <!-- Previous Program Arrow -->
+                    <ImageButton
+                        android:id="@+id/btnPrevProgram"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/baseline_arrow_left_ios_new_24"
+                        app:tint="@color/colorPrimary"
+                        android:visibility="gone" />
+
+                    <!-- Program Info (Center) -->
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:text="Strength Beginner Home Program"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-                    <TextView
-                        android:id="@+id/tvProgramProgress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lorem ipsum labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip erit in vo">
-                    </TextView>
+                        <TextView
+                            android:id="@+id/tvProgramHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Program 1 of 2"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
 
+                        <TextView
+                            android:id="@+id/tvCurrentProgramName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Muscle Gain Phase"
+                            android:textColor="#111827"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+
+                    <!-- Next Program Arrow -->
+                    <ImageButton
+                        android:id="@+id/btnNextProgram"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/baseline_arrow_right_ios_new_24"
+                        app:tint="@color/colorPrimary"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- Program Description -->
+            <TextView
+                android:id="@+id/tvProgramProgress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Focus: Hapertrocrepie &amp; Strength"
+                android:textColor="#6B7280"
+                android:textSize="13sp"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/cardProgramSwitcher"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/tvSessionLabel"
@@ -149,7 +160,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardProgramInfo" />
+                app:layout_constraintTop_toBottomOf="@id/tvProgramProgress" />
 
             <LinearLayout
                 android:id="@+id/layoutStatusCycle"

@@ -2,6 +2,14 @@
     <color name="colorPrimary">#6082B6</color>
     <color name="colorSecondary">#9eb9d4</color>
 
+    <!-- ========================================== -->
+    <!-- CALENDAR & WORKOUT STATUS COLORS           -->
+    <!-- ========================================== -->
+    <color name="colorStatusCompleted">#5c8a73</color>   <!-- Green for Completed/Done -->
+    <color name="colorStatusSkipped">#621B21</color>     <!-- Dark Red for Skipped/Cancelled -->
+    <color name="colorStatusNotStarted">#9E9E9E</color>  <!-- Gray for Not Started/Default -->
+    <color name="colorStatusMissed">#F59E0B</color>      <!-- Amber/Orange -->
+
     <!-- LIGHT MODE BACKGROUND -->
     <!-- Background & surfaces (template feel) -->
     <color name="colorBackground">#F7F9FC</color>      <!-- soft light bg -->

@@ -325,7 +325,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         tvCaloriesBurned.text = bonusText
 
         // Use totalTarget for UI display (Base + Bonus)
-        tvCalories.text = "${response.consumedCalories.toInt()} / $displayTarget kcal"
+        tvCalories.text = "${response.consumedCalories.toInt()} / ${response.totalTarget.toInt()} kcal"
 
         tvProtein.text = "${response.consumedProtein.toInt()}g / ${response.targetProtein.toInt()}g"
         tvCarbs.text = "${response.consumedCarbs.toInt()}g / ${response.targetCarbs.toInt()}g"
@@ -336,7 +336,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         updateMacroPieChart(response.consumedProtein, response.consumedCarbs, response.consumedFats)
 
         // Use totalTarget for progress bars
-        pbCalories.progress = percent(response.consumedCalories.toInt(), displayTarget)
+        pbCalories.progress = percent(response.consumedCalories.toInt(), response.totalTarget.toInt())
         pbProtein.progress = percent(response.consumedProtein.toInt(), response.targetProtein.toInt())
         pbCarbs.progress = percent(response.consumedCarbs.toInt(), response.targetCarbs.toInt())
         pbFats.progress = percent(response.consumedFats.toInt(), response.targetFats.toInt())
