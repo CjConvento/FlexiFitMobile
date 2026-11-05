@@ -9,11 +9,13 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ImageView  // ✅ ADD THIS IMPORT
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.flexifitapp.ApiClient
 import com.example.flexifitapp.R
+import com.example.flexifitapp.utils.AppLogger
 import kotlinx.coroutines.launch
 import com.example.flexifitapp.utils.ImageHelper
 
@@ -84,11 +86,18 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
             tvFoodTitle.text = it.getString("name") ?: "Food"
             tvDescription.text = it.getString("description") ?: "No description available"
 
-            // Base values for 1 serving
-            baseCalories = it.getDouble("calories", 0.0)
-            baseProtein = it.getDouble("protein", 0.0)
-            baseCarbs = it.getDouble("carbs", 0.0)
-            baseFats = it.getDouble("fats", 0.0)
+            // Get Total Value From API
+            val totalCalories = it.getDouble("calories", 0.0)
+            val totalProtein = it.getDouble("protein", 0.0)
+            val totalCarbs = it.getDouble("carbs", 0.0)
+            val totalFats = it.getDouble("fats", 0.0)
+
+            // NORMALIZE TO PER-SERVING
+            // Dahil ang API ay nagse-send ng TOTALS, kailangang i-divide by currentQty
+            baseCalories = if (currentQty > 0) totalCalories / currentQty else totalCalories
+            baseProtein = if (currentQty > 0) totalProtein / currentQty else totalProtein
+            baseCarbs = if (currentQty > 0) totalCarbs / currentQty else totalCarbs
+            baseFats = if (currentQty > 0) totalFats / currentQty else totalFats
 
             // Get serving label
             val servingLabel = it.getString("servingLabel") ?: "1 serving"
@@ -114,13 +123,22 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
 
     private fun setupClickListeners() {
         btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            if (hasChanges) {
+                saveAndGoBack()
+            } else {
+                parentFragmentManager.popBackStack()
+            }
         }
 
         btnMinus.setOnClickListener {
             if (currentQty >= 0.25) {
                 currentQty -= 0.25 // Decrement by 0.25 
                 tvQty.text = String.format("%.2f", currentQty) 
+
+                // Sync: Update weight para magmatch sa new quantity
+                currentWeight = currentQty * baseWeight
+                etServingWeight.setText(currentWeight.toInt().toString())
+
                 updateMacros()
                 hasChanges = true // added to track changes
             }
@@ -129,6 +147,11 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
         btnPlus.setOnClickListener {
             currentQty += 0.25
             tvQty.text = String.format("%.2f", currentQty)
+
+            // Sync: Update weight para magmatch sa new quantity
+            currentWeight = currentQty * baseWeight
+            etServingWeight.setText(currentWeight.toInt().toString())
+
             updateMacros()
             hasChanges = true // added to track changes
         }
@@ -141,9 +164,20 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
             override fun afterTextChanged(s: Editable?) {
                 val weightStr = s.toString()
                 if (weightStr.isNotEmpty()) {
-                    currentWeight = weightStr.toDouble()
-                    updateMacrosFromWeight()
-                    hasChanges = true // added to track changes
+                    try {
+                        currentWeight = weightStr.toDouble()
+
+                        // SYNC: I-update ang quantity para match ang new weight
+                        if (baseWeight > 0) {
+                            currentQty = currentWeight / baseWeight
+                            tvQty.text = String.format("%.2f", currentQty)
+                        }
+
+                        updateMacrosFromWeight()
+                        hasChanges = true
+                    } catch (e: NumberFormatException) {
+                        // Ignore invalid input
+                    }
                 }
             }
         })
@@ -158,6 +192,56 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
             carbs = baseCarbs * multiplier,
             fats = baseFats * multiplier
         )
+    }
+
+    // Dedicated save function na safe sa lifecycle
+    private fun saveAndGoBack() {
+        lifecycleScope.launch {
+            try {
+                val api = ApiClient.api()
+                val repository = NutritionRepository(api)
+
+                // SIMPLIFIED: Dahil synced na ang Qty at Weight, gamitin na lang ang currentQty
+                val newQty = currentQty
+
+                AppLogger.d("FOOD_DETAILS", "Saving: mealItemId=$mealItemId, newQty=$newQty")
+                val success = repository.updateMealItem(mealItemId, newQty)
+
+                if (success) {
+                    Toast.makeText(requireContext(), "Quantity updated", Toast.LENGTH_SHORT).show()
+
+                    // 1. I-calculate ang bagong macros base sa newQty
+                    val newCalories = (baseCalories * newQty).toInt()
+                    val newProtein = (baseProtein * newQty).toInt()
+                    val newCarbs = (baseCarbs * newQty).toInt()
+                    val newFats = (baseFats * newQty).toInt()
+                    val newServingLabel = "$newQty $unit"
+
+                    // 2. I-pack ang updated data sa Bundle
+                    val result = bundleOf(
+                        "mealItemId" to mealItemId,
+                        "newQty" to newQty,
+                        "newCalories" to newCalories,
+                        "newProtein" to newProtein,
+                        "newCarbs" to newCarbs,
+                        "newFats" to newFats,
+                        "newServingLabel" to newServingLabel
+                    )
+
+                    // 3. I-send ang result sa parent fragment bago mag-pop
+                    parentFragmentManager.setFragmentResult("food_item_updated", result)
+                    parentFragmentManager.popBackStack()
+                } else {
+                    // Mas detailed na error message para alam na may API issue
+                    Toast.makeText(requireContext(), "Failed to update. Check Logcat for details.", Toast.LENGTH_LONG).show()
+                    parentFragmentManager.popBackStack() // pop anyway para hindi mastuck
+                }
+            } catch (e: Exception) {
+                AppLogger.e("FOOD_DETAILS", "Save exception: ${e.message}", e)
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                parentFragmentManager.popBackStack()
+            }
+        }
     }
 
     private fun updateMacrosFromWeight() {
@@ -214,13 +298,5 @@ class FoodDetailsFragment : Fragment(R.layout.fragment_food_details) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onDestroyView() {
-        // Save changes kung may changes ang user
-        if (hasChanges){
-            updateQuantityInDatabase()
-        }
-        super.onDestroyView()
     }
 }

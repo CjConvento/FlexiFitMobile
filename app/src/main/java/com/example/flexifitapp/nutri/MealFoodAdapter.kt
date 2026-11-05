@@ -47,12 +47,4 @@ class MealFoodAdapter(
     }
 
     override fun getItemCount() = items.size
-
-    fun updateItem(updated: MealFood) {
-        val idx = items.indexOfFirst { it.mealItemId == updated.mealItemId }
-        if (idx != -1) {
-            items[idx] = updated
-            notifyItemChanged(idx)
-        }
-    }
 }

@@ -66,4 +66,45 @@ class MealSectionAdapter(
     }
 
     override fun getItemCount() = sections.size
+
+    /**
+     * METHOD: Para ma-update ang specific food item kahit nasa loob ng section
+     */
+    fun updateItemQuantity(
+        mealItemId: Int,
+        qty: Double,
+        calories: Int,
+        protein: Int,
+        carbs: Int,
+        fats: Int,
+        servingLabel: String
+    ) {
+        // 1. Hanapin ang section na naglalaman ng mealItemId
+        for (sectionIndex in sections.indices) {
+            val section = sections[sectionIndex]
+            val foodIndex = section.foods.indexOfFirst { it.mealItemId == mealItemId }
+
+            if (foodIndex != -1) {
+                // 2. I-update ang data sa loob ng section gamit ang copy()
+                val oldFood = section.foods[foodIndex]
+                val updatedFood = oldFood.copy(
+                    qty = qty,
+                    calories = calories,
+                    protein = protein,
+                    carbs = carbs,
+                    fats = fats,
+                    servingLabel = servingLabel
+                )
+
+                // I-replace ang lumang item sa list
+                section.foods[foodIndex] = updatedFood
+
+                // 3. I-notify ang adapter na nagbago ang section na ito
+                // (Magt-trigger ito ng smooth UI update sa specific na section)
+                notifyItemChanged(sectionIndex)
+
+                break // Exit the loop once we found and updated the item
+            }
+        }
+    }
 }

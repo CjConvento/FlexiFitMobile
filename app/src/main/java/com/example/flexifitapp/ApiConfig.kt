@@ -2,7 +2,7 @@ package com.example.flexifitapp
 
 object ApiConfig {
 
-    const val BASE_URL = "https://flexifit-api-ylop.onrender.com/"
+    const val BASE_URL = "https://flexifitapi.alwaysdata.net/" // new, points to alwaysdata API
 
 //    // Azure Blob Storage URLs
 //    const val WORKOUT_IMAGE_URL = "https://flexifitstorage.blob.core.windows.net/workouts/"

@@ -1,24 +1,23 @@
 package com.example.flexifitapp.utils
 
 import android.util.Log
-import com.example.flexifitapp.BuildConfig
 
 object AppLogger {
+    // TINANGGAL ANG BUILDConfig.DEBUG CHECK
     fun d(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) Log.d(tag, msg)
+        Log.d("FlexiFit-$tag", msg)
     }
 
     fun e(tag: String, msg: String, tr: Throwable? = null) {
-        if (BuildConfig.DEBUG) {
-            if (tr != null) Log.e(tag, msg, tr) else Log.e(tag, msg)
-        }
+        if (tr != null) Log.e("FlexiFit-$tag", msg, tr)
+        else Log.e("FlexiFit-$tag", msg)
     }
 
     fun i(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) Log.i(tag, msg)
+        Log.i("FlexiFit-$tag", msg)
     }
 
     fun w(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) Log.w(tag, msg)
+        Log.w("FlexiFit-$tag", msg)
     }
 }

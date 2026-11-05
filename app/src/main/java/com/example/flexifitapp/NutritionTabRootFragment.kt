@@ -65,7 +65,6 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
     private lateinit var btnResetWater: MaterialButton
     private lateinit var tvWaterValue: TextView
     // private lateinit var waterGlass: WaterGlassView // Uncomment if you have this custom view
-
     private lateinit var mealAdapter: MealSectionAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,12 +73,35 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         initViews(view)
         setupButtons()
         setupRecyclerView()
-        setupWaterButtons()  // ✅ Add this
+        setupWaterButtons()
 
         if (fromHost && day > 0) {
             fetchNutritionByDate()
         } else {
             fetchTodayNutrition()
+        }
+
+        // LISTEN FOR UPDATES FROM FOOD DETAILS FRAGMENT
+        parentFragmentManager.setFragmentResultListener("food_item_updated", viewLifecycleOwner) { requestKey, bundle ->
+            val mealItemId = bundle.getInt("mealItemId")
+            val newQty = bundle.getDouble("newQty")
+            val newCalories = bundle.getInt("newCalories")
+            val newProtein = bundle.getInt("newProtein")
+            val newCarbs = bundle.getInt("newCarbs")
+            val newFats = bundle.getInt("newFats")
+            val newServingLabel = bundle.getString("newServingLabel") ?: ""
+
+            // I-update ang specific item sa adapter nang hindi nagre-refetch ng buong API
+            mealAdapter.updateItemQuantity(
+                mealItemId = mealItemId,
+                qty = newQty,
+                calories = newCalories,
+                protein = newProtein,
+                carbs = newCarbs,
+                fats = newFats,
+                servingLabel = newServingLabel
+            )
+            AppLogger.d("NUTRITION_TAB", "Locally updated item $mealItemId without refetching")
         }
     }
 
@@ -323,6 +345,8 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
             "${response.bonusCalories.toInt()} kcal"
         }
         tvCaloriesBurned.text = bonusText
+        // Use response.totalTarget instead of undefined displayTarget
+        val targetCalories = response.totalTarget.toInt()
 
         // Use totalTarget for UI display (Base + Bonus)
         tvCalories.text = "${response.consumedCalories.toInt()} / ${response.totalTarget.toInt()} kcal"
@@ -336,7 +360,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
         updateMacroPieChart(response.consumedProtein, response.consumedCarbs, response.consumedFats)
 
         // Use totalTarget for progress bars
-        pbCalories.progress = percent(response.consumedCalories.toInt(), response.totalTarget.toInt())
+        pbCalories.progress = percent(response.consumedCalories.toInt(), targetCalories)
         pbProtein.progress = percent(response.consumedProtein.toInt(), response.targetProtein.toInt())
         pbCarbs.progress = percent(response.consumedCarbs.toInt(), response.targetCarbs.toInt())
         pbFats.progress = percent(response.consumedFats.toInt(), response.targetFats.toInt())
@@ -346,7 +370,7 @@ class NutritionTabRootFragment : Fragment(R.layout.fragment_nutri) {
                 mealType = getMealTypeName(meal.mealType),
                 foods = meal.foodItems.map { food ->
                     MealFood(
-                        mealItemId = food.foodId,
+                        mealItemId = food.itemLogId, // ginamit na ang mealitemid instead na foodid
                         foodId = food.foodId,
                         name = food.name,
                         description = food.description,
